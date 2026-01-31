@@ -2,14 +2,19 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IUser extends Document {
   email: string;
-  passwordHash: string;
+  passwordHash?: string;
   name: string;
   firstName?: string;
   lastName?: string;
   phone?: string;
-  role: 'admin' | 'user';
+  employeeId?: string;
+  reportingTo?: mongoose.Types.ObjectId;
+  joinDate?: Date;
+  role: 'admin' | 'bdm' | 'senior-bdm' | 'junior-bdm';
   avatarUrl?: string;
   isActive: boolean;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,7 +30,7 @@ const UserSchema = new Schema<IUser>(
     },
     passwordHash: {
       type: String,
-      required: true,
+      required: false,
     },
     name: {
       type: String,
@@ -40,10 +45,22 @@ const UserSchema = new Schema<IUser>(
     phone: {
       type: String,
     },
+    employeeId: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    reportingTo: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    joinDate: {
+      type: Date,
+    },
     role: {
       type: String,
-      enum: ['admin', 'user'],
-      default: 'user',
+      enum: ['admin', 'bdm', 'senior-bdm', 'junior-bdm'],
+      default: 'bdm',
     },
     avatarUrl: {
       type: String,
@@ -51,6 +68,12 @@ const UserSchema = new Schema<IUser>(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    resetPasswordToken: {
+      type: String,
+    },
+    resetPasswordExpires: {
+      type: Date,
     },
   },
   {

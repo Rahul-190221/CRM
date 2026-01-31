@@ -1,0 +1,1 @@
+export type Page = 'dashboard' | 'contacts' | 'deals' | 'lead-center' | 'lead-stage' | 'companies' | 'tasks' | 'settings' | 'course-details' | 'mock-test' | 'exam-reg' | 'notification' | 'profile' | 'bdm-add' | 'bdm-remove' | 'bdm-role' | 'bdm-activity' | 'bdm-report' | 'lead-assignments';

@@ -16,49 +16,17 @@ export interface IDeal extends Document {
 
 const DealSchema = new Schema<IDeal>(
   {
-    title: {
-      type: String,
-      required: true,
-    },
-    company: {
-      type: Schema.Types.ObjectId,
-      ref: 'Company',
-      required: true,
-    },
-    contact: {
-      type: Schema.Types.ObjectId,
-      ref: 'Contact',
-    },
-    amount: {
-      type: Number,
-      required: true,
-    },
-    currency: {
-      type: String,
-      default: 'USD',
-    },
-    stage: {
-      type: String,
-      required: true,
-    },
-    owner: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
-    closeDate: {
-      type: Date,
-    },
-    probability: {
-      type: Number,
-      min: 0,
-      max: 100,
-      default: 0,
-    },
+    title: { type: String, required: true },
+    company: { type: Schema.Types.ObjectId, ref: 'Company', required: true },
+    contact: { type: Schema.Types.ObjectId, ref: 'Contact' },
+    amount: { type: Number, required: true },
+    currency: { type: String, default: 'USD' },
+    stage: { type: String, required: true },
+    owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    closeDate: { type: Date },
+    probability: { type: Number, min: 0, max: 100, default: 0 },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 export default mongoose.model<IDeal>('Deal', DealSchema);
