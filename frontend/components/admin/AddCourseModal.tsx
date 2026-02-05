@@ -11,7 +11,7 @@ interface AddCourseModalProps {
   editingCourse?: Course | null
 }
 
-const testTypes: TestType[] = ['IELTS', 'PTE', 'GRE', 'TOEFL', 'SAT', 'Duolingo', 'GMAT', 'OET', 'Cambridge']
+const testTypes: TestType[] = ['IELTS', 'PTE', 'GRE', 'TOEFL']
 
 export default function AddCourseModal({ isOpen, onClose, onSubmit, editingCourse }: AddCourseModalProps) {
   const [formData, setFormData] = useState({
@@ -75,8 +75,10 @@ export default function AddCourseModal({ isOpen, onClose, onSubmit, editingCours
       <div className="bg-white rounded-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-5 border-b border-gray-200">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Add New Course</h2>
-            <p className="text-sm text-gray-500 mt-0.5">Fill in the details to create a new course offering.</p>
+            <h2 className="text-lg font-semibold text-gray-900">{editingCourse ? 'Edit Course' : 'Add New Course'}</h2>
+            <p className="text-sm text-gray-500 mt-0.5">
+              {editingCourse ? 'Update the details of the course.' : 'Fill in the details to create a new course offering.'}
+            </p>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
             <X className="w-5 h-5" />
@@ -219,7 +221,7 @@ export default function AddCourseModal({ isOpen, onClose, onSubmit, editingCours
               type="submit"
               className="flex-1 px-4 py-2.5 bg-yellow-400 rounded-lg text-sm font-bold text-gray-900 hover:bg-yellow-500 transition-colors"
             >
-              Add Course
+              {editingCourse ? 'Update Course' : 'Add Course'}
             </button>
           </div>
         </form>

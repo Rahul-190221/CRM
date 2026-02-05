@@ -5,12 +5,18 @@ import { useRouter } from 'next/navigation'
 import Cookies from 'js-cookie'
 import Sidebar from '@/components/layout/Sidebar'
 import Header from '@/components/layout/Header'
-import BDMDashboard from '@/components/bdm/BDMDashboard'
+import BDMDashboard from '@/components/dashboard/BDMDashboard'
+import LeadCenter from '@/components/leads/LeadCenter'
+import LeadStage from '@/components/leads/LeadStage'
+import CourseDetails from '@/components/admin/CourseDetails'
+import MockTest from '@/components/admin/MockTest'
+import ExamRegistration from '@/components/admin/ExamRegistration'
 import { getUserIdFromToken } from '@/lib/helpers/jwt'
+import type { Page } from '@/types/navigation'
 
 export default function BDMDashboardPage() {
   const router = useRouter()
-  const [activePage, setActivePage] = useState<string>('dashboard')
+  const [activePage, setActivePage] = useState<Page>('dashboard')
   const [user, setUser] = useState<any>(null)
   const [isInitialized, setIsInitialized] = useState(false)
 
@@ -42,6 +48,39 @@ export default function BDMDashboardPage() {
     router.push('/')
   }
 
+  const renderContent = () => {
+    switch (activePage) {
+      case 'dashboard':
+        return <BDMDashboard />
+      case 'lead-center':
+        return <LeadCenter user={user} />
+      case 'lead-stage':
+        return <LeadStage user={user} />
+      case 'course-details':
+        return <CourseDetails user={user} />
+      case 'mock-test':
+        return <MockTest user={user} />
+      case 'exam-reg':
+        return <ExamRegistration user={user} />
+      case 'notification':
+        return (
+          <div className="p-6">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Notifications</h1>
+            <p className="text-gray-500">No new notifications</p>
+          </div>
+        )
+      case 'profile':
+        return (
+          <div className="p-6">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Profile</h1>
+            <p className="text-gray-500">Profile settings coming soon</p>
+          </div>
+        )
+      default:
+        return <BDMDashboard />
+    }
+  }
+
   if (!isInitialized || !user) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-50">
@@ -56,14 +95,14 @@ export default function BDMDashboardPage() {
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       <Sidebar
-        activePage={activePage as any}
-        setActivePage={setActivePage as any}
+        activePage={activePage}
+        setActivePage={setActivePage}
         onLogout={handleLogout}
       />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header user={user} onLogout={handleLogout} />
-        <main className="flex-1 overflow-y-auto p-8">
-          <BDMDashboard activePage={activePage} setActivePage={setActivePage} />
+        <main className="flex-1 overflow-y-auto">
+          {renderContent()}
         </main>
       </div>
     </div>

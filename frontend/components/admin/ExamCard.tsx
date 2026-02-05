@@ -9,7 +9,8 @@ interface ExamCardProps {
   onEdit: (exam: Exam) => void
 }
 
-export default function ExamCard({ exam, onEdit }: ExamCardProps) {
+export default function ExamCard({ exam, onEdit, user }: ExamCardProps & { user?: any }) {
+  const isAdmin = user?.role === 'admin';
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -30,20 +31,21 @@ export default function ExamCard({ exam, onEdit }: ExamCardProps) {
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <h3 className="text-lg font-semibold text-gray-900">{exam.name}</h3>
-        <button
-          onClick={() => onEdit(exam)}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <Edit2 className="w-4 h-4" />
-          <span>Edit</span>
-        </button>
+        {isAdmin && (
+          <button
+            onClick={() => onEdit(exam)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <Edit2 className="w-4 h-4" />
+            <span>Edit</span>
+          </button>
+        )}
       </div>
 
       {/* Exam Type Badge */}
       <div className="mb-4">
-        <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-md ${
-          examTypeBadgeColors[exam.examType as ExamType] || 'bg-gray-100 text-gray-700'
-        }`}>
+        <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-md ${examTypeBadgeColors[exam.examType as ExamType] || 'bg-gray-100 text-gray-700'
+          }`}>
           {exam.examType}
         </span>
       </div>

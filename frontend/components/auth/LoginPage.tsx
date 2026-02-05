@@ -132,8 +132,8 @@ export default function LoginPage() {
           </div>
 
           {/* Right - Form */}
-          <div className="bg-white p-8 md:p-12 rounded-3xl">
-            <div className="flex items-center justify-between mb-6">
+          <div className="bg-white p-8 md:p-12 rounded-3xl"> 
+            <div className="flex items-center justify-between mb-6"> 
               <div className="flex items-center gap-3">
 
                 <span className="text-lg font-semibold text-[#0b1220]">Sign in to Luminedge</span>

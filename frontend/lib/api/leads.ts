@@ -1,0 +1,229 @@
+import type { Lead, BDM } from '@/types/admin';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_BASE_URL = API_URL.endsWith('/api') ? API_URL : `${API_URL}/api`;
+
+const getAuthHeader = (): HeadersInit => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+  return {
+    'Content-Type': 'application/json',
+    ...(token && { Authorization: `Bearer ${token}` })
+  };
+};
+
+// Get all leads with optional filters
+export const getLeads = async (filters?: {
+  stage?: string;
+  source?: string;
+  assignedTo?: string;
+  search?: string;
+}): Promise<Lead[]> => {
+  const params = new URLSearchParams();
+  if (filters?.stage) params.append('stage', filters.stage);
+  if (filters?.source) params.append('source', filters.source);
+  if (filters?.assignedTo) params.append('assignedTo', filters.assignedTo);
+  if (filters?.search) params.append('search', filters.search);
+
+  const queryString = params.toString();
+  const url = `${API_BASE_URL}/leads${queryString ? `?${queryString}` : ''}`;
+
+  const response = await fetch(url, {
+    headers: getAuthHeader()
+  });
+  if (!response.ok) throw new Error('Failed to fetch leads');
+  return response.json();
+};
+
+// Get single lead
+export const getLead = async (id: string): Promise<Lead> => {
+  const response = await fetch(`${API_BASE_URL}/leads/${id}`, {
+    headers: getAuthHeader()
+  });
+  if (!response.ok) throw new Error('Failed to fetch lead');
+  return response.json();
+};
+
+// Create lead
+export const createLead = async (data: Omit<Lead, '_id' | 'createdAt' | 'updatedAt'>): Promise<Lead> => {
+  const response = await fetch(`${API_BASE_URL}/leads`, {
+    method: 'POST',
+    headers: getAuthHeader(),
+    body: JSON.stringify(data)
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to create lead');
+  }
+  return response.json();
+};
+
+// Update lead
+export const updateLead = async (id: string, data: Partial<Lead>): Promise<Lead> => {
+  const response = await fetch(`${API_BASE_URL}/leads/${id}`, {
+    method: 'PATCH',
+    headers: getAuthHeader(),
+    body: JSON.stringify(data)
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to update lead');
+  }
+  return response.json();
+};
+
+// Update lead stage
+export const updateLeadStage = async (id: string, lifecycleStage: string): Promise<Lead> => {
+  const response = await fetch(`${API_BASE_URL}/leads/${id}/stage`, {
+    method: 'PATCH',
+    headers: getAuthHeader(),
+    body: JSON.stringify({ lifecycleStage })
+  });
+  if (!response.ok) throw new Error('Failed to update lead stage');
+  return response.json();
+};
+
+// Add follow-up to lead
+export const addFollowUp = async (id: string, followUp: {
+  date?: string;
+  note?: string;
+  nextFollowUpDate?: string;
+}): Promise<Lead> => {
+  const response = await fetch(`${API_BASE_URL}/leads/${id}/follow-up`, {
+    method: 'PATCH',
+    headers: getAuthHeader(),
+    body: JSON.stringify(followUp)
+  });
+  if (!response.ok) throw new Error('Failed to add follow-up');
+  return response.json();
+};
+
+// Delete lead
+export const deleteLead = async (id: string): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/leads/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeader()
+  });
+  if (!response.ok) throw new Error('Failed to delete lead');
+};
+
+// Get all BDMs for assignment
+export const getBDMs = async (): Promise<BDM[]> => {
+  const response = await fetch(`${API_BASE_URL}/leads/bdms`, {
+    headers: getAuthHeader()
+  });
+  if (!response.ok) throw new Error('Failed to fetch BDMs');
+  return response.json();
+};
+
+// Get lead statistics
+export const getLeadStats = async (): Promise<{
+  total: number;
+  newToday: number;
+  byStage: Record<string, number>;
+}> => {
+  const response = await fetch(`${API_BASE_URL}/leads/stats`, {
+    headers: getAuthHeader()
+  });
+  if (!response.ok) throw new Error('Failed to fetch lead stats');
+  return response.json();
+};
+
+// Parse CSV file and return leads array
+export const parseCSV = (csvContent: string): Omit<Lead, '_id' | 'createdAt' | 'updatedAt'>[] => {
+  const lines = csvContent.split('\n').filter(line => line.trim());
+  if (lines.length < 2) return [];
+
+  const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+  const leads: Omit<Lead, '_id' | 'createdAt' | 'updatedAt'>[] = [];
+
+  for (let i = 1; i < lines.length; i++) {
+    const values = lines[i].split(',').map(v => v.trim());
+    const leadData: any = {
+      followUps: [],
+      lifecycleStage: 'Intake'
+    };
+
+    headers.forEach((header, index) => {
+      const value = values[index] || '';
+      switch (header) {
+        case 'fullname':
+        case 'full name':
+        case 'name':
+          leadData.fullName = value;
+          break;
+        case 'email':
+          leadData.email = value;
+          break;
+        case 'phone':
+        case 'phone number':
+          leadData.phone = value;
+          break;
+        case 'source':
+        case 'lead source':
+          leadData.source = value || 'Other';
+          break;
+        case 'service':
+        case 'service interest':
+        case 'serviceinterest':
+          leadData.serviceInterest = value;
+          break;
+        case 'notes':
+        case 'note':
+          leadData.notes = value;
+          break;
+        case 'stage':
+        case 'lifecycle stage':
+        case 'lifecyclestage':
+          leadData.lifecycleStage = value || 'Intake';
+          break;
+      }
+    });
+
+    if (leadData.fullName && leadData.email && leadData.phone) {
+      leads.push(leadData);
+    }
+  }
+
+  return leads;
+};
+
+// Import leads from parsed CSV data
+export const importLeadsFromCSV = async (file: File): Promise<{ imported: number; failed: number; errors?: string[] }> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+      try {
+        const csvContent = e.target?.result as string;
+        const leads = parseCSV(csvContent);
+
+        if (leads.length === 0) {
+          reject(new Error('No valid leads found in CSV file'));
+          return;
+        }
+
+        const response = await fetch(`${API_BASE_URL}/leads/import`, {
+          method: 'POST',
+          headers: getAuthHeader(),
+          body: JSON.stringify({ leads })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || 'Failed to import leads');
+        }
+
+        const result = await response.json();
+        resolve(result);
+      } catch (error) {
+        reject(error);
+      }
+    };
+
+    reader.onerror = () => {
+      reject(new Error('Failed to read CSV file'));
+    };
+
+    reader.readAsText(file);
+  });
+};

@@ -23,7 +23,7 @@ const CourseSchema = new Schema<ICourse>(
     name: { type: String, required: true },
     testType: {
       type: String,
-      enum: ['IELTS', 'PTE', 'GRE', 'TOEFL', 'SAT', 'Duolingo', 'GMAT', 'OET', 'Cambridge'],
+      enum: ['IELTS', 'PTE', 'GRE', 'TOEFL'],
       required: true,
     },
     description: { type: String, required: true },

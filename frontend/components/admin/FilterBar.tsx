@@ -14,8 +14,8 @@ interface FilterBarProps {
   statusOptions?: { value: string; label: string }[]
 }
 
-const testTypes: TestType[] = ['IELTS', 'PTE', 'GRE', 'TOEFL', 'SAT', 'Duolingo', 'GMAT', 'OET', 'Cambridge']
-const examTypes: ExamType[] = ['Computer-Based', 'Paper-Based', 'Online']
+const testTypes: TestType[] = ['IELTS', 'PTE', 'GRE', 'TOEFL']
+const examTypes: ExamType[] = ['Computer-Based', 'Paper-Based']
 
 export default function FilterBar({
   filters,

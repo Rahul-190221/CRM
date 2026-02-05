@@ -43,7 +43,7 @@ export default function MockTestScheduleTable({ schedules, totalCount }: MockTes
               <tr key={schedule._id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                 <td className="px-4 py-3 text-sm text-gray-700">{schedule.listNumber}</td>
                 <td className="px-4 py-3 text-sm text-gray-900 font-medium">{schedule.name}</td>
-                <td className="px-4 py-3 text-sm text-gray-700">{schedule.testType}</td>
+                <td className="px-4 py-3 text-sm text-gray-700">{schedule.examType}</td>
                 <td className="px-4 py-3 text-sm text-gray-700">{formatDate(schedule.examDate)}</td>
                 <td className="px-4 py-3 text-sm text-gray-700">{schedule.examTime}</td>
                 <td className="px-4 py-3 text-sm text-gray-700">{schedule.totalSeats}</td>

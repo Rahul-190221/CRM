@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Contact from '../models/Contact';
+import Lead from '../models/Lead';
 import Task from '../models/Task';
 import User from '../models/User';
 
@@ -9,10 +9,10 @@ export const getBDMStats = async (req: Request, res: Response): Promise<void> =>
     const userId = req.user?.id;
 
     // Get counts for the BDM's leads
-    const totalLeads = await Contact.countDocuments({ owner: userId });
-    const converted = await Contact.countDocuments({ owner: userId, lifecycleStage: 'Converted' });
-    const inProgress = await Contact.countDocuments({
-      owner: userId,
+    const totalLeads = await Lead.countDocuments({ assignedTo: userId });
+    const converted = await Lead.countDocuments({ assignedTo: userId, lifecycleStage: 'Converted' });
+    const inProgress = await Lead.countDocuments({
+      assignedTo: userId,
       lifecycleStage: { $in: ['Intake', 'Processing', 'Hot'] }
     });
 
@@ -25,12 +25,12 @@ export const getBDMStats = async (req: Request, res: Response): Promise<void> =>
     const sixtyDaysAgo = new Date();
     sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
 
-    const currentPeriodLeads = await Contact.countDocuments({
-      owner: userId,
+    const currentPeriodLeads = await Lead.countDocuments({
+      assignedTo: userId,
       createdAt: { $gte: thirtyDaysAgo }
     });
-    const previousPeriodLeads = await Contact.countDocuments({
-      owner: userId,
+    const previousPeriodLeads = await Lead.countDocuments({
+      assignedTo: userId,
       createdAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo }
     });
 
@@ -59,16 +59,15 @@ export const getBDMRecentLeads = async (req: Request, res: Response): Promise<vo
     const userId = req.user?.id;
     const limit = parseInt(req.query.limit as string) || 5;
 
-    const recentLeads = await Contact.find({ owner: userId })
+    const recentLeads = await Lead.find({ assignedTo: userId })
       .sort({ createdAt: -1 })
       .limit(limit)
-      .populate('company', 'name')
       .lean();
 
-    const leads = recentLeads.map(lead => ({
+    const leads = recentLeads.map((lead) => ({
       id: lead._id,
-      name: `${lead.firstName} ${lead.lastName}`,
-      service: lead.service || 'General Inquiry',
+      name: lead.fullName,
+      service: lead.serviceInterest || 'General Inquiry',
       phone: lead.phone || 'N/A',
       createdAt: lead.createdAt,
       stage: lead.lifecycleStage
@@ -117,13 +116,13 @@ export const getLeadStageDistribution = async (req: Request, res: Response): Pro
   try {
     const userId = req.user?.id;
     const isAdmin = req.user?.role === 'admin';
-    const filter = isAdmin ? {} : { owner: userId };
+    const filter = isAdmin ? {} : { assignedTo: userId };
 
     const stages = ['Intake', 'Processing', 'Hot', 'Converted', 'Dead'];
     const distribution = await Promise.all(
       stages.map(async (stage) => ({
         stage,
-        count: await Contact.countDocuments({ ...filter, lifecycleStage: stage })
+        count: await Lead.countDocuments({ ...filter, lifecycleStage: stage })
       }))
     );
 
@@ -139,7 +138,7 @@ export const getLeadStageTrend = async (req: Request, res: Response): Promise<vo
   try {
     const userId = req.user?.id;
     const isAdmin = req.user?.role === 'admin';
-    const filter = isAdmin ? {} : { owner: userId };
+    const filter = isAdmin ? {} : { assignedTo: userId };
 
     const months = [];
     const now = new Date();
@@ -150,22 +149,22 @@ export const getLeadStageTrend = async (req: Request, res: Response): Promise<vo
 
       const monthData = {
         month: date.toLocaleString('default', { month: 'short' }),
-        Converted: await Contact.countDocuments({
+        Converted: await Lead.countDocuments({
           ...filter,
           lifecycleStage: 'Converted',
           updatedAt: { $gte: date, $lt: nextMonth }
         }),
-        Hot: await Contact.countDocuments({
+        Hot: await Lead.countDocuments({
           ...filter,
           lifecycleStage: 'Hot',
           createdAt: { $gte: date, $lt: nextMonth }
         }),
-        Intake: await Contact.countDocuments({
+        Intake: await Lead.countDocuments({
           ...filter,
           lifecycleStage: 'Intake',
           createdAt: { $gte: date, $lt: nextMonth }
         }),
-        Processing: await Contact.countDocuments({
+        Processing: await Lead.countDocuments({
           ...filter,
           lifecycleStage: 'Processing',
           createdAt: { $gte: date, $lt: nextMonth }
@@ -187,14 +186,14 @@ export const getLeadSourceDistribution = async (req: Request, res: Response): Pr
   try {
     const userId = req.user?.id;
     const isAdmin = req.user?.role === 'admin';
-    const filter = isAdmin ? {} : { owner: userId };
+    const filter = isAdmin ? {} : { assignedTo: userId };
 
-    const sources = ['Website', 'Referral', 'Social Media', 'Email Campaign', 'Walk-in'];
-    const total = await Contact.countDocuments(filter);
+    const sources = ['Website', 'Referral', 'Social Media', 'Email Campaign', 'Walk-in', 'Phone', 'Other'];
+    const total = await Lead.countDocuments(filter);
 
     const distribution = await Promise.all(
       sources.map(async (source) => {
-        const count = await Contact.countDocuments({ ...filter, source });
+        const count = await Lead.countDocuments({ ...filter, source });
         return {
           source,
           count,
@@ -215,7 +214,7 @@ export const getConversionRateTrend = async (req: Request, res: Response): Promi
   try {
     const userId = req.user?.id;
     const isAdmin = req.user?.role === 'admin';
-    const filter = isAdmin ? {} : { owner: userId };
+    const filter = isAdmin ? {} : { assignedTo: userId };
 
     const months = [];
     const now = new Date();
@@ -224,12 +223,12 @@ export const getConversionRateTrend = async (req: Request, res: Response): Promi
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const nextMonth = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
 
-      const totalInMonth = await Contact.countDocuments({
+      const totalInMonth = await Lead.countDocuments({
         ...filter,
         createdAt: { $gte: date, $lt: nextMonth }
       });
 
-      const convertedInMonth = await Contact.countDocuments({
+      const convertedInMonth = await Lead.countDocuments({
         ...filter,
         lifecycleStage: 'Converted',
         updatedAt: { $gte: date, $lt: nextMonth }
@@ -253,7 +252,7 @@ export const getStatusDistribution = async (req: Request, res: Response): Promis
   try {
     const userId = req.user?.id;
     const isAdmin = req.user?.role === 'admin';
-    const filter = isAdmin ? {} : { owner: userId };
+    const filter = isAdmin ? {} : { assignedTo: userId };
 
     // Using lifecycle stages as status
     const statuses = [
@@ -268,7 +267,7 @@ export const getStatusDistribution = async (req: Request, res: Response): Promis
     const distribution = await Promise.all(
       statuses.map(async (status) => ({
         label: status.label,
-        count: await Contact.countDocuments({ ...filter, lifecycleStage: status.stage }),
+        count: await Lead.countDocuments({ ...filter, lifecycleStage: status.stage }),
         color: status.color
       }))
     );
@@ -290,8 +289,8 @@ export const getAdminStats = async (req: Request, res: Response): Promise<void> 
       isActive: true
     });
     const totalUsers = await User.countDocuments({ isActive: true });
-    const totalLeads = await Contact.countDocuments();
-    const convertedLeads = await Contact.countDocuments({ lifecycleStage: 'Converted' });
+    const totalLeads = await Lead.countDocuments();
+    const convertedLeads = await Lead.countDocuments({ lifecycleStage: 'Converted' });
 
     const conversionRate = totalLeads > 0 ? ((convertedLeads / totalLeads) * 100).toFixed(1) : '0';
 
@@ -316,34 +315,33 @@ export const getRecentActivity = async (req: Request, res: Response): Promise<vo
   try {
     const limit = parseInt(req.query.limit as string) || 5;
 
-    // Get recent contacts with their owners
-    const recentContacts = await Contact.find()
+    // Get recent leads with their assigned BDMs
+    const recentLeads = await Lead.find()
       .sort({ updatedAt: -1 })
       .limit(limit)
-      .populate('owner', 'name')
-      .populate('company', 'name')
+      .populate('assignedTo', 'name')
       .lean();
 
-    const activities = recentContacts.map(contact => {
+    const activities = recentLeads.map((lead) => {
       let action = 'Added new lead';
       let type: 'success' | 'info' | 'warning' = 'info';
 
-      if (contact.lifecycleStage === 'Converted') {
-        action = `Converted lead "${contact.firstName} ${contact.lastName}"`;
+      if (lead.lifecycleStage === 'Converted') {
+        action = `Converted lead "${lead.fullName}"`;
         type = 'success';
-      } else if (contact.lifecycleStage === 'Dead') {
+      } else if (lead.lifecycleStage === 'Dead') {
         action = `Marked lead as dead`;
         type = 'warning';
       } else {
-        action = `Added new lead "${contact.firstName} ${contact.lastName}"`;
+        action = `Added new lead "${lead.fullName}"`;
       }
 
       return {
-        id: contact._id,
-        user: (contact.owner as any)?.name || 'Unknown',
+        id: lead._id,
+        user: (lead.assignedTo as any)?.name || 'Unassigned',
         action,
         type,
-        timestamp: contact.updatedAt
+        timestamp: lead.updatedAt
       };
     });
 
@@ -368,9 +366,9 @@ export const getTopPerformers = async (req: Request, res: Response): Promise<voi
     // Calculate conversion rate for each BDM
     const performersData = await Promise.all(
       bdms.map(async (bdm) => {
-        const totalLeads = await Contact.countDocuments({ owner: bdm._id });
-        const convertedLeads = await Contact.countDocuments({
-          owner: bdm._id,
+        const totalLeads = await Lead.countDocuments({ assignedTo: bdm._id });
+        const convertedLeads = await Lead.countDocuments({
+          assignedTo: bdm._id,
           lifecycleStage: 'Converted'
         });
 

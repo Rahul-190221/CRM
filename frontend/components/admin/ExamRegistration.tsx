@@ -5,7 +5,7 @@ import { Plus } from 'lucide-react'
 import ExamCard from './ExamCard'
 import AddExamModal from './AddExamModal'
 import FilterBar from './FilterBar'
-import { getExams, createExam, updateExam } from '@/lib/api/exams'
+import { getExams, createExam, updateExam, deleteExam } from '@/lib/api/exams'
 import type { Exam, FilterState } from '@/types/admin'
 
 // Mock data for exams
@@ -95,43 +95,10 @@ const mockExams: Exam[] = [
     createdAt: '2025-01-01',
     updatedAt: '2025-01-01'
   },
-  {
-    _id: '6',
-    name: 'Duolingo English Test',
-    examType: 'Online',
-    testType: 'Duolingo',
-    examDate: '2026-02-28',
-    examTime: 'Flexible',
-    venue: 'Online (Remote)',
-    registrationDeadline: '2026-02-27',
-    fee: 5500,
-    currency: 'BDT',
-    totalSlots: 100,
-    availableSlots: 100,
-    isActive: true,
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01'
-  },
-  {
-    _id: '7',
-    name: 'SAT',
-    examType: 'Paper-Based',
-    testType: 'SAT',
-    examDate: '2026-03-05',
-    examTime: '08:00 AM',
-    venue: 'American International School, Gulshan',
-    registrationDeadline: '2026-02-18',
-    fee: 12500,
-    currency: 'BDT',
-    totalSlots: 50,
-    availableSlots: 25,
-    isActive: true,
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01'
-  }
 ]
 
-export default function ExamRegistration() {
+export default function ExamRegistration({ user }: { user?: any }) {
+  const isAdmin = user?.role === 'admin';
   const [exams, setExams] = useState<Exam[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -180,6 +147,19 @@ export default function ExamRegistration() {
     setIsModalOpen(true)
   }
 
+  const handleDeleteExam = async (exam: Exam) => {
+    if (confirm('Are you sure you want to delete this exam registration?')) {
+      try {
+        await deleteExam(exam._id)
+        fetchExams()
+        setIsModalOpen(false)
+        setEditingExam(null)
+      } catch (error) {
+        console.error('Error deleting exam:', error)
+      }
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -196,16 +176,18 @@ export default function ExamRegistration() {
           <h1 className="text-2xl font-bold text-gray-900">Exam Registration</h1>
           <p className="text-sm text-gray-500 mt-1">Browse and manage exam registrations</p>
         </div>
-        <button
-          onClick={() => {
-            setEditingExam(null)
-            setIsModalOpen(true)
-          }}
-          className="flex items-center gap-2 bg-yellow-400 px-4 py-2.5 rounded-lg text-sm font-bold text-gray-900 hover:bg-yellow-500 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add Exam</span>
-        </button>
+        {isAdmin && (
+          <button
+            onClick={() => {
+              setEditingExam(null)
+              setIsModalOpen(true)
+            }}
+            className="flex items-center gap-2 bg-yellow-400 px-4 py-2.5 rounded-lg text-sm font-bold text-gray-900 hover:bg-yellow-500 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Exam</span>
+          </button>
+        )}
       </div>
 
       {/* Filters */}
@@ -231,6 +213,7 @@ export default function ExamRegistration() {
             key={exam._id}
             exam={exam}
             onEdit={handleEdit}
+            user={user}
           />
         ))}
       </div>
@@ -249,6 +232,7 @@ export default function ExamRegistration() {
           setEditingExam(null)
         }}
         onSubmit={handleAddExam}
+        onDelete={handleDeleteExam}
         editingExam={editingExam}
       />
     </div>

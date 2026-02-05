@@ -1,5 +1,5 @@
 // Test Types - shared across all admin pages
-export type TestType = 'IELTS' | 'PTE' | 'GRE' | 'TOEFL' | 'SAT' | 'Duolingo' | 'GMAT' | 'OET' | 'Cambridge';
+export type TestType = 'IELTS' | 'PTE' | 'GRE' | 'TOEFL';
 
 // Course Interface
 export interface Course {
@@ -30,6 +30,7 @@ export interface MockTestPricing {
 export interface MockTestPackage {
   _id: string;
   testType: TestType;
+  description: string;
   features: string[];
   pricing: MockTestPricing[];
   isActive: boolean;
@@ -43,6 +44,7 @@ export interface MockTestSchedule {
   listNumber: number;
   name: string;
   testType: TestType;
+  examType: ExamType;
   examDate: string;
   examTime: string;
   totalSeats: number;
@@ -52,8 +54,30 @@ export interface MockTestSchedule {
   updatedAt: string;
 }
 
+// Luminedge Schedule (external API)
+export interface LuminedgeTimeSlot {
+  slotId: string;
+  startTime: string;
+  endTime: string;
+  slot: number;
+  totalSlot: string;
+}
+
+export interface LuminedgeSchedule {
+  _id: string;
+  courseId: string;
+  startDate: string;
+  endDate: string;
+  timeSlots: LuminedgeTimeSlot[];
+  name: string;
+  testSystem: string;
+  testType: string;
+  status: string;
+  createdAt: string;
+}
+
 // Exam Interface
-export type ExamType = 'Computer-Based' | 'Paper-Based' | 'Online';
+export type ExamType = 'Computer-Based' | 'Paper-Based';
 
 export interface Exam {
   _id: string;
@@ -89,17 +113,11 @@ export const testTypeBadgeColors: Record<TestType, string> = {
   'PTE': 'bg-purple-100 text-purple-700 border-purple-200',
   'GRE': 'bg-green-100 text-green-700 border-green-200',
   'TOEFL': 'bg-blue-100 text-blue-700 border-blue-200',
-  'SAT': 'bg-orange-100 text-orange-700 border-orange-200',
-  'Duolingo': 'bg-lime-100 text-lime-700 border-lime-200',
-  'GMAT': 'bg-cyan-100 text-cyan-700 border-cyan-200',
-  'OET': 'bg-pink-100 text-pink-700 border-pink-200',
-  'Cambridge': 'bg-indigo-100 text-indigo-700 border-indigo-200',
 };
 
 export const examTypeBadgeColors: Record<ExamType, string> = {
   'Computer-Based': 'bg-blue-100 text-blue-700',
   'Paper-Based': 'bg-amber-100 text-amber-700',
-  'Online': 'bg-teal-100 text-teal-700',
 };
 
 export const statusBadgeColors: Record<string, string> = {
@@ -111,4 +129,44 @@ export const statusBadgeColors: Record<string, string> = {
   'cancelled': 'bg-red-100 text-red-700',
   'open': 'bg-green-100 text-green-700',
   'closed': 'bg-gray-100 text-gray-600',
+};
+
+// Lead Types
+export type LeadSource = 'Website' | 'Referral' | 'Social Media' | 'Email Campaign' | 'Walk-in' | 'Phone' | 'Other';
+export type LeadStage = 'Intake' | 'Processing' | 'Hot' | 'Converted' | 'Dead';
+export type ServiceInterest = 'IELTS' | 'PTE' | 'GRE' | 'TOEFL' | 'Study Abroad' | 'Visa Processing';
+
+export interface FollowUp {
+  date: string;
+  note: string;
+  nextFollowUpDate: string;
+}
+
+export interface Lead {
+  _id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  source: LeadSource;
+  serviceInterest: ServiceInterest;
+  assignedTo?: string;
+  notes?: string;
+  followUps: FollowUp[];
+  lifecycleStage: LeadStage;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BDM {
+  _id: string;
+  name: string;
+  email: string;
+}
+
+export const leadStageBadgeColors: Record<LeadStage, string> = {
+  'Intake': 'bg-blue-100 text-blue-700',
+  'Processing': 'bg-yellow-100 text-yellow-700',
+  'Hot': 'bg-orange-100 text-orange-700',
+  'Converted': 'bg-green-100 text-green-700',
+  'Dead': 'bg-red-100 text-red-700',
 };

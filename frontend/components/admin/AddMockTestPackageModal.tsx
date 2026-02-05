@@ -12,7 +12,7 @@ interface AddMockTestPackageModalProps {
   editingPackage?: MockTestPackage | null
 }
 
-const testTypes: TestType[] = ['IELTS', 'PTE', 'GRE', 'TOEFL', 'SAT', 'Duolingo', 'GMAT', 'OET', 'Cambridge']
+const testTypes: TestType[] = ['IELTS', 'PTE', 'GRE', 'TOEFL']
 
 export default function AddMockTestPackageModal({ isOpen, onClose, onSubmit, onDelete, editingPackage }: AddMockTestPackageModalProps) {
   const [formData, setFormData] = useState({
@@ -31,7 +31,7 @@ export default function AddMockTestPackageModal({ isOpen, onClose, onSubmit, onD
     if (editingPackage) {
       setFormData({
         testType: editingPackage.testType,
-        description: 'We have paper-based and computer-delivered mock tests.',
+        description: editingPackage.description || 'We have paper-based and computer-delivered mock tests.',
         features: editingPackage.features || [],
         pricing: editingPackage.pricing || [],
         isActive: editingPackage.isActive

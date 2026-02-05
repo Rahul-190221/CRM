@@ -5,7 +5,7 @@ import {
   LayoutDashboard,
   Users,
   Briefcase,
-  CheckSquare,
+  Activity,
   Building2,
   Settings,
   LogOut,
@@ -13,7 +13,8 @@ import {
   GraduationCap,
   ClipboardCheck,
   FileBadge,
-  Bell
+  Bell,
+  UserCircle
 } from 'lucide-react'
 import type { Page } from '@/types/navigation'
 
@@ -28,10 +29,6 @@ export default function Sidebar({ activePage, setActivePage, onLogout }: Sidebar
 
   const menuItems = [
     { id: 'dashboard' as Page, label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'contacts' as Page, label: 'Contacts', icon: Users },
-    { id: 'deals' as Page, label: 'Deals', icon: Briefcase },
-    { id: 'tasks' as Page, label: 'Lead Stage', icon: CheckSquare },
-    { id: 'companies' as Page, label: 'Companies', icon: Building2 },
   ]
 
   const servicesItems: { id: Page; label: string; icon: any }[] = [
@@ -40,90 +37,103 @@ export default function Sidebar({ activePage, setActivePage, onLogout }: Sidebar
     { id: 'exam-reg', label: 'Exam Registration', icon: FileBadge },
   ]
 
+  const NavItem = ({ item, isSub = false }: { item: any, isSub?: boolean }) => {
+    const Icon = item.icon
+    const isActive = activePage === item.id
+    return (
+      <button
+        onClick={() => setActivePage(item.id)}
+        className={`w-full flex items-center gap-3 px-4 py-2 my-0.5 rounded-lg transition-all duration-200 ${isActive
+          ? 'bg-[#FDE047] text-gray-900 font-semibold'
+          : 'text-gray-600 hover:bg-gray-50'
+          } ${isSub ? 'pl-9 text-[13px]' : 'text-sm font-medium'}`}
+      >
+        <Icon className={`${isSub ? 'w-4 h-4' : 'w-5 h-5'}`} />
+        <span>{item.label}</span>
+      </button>
+    )
+  }
+
   return (
-    <div className="w-64 bg-white border-r border-gray-100 flex flex-col h-screen">
+    <div className="w-64 flex-shrink-0 bg-white border-r border-gray-100 flex flex-col h-screen overflow-hidden text-gray-900">
       {/* Logo Section */}
-      <div className="p-6 border-b border-gray-100">
-        <div className="flex items-center gap-3">
-          <img src="/assets/logo.png" alt="Luminedge logo" className="w-25 h-auto bg-white object-contain rounded-md" />
+      <div className="p-5">
+        <div className="p-4 border-b border-gray-100 bg-white">
+          <div className="flex items-center gap-3">
+            <img src="/assets/logo.png" alt="Luminedge logo" className="w-36 h-auto bg-white object-contain rounded-md" />
+          </div>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-3 overflow-y-auto scrollbar-hide space-y-1">
-        <ul className="space-y-1">
-          {menuItems.map((item) => {
-            const Icon = item.icon
-            const isActive = activePage === item.id
-            return (
-              <li key={item.id}>
-                <button
-                  onClick={() => setActivePage(item.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${isActive
-                    ? 'bg-yellow-400 text-gray-900 font-semibold'
-                    : 'text-gray-700 hover:bg-gray-50'
-                    }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  <span className="text-sm font-medium">{item.label}</span>
-                </button>
-              </li>
-            )
-          })}
-        </ul>
+      <div className="flex-1 px-3 overflow-y-auto py-2 scrollbar-hide">
+        <NavItem item={menuItems[0]} />
 
         {/* Services Section */}
-        <div className="mt-6">
+        <div className="mt-2">
           <button
             onClick={() => setIsServicesOpen(!isServicesOpen)}
-            className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200"
+            className={`w-full flex items-center justify-between px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${isServicesOpen ? 'text-gray-900' : 'text-gray-600 hover:bg-gray-50'}`}
           >
             <div className="flex items-center gap-3">
-              <Briefcase className="w-5 h-5 text-gray-600" />
-              <span className="text-sm font-medium">Services</span>
+              <Briefcase className="w-5 h-5" />
+              <span>Services</span>
             </div>
-            <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isServicesOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isServicesOpen ? 'rotate-180' : ''}`} />
           </button>
-
           {isServicesOpen && (
-            <ul className="mt-2 ml-4 border-l-2 border-gray-200 pl-2 space-y-1">
-              {servicesItems.map((item) => {
-                const Icon = item.icon
-                const isActive = activePage === item.id
-                return (
-                  <li key={item.id}>
-                    <button
-                      onClick={() => setActivePage(item.id)}
-                      className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-sm ${isActive ? 'bg-yellow-400 text-gray-900 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'}`}
-                    >
-                      <Icon className="w-4 h-4" />
-                      <span>{item.label}</span>
-                    </button>
-                  </li>
-                )
-              })}
-            </ul>
+            <div className="mt-1 space-y-0.5">
+              {servicesItems.map(item => <NavItem key={item.id} item={item} isSub />)}
+            </div>
           )}
         </div>
-      </nav>
+
+        <div className="mt-2">
+          <button
+            onClick={() => setActivePage('lead-center')}
+            className={`w-full flex items-center gap-3 px-4 py-2.5 my-0.5 rounded-lg text-sm font-medium transition-all duration-200 ${activePage === 'lead-center' ? 'bg-[#FDE047] text-gray-900 font-bold shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`}
+          >
+            <Users className="w-5 h-5" />
+            <span>Lead Center</span>
+          </button>
+        </div>
+
+        <div className="mt-1">
+          <button
+            onClick={() => setActivePage('lead-stage')}
+            className={`w-full flex items-center gap-3 px-4 py-2.5 my-0.5 rounded-lg text-sm font-medium transition-all duration-200 ${activePage === 'lead-stage' ? 'bg-[#FDE047] text-gray-900 font-bold shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`}
+          >
+            <Activity className="w-5 h-5" />
+            <span>Lead Stage</span>
+          </button>
+        </div>
+      </div>
 
       {/* Bottom Section */}
-      <div className="p-4 border-t border-gray-100 space-y-2">
-        <button className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors relative">
-          <Bell className="w-5 h-5 text-gray-600" />
-          <span className="text-sm font-medium">Notification</span>
-          <span className="absolute right-3 top-1 w-2 h-2 bg-red-500 rounded-full"></span>
+      <div className="px-3 py-4 border-t border-gray-50 space-y-1">
+        <button
+          onClick={() => setActivePage('notification')}
+          className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${activePage === 'notification' ? 'bg-[#FDE047] text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
+        >
+          <div className="flex items-center gap-3">
+            <Bell className="w-5 h-5" />
+            <span>Notification</span>
+          </div>
+          <span className="w-5 h-5 bg-[#EF4444] text-white text-[10px] flex items-center justify-center rounded-full font-bold">5</span>
         </button>
-        <button className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-          <Users className="w-5 h-5 text-gray-600" />
-          <span className="text-sm font-medium">Profile</span>
+        <button
+          onClick={() => setActivePage('profile')}
+          className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${activePage === 'profile' ? 'bg-[#FDE047] text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
+        >
+          <UserCircle className="w-5 h-5" />
+          <span>Profile</span>
         </button>
         <button
           onClick={onLogout}
-          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors font-medium"
+          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white bg-[#EF4444] hover:bg-red-600 transition-colors mt-2"
         >
           <LogOut className="w-5 h-5" />
-          <span className="text-sm">Logout</span>
+          <span>Logout</span>
         </button>
       </div>
     </div>

@@ -4,14 +4,14 @@ import dotenv from 'dotenv';
 
 // Import routes
 import authRoutes from './routes/auth.routes';
-import contactsRoutes from './routes/contacts.routes';
-import dealsRoutes from './routes/deals.routes';
 import tasksRoutes from './routes/tasks.routes';
-import companiesRoutes from './routes/companies.routes';
 import dashboardRoutes from './routes/dashboard.routes';
 import coursesRoutes from './routes/courses.routes';
 import mockTestsRoutes from './routes/mockTests.routes';
 import examsRoutes from './routes/exams.routes';
+import leadsRoutes from './routes/leads.routes';
+import schedulesRoutes from './routes/schedules.routes';
+import mockTestPackagesRoutes from './routes/mockTestPackages.routes';
 
 dotenv.config();
 
@@ -20,21 +20,25 @@ const app = express();
 // Middleware
 app.use(cors({
   origin: ['http://localhost:3000', 'http://localhost:3001'],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 86400 // 24 hours
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/contacts', contactsRoutes);
-app.use('/api/deals', dealsRoutes);
 app.use('/api/tasks', tasksRoutes);
-app.use('/api/companies', companiesRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/courses', coursesRoutes);
 app.use('/api/mock-tests', mockTestsRoutes);
 app.use('/api/exams', examsRoutes);
+app.use('/api/leads', leadsRoutes);
+app.use('/api/schedules', schedulesRoutes);
+app.use('/api/mock-test-packages', mockTestPackagesRoutes);
 
 // Health check
 app.get('/api/health', (req: Request, res: Response) => {

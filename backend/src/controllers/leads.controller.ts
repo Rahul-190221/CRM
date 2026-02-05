@@ -1,0 +1,345 @@
+import { Request, Response } from 'express';
+import Lead from '../models/Lead';
+import User from '../models/User';
+
+// Get all leads
+export const getLeads = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { stage, source, assignedTo, search } = req.query;
+
+    const filter: any = {};
+
+    if (stage && stage !== 'All') {
+      filter.lifecycleStage = stage;
+    }
+
+    if (source && source !== 'All') {
+      filter.source = source;
+    }
+
+    if (assignedTo) {
+      filter.assignedTo = assignedTo;
+    }
+
+    if (search) {
+      filter.$or = [
+        { fullName: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+        { phone: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    const leads = await Lead.find(filter)
+      .populate('assignedTo', 'name email')
+      .sort({ createdAt: -1 });
+
+    res.json(leads);
+  } catch (error) {
+    console.error('Error fetching leads:', error);
+    res.status(500).json({ error: 'Failed to fetch leads' });
+  }
+};
+
+// Get single lead
+export const getLead = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const lead = await Lead.findById(req.params.id).populate('assignedTo', 'name email');
+
+    if (!lead) {
+      res.status(404).json({ error: 'Lead not found' });
+      return;
+    }
+
+    res.json(lead);
+  } catch (error) {
+    console.error('Error fetching lead:', error);
+    res.status(500).json({ error: 'Failed to fetch lead' });
+  }
+};
+
+// Create lead
+export const createLead = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { fullName, email, phone, source, serviceInterest, assignedTo, notes, followUps, lifecycleStage } = req.body;
+
+    // Process follow-ups to convert date strings to Date objects
+    const processedFollowUps = followUps?.map((fu: any) => ({
+      date: fu.date ? new Date(fu.date) : undefined,
+      note: fu.note,
+      nextFollowUpDate: fu.nextFollowUpDate ? new Date(fu.nextFollowUpDate) : undefined
+    })).filter((fu: any) => fu.date || fu.note || fu.nextFollowUpDate) || [];
+
+    const lead = new Lead({
+      fullName,
+      email,
+      phone,
+      source: source || 'Website',
+      serviceInterest,
+      assignedTo: assignedTo || undefined,
+      notes,
+      followUps: processedFollowUps,
+      lifecycleStage: lifecycleStage || 'Intake'
+    });
+
+    await lead.save();
+
+    // Populate assignedTo before sending response
+    await lead.populate('assignedTo', 'name email');
+
+    res.status(201).json(lead);
+  } catch (error: any) {
+    console.error('Error creating lead:', error);
+    if (error.name === 'ValidationError') {
+      res.status(400).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'Failed to create lead' });
+    }
+  }
+};
+
+// Update lead
+export const updateLead = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { followUps, ...updateData } = req.body;
+
+    // Process follow-ups if provided
+    if (followUps) {
+      updateData.followUps = followUps.map((fu: any) => ({
+        date: fu.date ? new Date(fu.date) : undefined,
+        note: fu.note,
+        nextFollowUpDate: fu.nextFollowUpDate ? new Date(fu.nextFollowUpDate) : undefined
+      })).filter((fu: any) => fu.date || fu.note || fu.nextFollowUpDate);
+    }
+
+    const lead = await Lead.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true, runValidators: true }
+    ).populate('assignedTo', 'name email');
+
+    if (!lead) {
+      res.status(404).json({ error: 'Lead not found' });
+      return;
+    }
+
+    res.json(lead);
+  } catch (error: any) {
+    console.error('Error updating lead:', error);
+    if (error.name === 'ValidationError') {
+      res.status(400).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'Failed to update lead' });
+    }
+  }
+};
+
+// Delete lead
+export const deleteLead = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const lead = await Lead.findByIdAndDelete(req.params.id);
+
+    if (!lead) {
+      res.status(404).json({ error: 'Lead not found' });
+      return;
+    }
+
+    res.json({ message: 'Lead deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting lead:', error);
+    res.status(500).json({ error: 'Failed to delete lead' });
+  }
+};
+
+// Add follow-up to lead
+export const addFollowUp = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { date, note, nextFollowUpDate } = req.body;
+
+    const lead = await Lead.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: {
+          followUps: {
+            date: date ? new Date(date) : undefined,
+            note,
+            nextFollowUpDate: nextFollowUpDate ? new Date(nextFollowUpDate) : undefined,
+            createdAt: new Date()
+          }
+        }
+      },
+      { new: true, runValidators: true }
+    ).populate('assignedTo', 'name email');
+
+    if (!lead) {
+      res.status(404).json({ error: 'Lead not found' });
+      return;
+    }
+
+    res.json(lead);
+  } catch (error) {
+    console.error('Error adding follow-up:', error);
+    res.status(500).json({ error: 'Failed to add follow-up' });
+  }
+};
+
+// Update lead stage
+export const updateLeadStage = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { lifecycleStage } = req.body;
+
+    if (!['Intake', 'Processing', 'Hot', 'Converted', 'Dead'].includes(lifecycleStage)) {
+      res.status(400).json({ error: 'Invalid lifecycle stage' });
+      return;
+    }
+
+    const lead = await Lead.findByIdAndUpdate(
+      req.params.id,
+      { lifecycleStage },
+      { new: true }
+    ).populate('assignedTo', 'name email');
+
+    if (!lead) {
+      res.status(404).json({ error: 'Lead not found' });
+      return;
+    }
+
+    res.json(lead);
+  } catch (error) {
+    console.error('Error updating lead stage:', error);
+    res.status(500).json({ error: 'Failed to update lead stage' });
+  }
+};
+
+// Get all BDMs (users with bdm role)
+export const getBDMs = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const bdms = await User.find({
+      role: { $in: ['bdm', 'senior-bdm', 'junior-bdm', 'admin'] },
+      isActive: true
+    }).select('_id name email role');
+
+    res.json(bdms);
+  } catch (error) {
+    console.error('Error fetching BDMs:', error);
+    res.status(500).json({ error: 'Failed to fetch BDMs' });
+  }
+};
+
+// Import leads from CSV
+export const importLeads = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { leads } = req.body;
+
+    if (!leads || !Array.isArray(leads)) {
+      res.status(400).json({ error: 'Invalid leads data. Expected array of leads.' });
+      return;
+    }
+
+    let imported = 0;
+    let failed = 0;
+    const errors: string[] = [];
+
+    for (const leadData of leads) {
+      try {
+        const lead = new Lead({
+          fullName: leadData.fullName,
+          email: leadData.email,
+          phone: leadData.phone,
+          source: leadData.source || 'Other',
+          serviceInterest: leadData.serviceInterest,
+          notes: leadData.notes,
+          lifecycleStage: leadData.lifecycleStage || 'Intake'
+        });
+
+        await lead.save();
+        imported++;
+      } catch (error: any) {
+        failed++;
+        errors.push(`Row ${imported + failed}: ${error.message}`);
+      }
+    }
+
+    res.json({
+      imported,
+      failed,
+      errors: errors.slice(0, 10) // Return first 10 errors
+    });
+  } catch (error) {
+    console.error('Error importing leads:', error);
+    res.status(500).json({ error: 'Failed to import leads' });
+  }
+};
+
+// Get lead statistics
+export const getLeadStats = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const stats = await Lead.aggregate([
+      {
+        $group: {
+          _id: '$lifecycleStage',
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const totalLeads = await Lead.countDocuments();
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const newLeadsToday = await Lead.countDocuments({ createdAt: { $gte: todayStart } });
+
+    res.json({
+      total: totalLeads,
+      newToday: newLeadsToday,
+      byStage: stats.reduce((acc: any, curr) => {
+        acc[curr._id] = curr.count;
+        return acc;
+      }, {})
+    });
+  } catch (error) {
+    console.error('Error fetching lead stats:', error);
+    res.status(500).json({ error: 'Failed to fetch lead statistics' });
+  }
+};
+
+// Assign leads to BDM
+export const assignLeads = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { leadIds, bdmId } = req.body;
+
+    if (!leadIds || !Array.isArray(leadIds) || leadIds.length === 0) {
+      res.status(400).json({ error: 'Lead IDs are required' });
+      return;
+    }
+
+    if (!bdmId) {
+      res.status(400).json({ error: 'BDM ID is required' });
+      return;
+    }
+
+    // Verify BDM exists
+    const bdm = await User.findById(bdmId);
+    if (!bdm) {
+      res.status(404).json({ error: 'BDM not found' });
+      return;
+    }
+
+    // Update all leads
+    const result = await Lead.updateMany(
+      { _id: { $in: leadIds } },
+      {
+        $set: {
+          assignedTo: bdmId,
+          assignedAt: new Date()
+        }
+      }
+    );
+
+    res.json({
+      message: `Successfully assigned ${result.modifiedCount} lead(s) to ${bdm.name}`,
+      modifiedCount: result.modifiedCount
+    });
+  } catch (error) {
+    console.error('Error assigning leads:', error);
+    res.status(500).json({ error: 'Failed to assign leads' });
+  }
+};

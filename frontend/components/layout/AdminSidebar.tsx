@@ -6,7 +6,7 @@ import {
     LayoutDashboard,
     Users,
     Briefcase,
-    CheckSquare,
+    Activity,
     LogOut,
     ChevronDown,
     GraduationCap,
@@ -16,7 +16,6 @@ import {
     UserPlus,
     UserX,
     Shield,
-    Activity,
     FileText,
     Send,
     UserCircle,
@@ -71,15 +70,15 @@ export default function AdminSidebar({ activePage, setActivePage, onLogout }: Ad
     }
 
     return (
-        <div className="w-64 bg-white border-r border-gray-100 flex flex-col h-screen overflow-hidden text-gray-900">
+        <div className="w-64 flex-shrink-0 bg-white border-r border-gray-100 flex flex-col h-screen overflow-hidden text-gray-900">
             {/* Logo Section */}
             <div className="p-5">
                 <div className="p-4 border-b border-gray-100 bg-white">
-        <div className="flex items-center gap-3">
-          <img src="/assets/logo.png" alt="Luminedge logo" className="w-25 h-auto bg-white object-contain rounded-md" />
-          
-        </div>
-      </div>
+                    <div className="flex items-center gap-3">
+                        <img src="/assets/logo.png" alt="Luminedge logo" className="w-36 h-auto bg-white object-contain rounded-md" />
+
+                    </div>
+                </div>
             </div>
 
             {/* Navigation */}
@@ -108,7 +107,7 @@ export default function AdminSidebar({ activePage, setActivePage, onLogout }: Ad
                 <div className="mt-2">
                     <button
                         onClick={() => setActivePage('lead-center')}
-                        className={`w-full flex items-center gap-3 px-4 py-2 my-0.5 rounded-lg text-sm font-medium transition-all duration-200 ${activePage === 'lead-center' ? 'bg-[#FDE047] text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 my-0.5 rounded-lg text-sm font-medium transition-all duration-200 ${activePage === 'lead-center' ? 'bg-[#FDE047] text-gray-900 font-bold shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`}
                     >
                         <Users className="w-5 h-5" />
                         <span>Lead Center</span>
@@ -118,9 +117,9 @@ export default function AdminSidebar({ activePage, setActivePage, onLogout }: Ad
                 <div className="mt-1">
                     <button
                         onClick={() => setActivePage('lead-stage')}
-                        className={`w-full flex items-center gap-3 px-4 py-2 my-0.5 rounded-lg text-sm font-medium transition-all duration-200 ${activePage === 'lead-stage' ? 'bg-[#FDE047] text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 my-0.5 rounded-lg text-sm font-medium transition-all duration-200 ${activePage === 'lead-stage' ? 'bg-[#FDE047] text-gray-900 font-bold shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`}
                     >
-                        <CheckSquare className="w-5 h-5" />
+                        <Activity className="w-5 h-5" />
                         <span>Lead Stage</span>
                     </button>
                 </div>

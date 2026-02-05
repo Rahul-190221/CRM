@@ -10,6 +10,7 @@ import Header from '@/components/layout/Header'
 import Dashboard from '@/components/dashboard/Dashboard'
 import BDMDashboard from '@/components/dashboard/BDMDashboard'
 import LeadCenter from '@/components/leads/LeadCenter'
+import InputLead from '@/components/leads/InputLead'
 import LeadStage from '@/components/leads/LeadStage'
 import CourseDetails from '@/components/admin/CourseDetails'
 import MockTest from '@/components/admin/MockTest'
@@ -50,15 +51,31 @@ export default function DashboardPage() {
       case 'dashboard':
         return user?.role === 'admin' ? <Dashboard /> : <BDMDashboard />
       case 'lead-center':
-        return <LeadCenter />
+        return <LeadCenter user={user} />
+      case 'input-lead':
+        return <InputLead onSuccess={() => setActivePage('lead-center')} onCancel={() => setActivePage('lead-center')} />
       case 'lead-stage':
-        return <LeadStage />
+        return <LeadStage user={user} />
       case 'course-details':
-        return <CourseDetails />
+        return <CourseDetails user={user} />
       case 'mock-test':
-        return <MockTest />
+        return <MockTest user={user} />
       case 'exam-reg':
-        return <ExamRegistration />
+        return <ExamRegistration user={user} />
+      case 'notification':
+        return (
+          <div className="p-6">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Notifications</h1>
+            <p className="text-gray-500">No new notifications</p>
+          </div>
+        )
+      case 'profile':
+        return (
+          <div className="p-6">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Profile</h1>
+            <p className="text-gray-500">Profile settings coming soon</p>
+          </div>
+        )
       default:
         return user?.role === 'admin' ? <Dashboard /> : <BDMDashboard />
     }

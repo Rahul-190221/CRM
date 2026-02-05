@@ -4,29 +4,40 @@ import { Edit2 } from 'lucide-react'
 import type { MockTestPackage, TestType } from '@/types/admin'
 import { testTypeBadgeColors } from '@/types/admin'
 
+// Border colors based on test type (matching the Figma design)
+const testTypeBorderColors: Record<TestType, string> = {
+  'IELTS': 'border-l-red-500',
+  'PTE': 'border-l-purple-500',
+  'GRE': 'border-l-green-500',
+  'TOEFL': 'border-l-blue-500',
+}
+
 interface MockTestPackageCardProps {
   package_: MockTestPackage
   onEdit: (pkg: MockTestPackage) => void
 }
 
-export default function MockTestPackageCard({ package_, onEdit }: MockTestPackageCardProps) {
+export default function MockTestPackageCard({ package_, onEdit, user }: MockTestPackageCardProps & { user?: any }) {
+  const isAdmin = user?.role === 'admin';
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+    <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm border-l-4 border-l-yellow-400">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900">{package_.testType} Mock Test Packages</h3>
-        <button
-          onClick={() => onEdit(package_)}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <Edit2 className="w-4 h-4" />
-          <span>Edit</span>
-        </button>
+        {isAdmin && (
+          <button
+            onClick={() => onEdit(package_)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <Edit2 className="w-4 h-4" />
+            <span>Edit</span>
+          </button>
+        )}
       </div>
 
       {/* Description */}
       <p className="text-sm text-gray-600 mb-4">
-        We have paper-based and computer-delivered mock tests.
+        {package_.description || 'We have paper-based and computer-delivered mock tests.'}
       </p>
 
       {/* Features List */}

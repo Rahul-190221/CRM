@@ -19,7 +19,7 @@ const MockTestScheduleSchema = new Schema<IMockTestSchedule>(
     name: { type: String, required: true },
     testType: {
       type: String,
-      enum: ['IELTS', 'PTE', 'GRE', 'TOEFL', 'SAT', 'Duolingo', 'GMAT', 'OET', 'Cambridge'],
+      enum: ['IELTS', 'PTE', 'GRE', 'TOEFL'],
       required: true,
     },
     examDate: { type: Date, required: true },

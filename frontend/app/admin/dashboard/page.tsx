@@ -11,6 +11,12 @@ import LeadStage from '@/components/leads/LeadStage'
 import CourseDetails from '@/components/admin/CourseDetails'
 import MockTest from '@/components/admin/MockTest'
 import ExamRegistration from '@/components/admin/ExamRegistration'
+import BDMAdd from '@/components/admin/BDMAdd'
+import BDMRemove from '@/components/admin/BDMRemove'
+import BDMRole from '@/components/admin/BDMRole'
+import BDMActivity from '@/components/admin/BDMActivity'
+import BDMReport from '@/components/admin/BDMReport'
+import LeadAssignments from '@/components/admin/LeadAssignments'
 import { getUserIdFromToken } from '@/lib/helpers/jwt'
 import type { Page } from '@/types/navigation'
 
@@ -53,15 +59,27 @@ export default function AdminDashboardPage() {
       case 'dashboard':
         return <Dashboard />
       case 'lead-center':
-        return <LeadCenter />
+        return <LeadCenter user={user} />
       case 'lead-stage':
-        return <LeadStage />
+        return <LeadStage user={user} />
       case 'course-details':
-        return <CourseDetails />
+        return <CourseDetails user={user} />
       case 'mock-test':
-        return <MockTest />
+        return <MockTest user={user} />
       case 'exam-reg':
-        return <ExamRegistration />
+        return <ExamRegistration user={user} />
+      case 'bdm-add':
+        return <BDMAdd user={user} />
+      case 'bdm-remove':
+        return <BDMRemove user={user} />
+      case 'bdm-role':
+        return <BDMRole user={user} />
+      case 'bdm-activity':
+        return <BDMActivity user={user} />
+      case 'bdm-report':
+        return <BDMReport user={user} />
+      case 'lead-assignments':
+        return <LeadAssignments user={user} />
       default:
         return <Dashboard />
     }

@@ -18,7 +18,7 @@ const MockTestPackageSchema = new Schema<IMockTestPackage>(
   {
     testType: {
       type: String,
-      enum: ['IELTS', 'PTE', 'GRE', 'TOEFL', 'SAT', 'Duolingo', 'GMAT', 'OET', 'Cambridge'],
+      enum: ['IELTS', 'PTE', 'GRE', 'TOEFL'],
       required: true,
       unique: true,
     },

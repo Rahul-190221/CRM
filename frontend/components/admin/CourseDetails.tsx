@@ -82,101 +82,12 @@ const mockCourses: Course[] = [
     createdAt: '2025-01-01',
     updatedAt: '2025-01-01'
   },
-  {
-    _id: '5',
-    name: 'SAT Preparation',
-    testType: 'SAT',
-    description: 'Comprehensive SAT preparation with focus on Math, Evidence-Based Reading, and Writing.',
-    durationMonths: 3,
-    enrolledCount: 25,
-    capacity: 30,
-    startDate: '2025-12-05',
-    price: 19000,
-    currency: 'BDT',
-    instructor: 'Mr. Robert Brown',
-    schedule: 'Tue, Thu, Sat - 3:00 PM to 5:00 PM',
-    syllabus: ['Math Section', 'Reading & Writing', 'Essay Writing', 'Practice Tests', 'Time Management'],
-    isActive: true,
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01'
-  },
-  {
-    _id: '6',
-    name: 'Duolingo English Test',
-    testType: 'Duolingo',
-    description: 'Focused preparation for Duolingo English Test with adaptive learning techniques.',
-    durationMonths: 1,
-    enrolledCount: 18,
-    capacity: 25,
-    startDate: '2025-12-10',
-    price: 12000,
-    currency: 'BDT',
-    instructor: 'Ms. Anna Lee',
-    schedule: 'Flexible Online',
-    syllabus: ['Literacy', 'Comprehension', 'Conversation', 'Production', 'Practice Sessions'],
-    isActive: true,
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01'
-  },
-  {
-    _id: '7',
-    name: 'GMAT Test Prep',
-    testType: 'GMAT',
-    description: 'Complete GMAT preparation covering Quantitative, Verbal, Integrated Reasoning, and AWA.',
-    durationMonths: 5,
-    enrolledCount: 22,
-    capacity: 30,
-    startDate: '2025-12-15',
-    price: 25000,
-    currency: 'BDT',
-    instructor: 'Dr. David Kim',
-    schedule: 'Sat, Sun - 10:00 AM to 2:00 PM',
-    syllabus: ['Quantitative', 'Verbal', 'Integrated Reasoning', 'AWA', 'Full-length Tests'],
-    isActive: true,
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01'
-  },
-  {
-    _id: '8',
-    name: 'OET Preparation',
-    testType: 'OET',
-    description: 'Occupational English Test preparation for healthcare professionals.',
-    durationMonths: 2,
-    enrolledCount: 15,
-    capacity: 20,
-    startDate: '2025-12-20',
-    price: 17000,
-    currency: 'BDT',
-    instructor: 'Dr. Lisa Martin',
-    schedule: 'Mon, Wed - 6:00 PM to 8:00 PM',
-    syllabus: ['Listening', 'Reading', 'Writing', 'Speaking', 'Healthcare Scenarios'],
-    isActive: true,
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01'
-  },
-  {
-    _id: '9',
-    name: 'Cambridge English',
-    testType: 'Cambridge',
-    description: 'Cambridge English exam preparation including FCE, CAE, and CPE levels.',
-    durationMonths: 4,
-    enrolledCount: 20,
-    capacity: 25,
-    startDate: '2025-11-28',
-    price: 21000,
-    currency: 'BDT',
-    instructor: 'Mr. Peter Smith',
-    schedule: 'Tue, Thu, Sat - 11:00 AM to 1:00 PM',
-    syllabus: ['Reading & Use of English', 'Writing', 'Listening', 'Speaking', 'Exam Techniques'],
-    isActive: true,
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01'
-  }
 ]
 
-const testTypes: TestType[] = ['IELTS', 'PTE', 'GRE', 'TOEFL', 'SAT', 'Duolingo', 'GMAT', 'OET', 'Cambridge']
+const testTypes: TestType[] = ['IELTS', 'PTE', 'GRE', 'TOEFL']
 
-export default function CourseDetails() {
+export default function CourseDetails({ user }: { user?: any }) {
+  const isAdmin = user?.role === 'admin';
   const [courses, setCourses] = useState<Course[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
@@ -244,8 +155,8 @@ export default function CourseDetails() {
   }
 
   const filteredCourses = courses.filter(course =>
-    course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    course.description.toLowerCase().includes(searchTerm.toLowerCase())
+    (course.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (course.description?.toLowerCase() || '').includes(searchTerm.toLowerCase())
   )
 
   if (isLoading) {
@@ -264,16 +175,18 @@ export default function CourseDetails() {
           <h1 className="text-2xl font-bold text-gray-900">Course Details</h1>
           <p className="text-sm text-gray-500 mt-1">Manage and view all available courses</p>
         </div>
-        <button
-          onClick={() => {
-            setSelectedCourse(null)
-            setIsAddModalOpen(true)
-          }}
-          className="flex items-center gap-2 bg-yellow-400 px-4 py-2.5 rounded-lg text-sm font-bold text-gray-900 hover:bg-yellow-500 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add New Course</span>
-        </button>
+        {isAdmin && (
+          <button
+            onClick={() => {
+              setSelectedCourse(null)
+              setIsAddModalOpen(true)
+            }}
+            className="flex items-center gap-2 bg-yellow-400 px-4 py-2.5 rounded-lg text-sm font-bold text-gray-900 hover:bg-yellow-500 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add New Course</span>
+          </button>
+        )}
       </div>
 
       {/* Filters */}
@@ -317,6 +230,7 @@ export default function CourseDetails() {
             course={course}
             onEdit={handleEdit}
             onViewDetails={handleViewDetails}
+            user={user}
           />
         ))}
       </div>
@@ -348,6 +262,7 @@ export default function CourseDetails() {
         onEdit={handleEdit}
         onDelete={handleDelete}
         course={selectedCourse}
+        isAdmin={isAdmin}
       />
     </div>
   )

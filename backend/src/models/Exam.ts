@@ -22,12 +22,12 @@ const ExamSchema = new Schema<IExam>(
     name: { type: String, required: true },
     examType: {
       type: String,
-      enum: ['Computer-Based', 'Paper-Based', 'Online'],
+      enum: ['Computer-Based', 'Paper-Based'],
       required: true,
     },
     testType: {
       type: String,
-      enum: ['IELTS', 'PTE', 'GRE', 'TOEFL', 'SAT', 'Duolingo', 'GMAT', 'OET', 'Cambridge'],
+      enum: ['IELTS', 'PTE', 'GRE', 'TOEFL'],
       required: true,
     },
     examDate: { type: Date, required: true },

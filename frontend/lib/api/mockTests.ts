@@ -1,7 +1,7 @@
-import type { MockTestPackage, MockTestSchedule, FilterState } from '@/types/admin';
+import type { MockTestPackage, MockTestSchedule, FilterState, LuminedgeSchedule } from '@/types/admin';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-const API_BASE_URL = `${API_URL}/api`;
+const API_BASE_URL = API_URL.endsWith('/api') ? API_URL : `${API_URL}/api`;
 
 const getAuthHeader = (): HeadersInit => {
   const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
@@ -28,15 +28,15 @@ export const getMockTests = async (userId: string) => {
 
 // Mock Test Packages
 export const getMockTestPackages = async (): Promise<MockTestPackage[]> => {
-  const response = await fetch(`${API_BASE_URL}/mock-tests/packages`, {
+  const response = await fetch(`${API_BASE_URL}/mock-test-packages`, {
     headers: getAuthHeader()
   });
   if (!response.ok) throw new Error('Failed to fetch mock test packages');
   return response.json();
 };
 
-export const getMockTestPackage = async (id: string): Promise<MockTestPackage> => {
-  const response = await fetch(`${API_BASE_URL}/mock-tests/packages/${id}`, {
+export const getMockTestPackage = async (testType: string): Promise<MockTestPackage> => {
+  const response = await fetch(`${API_BASE_URL}/mock-test-packages/${testType}`, {
     headers: getAuthHeader()
   });
   if (!response.ok) throw new Error('Failed to fetch mock test package');
@@ -44,7 +44,7 @@ export const getMockTestPackage = async (id: string): Promise<MockTestPackage> =
 };
 
 export const createMockTestPackage = async (data: Omit<MockTestPackage, '_id' | 'createdAt' | 'updatedAt'>): Promise<MockTestPackage> => {
-  const response = await fetch(`${API_BASE_URL}/mock-tests/packages`, {
+  const response = await fetch(`${API_BASE_URL}/mock-test-packages`, {
     method: 'POST',
     headers: getAuthHeader(),
     body: JSON.stringify(data)
@@ -53,9 +53,9 @@ export const createMockTestPackage = async (data: Omit<MockTestPackage, '_id' | 
   return response.json();
 };
 
-export const updateMockTestPackage = async (id: string, data: Partial<MockTestPackage>): Promise<MockTestPackage> => {
-  const response = await fetch(`${API_BASE_URL}/mock-tests/packages/${id}`, {
-    method: 'PATCH',
+export const updateMockTestPackage = async (testType: string, data: { features: string[]; pricing: { testCount: number; fee: number }[] }): Promise<MockTestPackage> => {
+  const response = await fetch(`${API_BASE_URL}/mock-test-packages/${testType}`, {
+    method: 'PUT',
     headers: getAuthHeader(),
     body: JSON.stringify(data)
   });
@@ -63,18 +63,28 @@ export const updateMockTestPackage = async (id: string, data: Partial<MockTestPa
   return response.json();
 };
 
-export const deleteMockTestPackage = async (id: string): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/mock-tests/packages/${id}`, {
+export const deleteMockTestPackage = async (testType: string): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/mock-test-packages/${testType}`, {
     method: 'DELETE',
     headers: getAuthHeader()
   });
   if (!response.ok) throw new Error('Failed to delete mock test package');
 };
 
+export const seedMockTestPackages = async (): Promise<{ message: string; count: number }> => {
+  const response = await fetch(`${API_BASE_URL}/mock-test-packages/seed`, {
+    method: 'POST',
+    headers: getAuthHeader()
+  });
+  if (!response.ok) throw new Error('Failed to seed mock test packages');
+  return response.json();
+};
+
 // Mock Test Schedules
 export const getMockTestSchedules = async (filters?: FilterState): Promise<MockTestSchedule[]> => {
   const params = new URLSearchParams();
   if (filters?.testType && filters.testType !== 'all') params.append('testType', filters.testType);
+  if (filters?.examType && filters.examType !== 'all') params.append('examType', filters.examType);
   if (filters?.status && filters.status !== 'all') params.append('status', filters.status);
   if (filters?.sortBy) params.append('sortBy', filters.sortBy);
 
@@ -119,4 +129,13 @@ export const deleteMockTestSchedule = async (id: string): Promise<void> => {
     headers: getAuthHeader()
   });
   if (!response.ok) throw new Error('Failed to delete mock test schedule');
+};
+
+// Luminedge Available Schedules (external API via proxy)
+export const getAvailableSchedulesFromLuminedge = async (): Promise<LuminedgeSchedule[]> => {
+  const response = await fetch(`${API_BASE_URL}/schedules`, {
+    headers: getAuthHeader()
+  });
+  if (!response.ok) throw new Error('Failed to fetch available schedules');
+  return response.json();
 };

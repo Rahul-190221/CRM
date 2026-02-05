@@ -1,19 +1,26 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Plus } from 'lucide-react'
-import MockTestPackageCard from './MockTestPackageCard'
+import { useState, useEffect, useMemo } from 'react'
+import { Pencil, X, Plus, Trash2 } from 'lucide-react'
 import MockTestScheduleTable from './MockTestScheduleTable'
-import FilterBar from './FilterBar'
-import AddMockTestPackageModal from './AddMockTestPackageModal'
-import { getMockTestPackages, getMockTestSchedules, createMockTestPackage, updateMockTestPackage, deleteMockTestPackage } from '@/lib/api/mockTests'
-import type { MockTestPackage, MockTestSchedule, FilterState } from '@/types/admin'
+import { getAvailableSchedulesFromLuminedge, getMockTestPackages, updateMockTestPackage, seedMockTestPackages } from '@/lib/api/mockTests'
+import type { LuminedgeSchedule, MockTestSchedule, FilterState, ExamType } from '@/types/admin'
 
-// Mock data for packages
-const mockPackages: MockTestPackage[] = [
+// Mock Test Package type
+interface MockTestPackage {
+  testType: string
+  borderColor: string
+  bgColor: string
+  features: string[]
+  pricing: { testCount: number; fee: number }[]
+}
+
+// Initial Mock Test Package data
+const initialMockTestPackages: MockTestPackage[] = [
   {
-    _id: '1',
     testType: 'IELTS',
+    borderColor: 'border-l-yellow-400',
+    bgColor: 'bg-yellow-400',
     features: [
       'Flexible mock test schedule',
       'Real exam experience',
@@ -26,14 +33,12 @@ const mockPackages: MockTestPackage[] = [
       { testCount: 1, fee: 1550 },
       { testCount: 3, fee: 3000 },
       { testCount: 5, fee: 4500 }
-    ],
-    isActive: true,
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01'
+    ]
   },
   {
-    _id: '2',
     testType: 'PTE',
+    borderColor: 'border-l-blue-500',
+    bgColor: 'bg-blue-500',
     features: [
       'Flexible mock test schedule',
       'Real exam experience',
@@ -46,14 +51,12 @@ const mockPackages: MockTestPackage[] = [
       { testCount: 1, fee: 1750 },
       { testCount: 3, fee: 3500 },
       { testCount: 5, fee: 5000 }
-    ],
-    isActive: true,
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01'
+    ]
   },
   {
-    _id: '3',
     testType: 'GRE',
+    borderColor: 'border-l-green-500',
+    bgColor: 'bg-green-500',
     features: [
       'Flexible mock test schedule',
       'Real exam experience',
@@ -64,16 +67,14 @@ const mockPackages: MockTestPackage[] = [
     ],
     pricing: [
       { testCount: 1, fee: 2000 },
-      { testCount: 3, fee: 4500 },
-      { testCount: 5, fee: 6500 }
-    ],
-    isActive: true,
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01'
+      { testCount: 3, fee: 4000 },
+      { testCount: 5, fee: 6000 }
+    ]
   },
   {
-    _id: '4',
     testType: 'TOEFL',
+    borderColor: 'border-l-purple-500',
+    bgColor: 'bg-purple-500',
     features: [
       'Flexible mock test schedule',
       'Real exam experience',
@@ -84,101 +85,226 @@ const mockPackages: MockTestPackage[] = [
     ],
     pricing: [
       { testCount: 1, fee: 1800 },
-      { testCount: 3, fee: 4000 },
-      { testCount: 5, fee: 5500 }
-    ],
-    isActive: true,
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01'
+      { testCount: 3, fee: 3600 },
+      { testCount: 5, fee: 5400 }
+    ]
   }
 ]
 
-// Mock data for schedules
-const mockSchedules: MockTestSchedule[] = [
-  { _id: '1', listNumber: 1, name: 'IELTS', testType: 'IELTS', examDate: '2025-11-06', examTime: '1:30 PM - 4:30 PM', totalSeats: 20, availableSeats: 1, status: 'upcoming', createdAt: '2025-01-01', updatedAt: '2025-01-01' },
-  { _id: '2', listNumber: 2, name: 'Pearson PTE', testType: 'PTE', examDate: '2025-11-06', examTime: '3:00 PM - 5:00 PM', totalSeats: 10, availableSeats: 2, status: 'upcoming', createdAt: '2025-01-01', updatedAt: '2025-01-01' },
-  { _id: '3', listNumber: 3, name: 'GRE', testType: 'GRE', examDate: '2025-11-06', examTime: '4:30 PM - 6:30 PM', totalSeats: 5, availableSeats: 5, status: 'upcoming', createdAt: '2025-01-01', updatedAt: '2025-01-01' },
-  { _id: '4', listNumber: 4, name: 'PTE Academic', testType: 'PTE', examDate: '2025-11-08', examTime: '2:00 PM - 5:00 PM', totalSeats: 15, availableSeats: 8, status: 'upcoming', createdAt: '2025-01-01', updatedAt: '2025-01-01' },
-  { _id: '5', listNumber: 5, name: 'SAT', testType: 'SAT', examDate: '2025-11-09', examTime: '8:00 AM - 12:00 PM', totalSeats: 40, availableSeats: 25, status: 'upcoming', createdAt: '2025-01-01', updatedAt: '2025-01-01' },
-  { _id: '6', listNumber: 6, name: 'GMAT', testType: 'GMAT', examDate: '2025-11-10', examTime: '11:00 AM - 2:30 PM', totalSeats: 12, availableSeats: 7, status: 'upcoming', createdAt: '2025-01-01', updatedAt: '2025-01-01' },
-  { _id: '7', listNumber: 7, name: 'Duolingo English Test', testType: 'Duolingo', examDate: '2025-11-10', examTime: '9:00 AM - 10:00 AM', totalSeats: 50, availableSeats: 42, status: 'upcoming', createdAt: '2025-01-01', updatedAt: '2025-01-01' },
-  { _id: '8', listNumber: 8, name: 'OET', testType: 'OET', examDate: '2025-11-12', examTime: '1:00 PM - 4:00 PM', totalSeats: 18, availableSeats: 12, status: 'upcoming', createdAt: '2025-01-01', updatedAt: '2025-01-01' },
-  { _id: '9', listNumber: 9, name: 'IELTS', testType: 'IELTS', examDate: '2025-11-15', examTime: '10:00 AM - 1:00 PM', totalSeats: 25, availableSeats: 18, status: 'upcoming', createdAt: '2025-01-01', updatedAt: '2025-01-01' },
-  { _id: '10', listNumber: 10, name: 'TOEFL iBT', testType: 'TOEFL', examDate: '2025-11-16', examTime: '2:30 PM - 6:30 PM', totalSeats: 20, availableSeats: 15, status: 'upcoming', createdAt: '2025-01-01', updatedAt: '2025-01-01' },
-  { _id: '11', listNumber: 11, name: 'PTE Core', testType: 'PTE', examDate: '2025-11-18', examTime: '11:00 AM - 2:00 PM', totalSeats: 10, availableSeats: 6, status: 'upcoming', createdAt: '2025-01-01', updatedAt: '2025-01-01' }
+const courses = [
+  { _id: '67337c880794d577cd982b75', name: 'IELTS' },
+  { _id: '67337c880794d577cd982b76', name: 'Pearson PTE' },
+  { _id: '67337c880794d577cd982b77', name: 'GRE' },
+  { _id: '67337c880794d577cd982b78', name: 'TOEFL' },
 ]
 
-export default function MockTest() {
-  const [packages, setPackages] = useState<MockTestPackage[]>([])
+const testTypes: ExamType[] = ['Computer-Based', 'Paper-Based']
+
+
+function formatTimeTo12h(time: string): string {
+  const [hours, minutes] = time.split(':').map(Number)
+  const period = hours >= 12 ? 'PM' : 'AM'
+  const h = hours % 12 || 12
+  return `${h}:${minutes.toString().padStart(2, '0')} ${period}`
+}
+
+function transformSchedules(data: LuminedgeSchedule[]): MockTestSchedule[] {
+  return data.map((item, index) => {
+    const slot = item.timeSlots?.[0]
+    const totalSeats = slot ? parseInt(slot.totalSlot, 10) || 0 : 0
+    const booked = slot ? slot.slot : 0
+    const availableSeats = Math.max(0, totalSeats - booked)
+
+    const examTime = slot
+      ? `${formatTimeTo12h(slot.startTime)} - ${formatTimeTo12h(slot.endTime)}`
+      : ''
+
+    return {
+      _id: item._id,
+      listNumber: index + 1,
+      name: item.name,
+      testType: item.name as MockTestSchedule['testType'],
+      examType: (item.testType || 'Computer-Based') as MockTestSchedule['examType'],
+      examDate: item.startDate,
+      examTime,
+      totalSeats,
+      availableSeats,
+      status: (item.status?.toLowerCase() === 'scheduled' ? 'upcoming' : item.status?.toLowerCase() || 'upcoming') as MockTestSchedule['status'],
+      createdAt: item.createdAt,
+      updatedAt: item.createdAt,
+    }
+  })
+}
+
+export default function MockTest({ user }: { user?: any }) {
+  const isAdmin = user?.role === 'admin'
   const [schedules, setSchedules] = useState<MockTestSchedule[]>([])
+  const [packages, setPackages] = useState<MockTestPackage[]>(initialMockTestPackages)
   const [isLoading, setIsLoading] = useState(true)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedPackage, setSelectedPackage] = useState<MockTestPackage | null>(null)
+  const [editingPackage, setEditingPackage] = useState<string | null>(null)
+  const [editFormData, setEditFormData] = useState<MockTestPackage | null>(null)
+  const today = new Date().toISOString().split('T')[0]
   const [filters, setFilters] = useState<FilterState>({
     testType: 'all',
+    examType: 'all',
     status: 'upcoming',
     sortBy: 'date-asc'
   })
+  const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
-    fetchData()
-  }, [filters])
+    fetchSchedules()
+    fetchPackages()
+  }, [])
 
-  const fetchData = async () => {
+  const fetchPackages = async () => {
     try {
-      const [pkgData, scheduleData] = await Promise.all([
-        getMockTestPackages(),
-        getMockTestSchedules(filters)
-      ])
-      setPackages(pkgData)
-      setSchedules(scheduleData)
+      const data = await getMockTestPackages()
+      if (data && data.length > 0) {
+        // Merge API data with UI styling info
+        const packagesWithStyles = data.map((pkg: any) => {
+          const styleMap: Record<string, { borderColor: string; bgColor: string }> = {
+            'IELTS': { borderColor: 'border-l-yellow-400', bgColor: 'bg-yellow-400' },
+            'PTE': { borderColor: 'border-l-blue-500', bgColor: 'bg-blue-500' },
+            'GRE': { borderColor: 'border-l-green-500', bgColor: 'bg-green-500' },
+            'TOEFL': { borderColor: 'border-l-purple-500', bgColor: 'bg-purple-500' }
+          }
+          return {
+            ...pkg,
+            ...styleMap[pkg.testType] || { borderColor: 'border-l-gray-400', bgColor: 'bg-gray-400' }
+          }
+        })
+        setPackages(packagesWithStyles)
+      } else {
+        // Seed packages if none exist
+        await seedMockTestPackages()
+        fetchPackages()
+      }
     } catch (error) {
-      console.error('Error fetching data:', error)
-      // Use mock data as fallback
-      setPackages(mockPackages)
-      setSchedules(mockSchedules)
+      console.error('Error fetching packages:', error)
+      // Use initial data as fallback
+    }
+  }
+
+  const handleEditPackage = (pkg: MockTestPackage) => {
+    setEditingPackage(pkg.testType)
+    setEditFormData({ ...pkg, features: [...pkg.features], pricing: pkg.pricing.map(p => ({ ...p })) })
+  }
+
+  const handleSavePackage = async () => {
+    if (!editFormData || !editingPackage) return
+    setIsSaving(true)
+    try {
+      await updateMockTestPackage(editingPackage, {
+        features: editFormData.features,
+        pricing: editFormData.pricing
+      })
+      setPackages(prev => prev.map(p => p.testType === editingPackage ? editFormData : p))
+      setEditingPackage(null)
+      setEditFormData(null)
+    } catch (error) {
+      console.error('Error saving package:', error)
+      alert('Failed to save package. Please try again.')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setEditingPackage(null)
+    setEditFormData(null)
+  }
+
+  const handleFeatureChange = (index: number, value: string) => {
+    if (!editFormData) return
+    const newFeatures = [...editFormData.features]
+    newFeatures[index] = value
+    setEditFormData({ ...editFormData, features: newFeatures })
+  }
+
+  const handleAddFeature = () => {
+    if (!editFormData) return
+    setEditFormData({ ...editFormData, features: [...editFormData.features, ''] })
+  }
+
+  const handleRemoveFeature = (index: number) => {
+    if (!editFormData) return
+    const newFeatures = editFormData.features.filter((_, i) => i !== index)
+    setEditFormData({ ...editFormData, features: newFeatures })
+  }
+
+  const handlePricingChange = (index: number, field: 'testCount' | 'fee', value: number) => {
+    if (!editFormData) return
+    const newPricing = [...editFormData.pricing]
+    newPricing[index] = { ...newPricing[index], [field]: value }
+    setEditFormData({ ...editFormData, pricing: newPricing })
+  }
+
+  const handleAddPricing = () => {
+    if (!editFormData) return
+    setEditFormData({ ...editFormData, pricing: [...editFormData.pricing, { testCount: 1, fee: 0 }] })
+  }
+
+  const handleRemovePricing = (index: number) => {
+    if (!editFormData) return
+    const newPricing = editFormData.pricing.filter((_, i) => i !== index)
+    setEditFormData({ ...editFormData, pricing: newPricing })
+  }
+
+  const fetchSchedules = async () => {
+    try {
+      const data = await getAvailableSchedulesFromLuminedge()
+      const transformed = transformSchedules(data)
+      setSchedules(transformed)
+    } catch (error) {
+      console.error('Error fetching schedules:', error)
+      setSchedules([])
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleEditPackage = (pkg: MockTestPackage) => {
-    setSelectedPackage(pkg)
-    setIsModalOpen(true)
-  }
+  const filteredSchedules = useMemo(() => {
+    let result = [...schedules]
 
-  const handleAddPackage = () => {
-    setSelectedPackage(null)
-    setIsModalOpen(true)
-  }
-
-  const handleSubmitPackage = async (packageData: Omit<MockTestPackage, '_id' | 'createdAt' | 'updatedAt'>) => {
-    try {
-      if (selectedPackage) {
-        await updateMockTestPackage(selectedPackage._id, packageData)
-      } else {
-        await createMockTestPackage(packageData)
-      }
-      fetchData()
-      setIsModalOpen(false)
-      setSelectedPackage(null)
-    } catch (error) {
-      console.error('Error saving package:', error)
+    // Filter by course type (name)
+    if (filters.testType && filters.testType !== 'all') {
+      result = result.filter(s => s.name.toLowerCase().includes(filters.testType!.toLowerCase()))
     }
-  }
 
-  const handleDeletePackage = async (pkg: MockTestPackage) => {
-    if (confirm('Are you sure you want to delete this mock test package?')) {
-      try {
-        await deleteMockTestPackage(pkg._id)
-        fetchData()
-        setIsModalOpen(false)
-        setSelectedPackage(null)
-      } catch (error) {
-        console.error('Error deleting package:', error)
+    // Filter by test type (Computer-Based / Paper-Based)
+    if (filters.examType && filters.examType !== 'all') {
+      result = result.filter(s => s.examType === filters.examType)
+    }
+
+    // Filter by status/time period
+    if (filters.status && filters.status !== 'all') {
+      if (filters.status === 'today') {
+        result = result.filter(s => s.examDate === today)
+      } else if (filters.status === 'previous') {
+        result = result.filter(s => s.examDate && s.examDate < today)
+      } else if (filters.status === 'upcoming') {
+        result = result.filter(s => s.examDate && s.examDate >= today)
       }
     }
-  }
+
+    // Filter by date picker
+    if (filters.dateRange?.start) {
+      result = result.filter(s => s.examDate && s.examDate >= filters.dateRange!.start)
+    }
+
+    // Sort
+    if (filters.sortBy === 'date-asc') {
+      result.sort((a, b) => (a.examDate || '').localeCompare(b.examDate || ''))
+    } else if (filters.sortBy === 'date-desc') {
+      result.sort((a, b) => (b.examDate || '').localeCompare(a.examDate || ''))
+    } else if (filters.sortBy === 'name') {
+      result.sort((a, b) => (a.name || '').localeCompare(b.name || ''))
+    }
+
+    // Re-number after filtering
+    return result.map((s, i) => ({ ...s, listNumber: i + 1 }))
+  }, [schedules, filters])
 
   if (isLoading) {
     return (
@@ -190,61 +316,230 @@ export default function MockTest() {
 
   return (
     <div className="p-6 bg-gray-50 min-h-full">
-      {/* Mock Test Packages Section */}
-      <div className="mb-10">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Mock Test Packages</h1>
-            <p className="text-sm text-gray-500 mt-1">Available mock test packages with pricing details</p>
-          </div>
-          <button className="flex items-center gap-2 bg-yellow-400 px-4 py-2.5 rounded-lg text-sm font-bold text-gray-900 hover:bg-yellow-500 transition-colors">
-            <Plus className="w-4 h-4" />
-            <span>Add More</span>
-          </button>
-        </div>
+      {/* Page Header */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Mock Test</h1>
+        <p className="text-sm text-gray-500 mt-1">Browse mock test details and available schedules</p>
+      </div>
 
-        {/* Packages Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {packages.map(pkg => (
-            <MockTestPackageCard
-              key={pkg._id}
-              package_={pkg}
-              onEdit={handleEditPackage}
-            />
+      {/* Mock Test Packages Section */}
+      <div className="bg-white rounded-xl p-6 mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-1">Mock Test Packages</h2>
+        <p className="text-sm text-gray-500 mb-6">Available mock test packages with pricing details</p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {packages.map((pkg) => (
+            <div key={pkg.testType} className={`bg-white rounded-lg border border-gray-200 border-l-4 ${pkg.borderColor} overflow-hidden relative`}>
+              {/* Edit Button - Admin Only */}
+              {isAdmin && editingPackage !== pkg.testType && (
+                <button
+                  onClick={() => handleEditPackage(pkg)}
+                  className="absolute top-3 right-3 p-2 text-gray-400 hover:text-yellow-500 hover:bg-yellow-50 rounded-lg transition-colors"
+                  title="Edit Package"
+                >
+                  <Pencil size={16} />
+                </button>
+              )}
+
+              {editingPackage === pkg.testType && editFormData ? (
+                // Edit Mode
+                <div className="p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">{pkg.testType} Mock Test Packages</h3>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleSavePackage}
+                        disabled={isSaving}
+                        className="px-3 py-1.5 bg-yellow-400 text-white text-sm rounded-lg hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isSaving ? 'Saving...' : 'Save'}
+                      </button>
+                      <button
+                        onClick={handleCancelEdit}
+                        className="px-3 py-1.5 bg-gray-100 text-gray-600 text-sm rounded-lg hover:bg-gray-200"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Edit Features */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Features</label>
+                    {editFormData.features.map((feature, idx) => (
+                      <div key={idx} className="flex items-center gap-2 mb-2">
+                        <input
+                          type="text"
+                          value={feature}
+                          onChange={(e) => handleFeatureChange(idx, e.target.value)}
+                          className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400"
+                        />
+                        <button
+                          onClick={() => handleRemoveFeature(idx)}
+                          className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      onClick={handleAddFeature}
+                      className="flex items-center gap-1 text-sm text-yellow-600 hover:text-yellow-700 mt-2"
+                    >
+                      <Plus size={14} /> Add Feature
+                    </button>
+                  </div>
+
+                  {/* Edit Pricing */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Pricing</label>
+                    {editFormData.pricing.map((price, idx) => (
+                      <div key={idx} className="flex items-center gap-2 mb-2">
+                        <input
+                          type="number"
+                          value={price.testCount}
+                          onChange={(e) => handlePricingChange(idx, 'testCount', parseInt(e.target.value) || 0)}
+                          className="w-20 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400"
+                          placeholder="Count"
+                        />
+                        <span className="text-sm text-gray-500">tests</span>
+                        <input
+                          type="number"
+                          value={price.fee}
+                          onChange={(e) => handlePricingChange(idx, 'fee', parseInt(e.target.value) || 0)}
+                          className="w-28 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400"
+                          placeholder="Fee"
+                        />
+                        <span className="text-sm text-gray-500">BDT</span>
+                        <button
+                          onClick={() => handleRemovePricing(idx)}
+                          className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      onClick={handleAddPricing}
+                      className="flex items-center gap-1 text-sm text-yellow-600 hover:text-yellow-700 mt-2"
+                    >
+                      <Plus size={14} /> Add Pricing Tier
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                // View Mode
+                <>
+                  <div className="p-5">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{pkg.testType} Mock Test Packages</h3>
+                    <p className="text-sm text-gray-600 mb-4">We have paper-based and computer-delivered mock tests.</p>
+
+                    <ul className="space-y-2 mb-4">
+                      {pkg.features.map((feature, idx) => (
+                        <li key={idx} className="flex items-center text-sm text-gray-700">
+                          <span className="w-1.5 h-1.5 bg-yellow-400 rounded-full mr-2"></span>
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Pricing Table */}
+                  <div className="overflow-hidden">
+                    <table className="w-full">
+                      <thead>
+                        <tr className={`${pkg.bgColor} text-white`}>
+                          <th className="px-5 py-3 text-left text-sm font-medium">No. of Mock Test</th>
+                          <th className="px-5 py-3 text-left text-sm font-medium">Fee</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {pkg.pricing.map((price, idx) => (
+                          <tr key={idx} className="border-t border-gray-100">
+                            <td className="px-5 py-3 text-sm text-gray-700">{price.testCount} Mock Test Fee</td>
+                            <td className="px-5 py-3 text-sm text-gray-700">BDT {price.fee.toLocaleString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
+            </div>
           ))}
         </div>
       </div>
 
-      {/* Available Schedules Section */}
-      <div>
-        <div className="mb-4">
-          <h2 className="text-xl font-bold text-gray-900">Available Schedules</h2>
-          <p className="text-sm text-gray-500 mt-1">Browse and filter available test schedules</p>
+      {/* Filters */}
+      <div className="bg-white rounded-xl p-5 mb-6">
+        <h3 className="text-sm font-bold text-gray-900 mb-3">Filter by</h3>
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Course Type */}
+          <select
+            value={filters.testType || 'all'}
+            onChange={(e) => setFilters({ ...filters, testType: e.target.value as any })}
+            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-yellow-400 focus:border-transparent min-w-[160px]"
+          >
+            <option value="all">All Course Types</option>
+            {courses.map(course => (
+              <option key={course._id} value={course.name}>{course.name}</option>
+            ))}
+          </select>
+
+          {/* Test Type (Computer-Based / Paper-Based) */}
+          <select
+            value={filters.examType || 'all'}
+            onChange={(e) => setFilters({ ...filters, examType: e.target.value as any })}
+            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-yellow-400 focus:border-transparent min-w-[160px]"
+          >
+            <option value="all">All Test Types</option>
+            {testTypes.map(type => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
+
+          {/* Sort */}
+          <select
+            value={filters.sortBy || 'date-asc'}
+            onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })}
+            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-yellow-400 focus:border-transparent min-w-[180px]"
+          >
+            <option value="date-asc">Start Date Ascending</option>
+            <option value="date-desc">Start Date Descending</option>
+            <option value="name">Name</option>
+          </select>
+
+          {/* Time Period */}
+          <select
+            value={filters.status || 'all'}
+            onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-yellow-400 focus:border-transparent min-w-[140px]"
+          >
+            <option value="upcoming">Upcoming</option>
+            <option value="all">All</option>
+            <option value="today">Today</option>
+            <option value="previous">Previous Day</option>
+          </select>
+
+          {/* Date Picker */}
+          <input
+            type="date"
+            value={filters.dateRange?.start || ''}
+            onChange={(e) => setFilters({
+              ...filters,
+              dateRange: { start: e.target.value, end: filters.dateRange?.end || '' }
+            })}
+            placeholder="dd/mm/yyyy"
+            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-yellow-400 focus:border-transparent min-w-[150px]"
+          />
         </div>
-
-        {/* Filters */}
-        <FilterBar
-          filters={filters}
-          onFilterChange={setFilters}
-          showTestType={true}
-          showStatus={true}
-          showSort={true}
-          showDatePicker={true}
-          statusOptions={[
-            { value: 'all', label: 'All' },
-            { value: 'upcoming', label: 'Upcoming' },
-            { value: 'ongoing', label: 'Ongoing' },
-            { value: 'completed', label: 'Completed' },
-            { value: 'cancelled', label: 'Cancelled' }
-          ]}
-        />
-
-        {/* Schedules Table */}
-        <MockTestScheduleTable
-          schedules={schedules}
-          totalCount={15}
-        />
       </div>
+
+      {/* Schedules Table */}
+      <MockTestScheduleTable
+        schedules={filteredSchedules}
+        totalCount={schedules.length}
+      />
     </div>
   )
 }

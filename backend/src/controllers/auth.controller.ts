@@ -225,3 +225,193 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+// Get all users (with optional role filter)
+export const getUsers = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { role, limit } = req.query;
+
+    const filter: any = { isActive: true };
+
+    if (role) {
+      const roles = (role as string).split(',');
+      filter.role = { $in: roles };
+    }
+
+    let query = User.find(filter).select('-passwordHash -resetPasswordToken -resetPasswordExpires');
+
+    if (limit) {
+      query = query.limit(parseInt(limit as string));
+    }
+
+    const users = await query.sort({ createdAt: -1 });
+
+    res.json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ message: 'Failed to fetch users' });
+  }
+};
+
+// Update user role
+export const updateUserRole = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
+
+    const validRoles = ['admin', 'bdm', 'senior-bdm', 'junior-bdm'];
+    if (!validRoles.includes(role)) {
+      res.status(400).json({ message: 'Invalid role' });
+      return;
+    }
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      { role },
+      { new: true }
+    ).select('-passwordHash');
+
+    if (!user) {
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error('Error updating user role:', error);
+    res.status(500).json({ message: 'Failed to update user role' });
+  }
+};
+
+// Delete user (soft delete - set isActive to false)
+export const deleteUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      { isActive: false },
+      { new: true }
+    ).select('-passwordHash');
+
+    if (!user) {
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
+
+    res.json({ message: 'User removed successfully' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ message: 'Failed to delete user' });
+  }
+};
+
+// Update profile
+export const updateProfile = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.id;
+    const { firstName, lastName, phone, department } = req.body;
+
+    const updateData: any = {};
+    if (firstName !== undefined) updateData.firstName = firstName;
+    if (lastName !== undefined) updateData.lastName = lastName;
+    if (phone !== undefined) updateData.phone = phone;
+    if (department !== undefined) updateData.department = department;
+
+    // Update name if firstName or lastName provided
+    if (firstName || lastName) {
+      const user = await User.findById(userId);
+      if (user) {
+        const newFirstName = firstName || user.firstName || '';
+        const newLastName = lastName || user.lastName || '';
+        updateData.name = `${newFirstName} ${newLastName}`.trim();
+      }
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      updateData,
+      { new: true }
+    ).select('-passwordHash -resetPasswordToken -resetPasswordExpires');
+
+    if (!user) {
+      res.status(404).json({ success: false, message: 'User not found' });
+      return;
+    }
+
+    res.json({ success: true, data: user, message: 'Profile updated successfully' });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ success: false, message: 'Failed to update profile' });
+  }
+};
+
+// Change password
+export const changePassword = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.id;
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      res.status(400).json({ success: false, message: 'Current password and new password are required' });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      res.status(400).json({ success: false, message: 'New password must be at least 6 characters' });
+      return;
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(404).json({ success: false, message: 'User not found' });
+      return;
+    }
+
+    // Check if user has a password (not Google-only user)
+    if (!user.passwordHash) {
+      res.status(400).json({ success: false, message: 'Cannot change password for Google-authenticated accounts' });
+      return;
+    }
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!isMatch) {
+      res.status(400).json({ success: false, message: 'Current password is incorrect' });
+      return;
+    }
+
+    // Hash and save new password
+    user.passwordHash = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    res.json({ success: true, message: 'Password changed successfully' });
+  } catch (error) {
+    console.error('Error changing password:', error);
+    res.status(500).json({ success: false, message: 'Failed to change password' });
+  }
+};
+
+// Get user stats for profile
+export const getUserStats = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.id;
+    const Lead = require('../models/Lead').default;
+
+    const totalLeads = await Lead.countDocuments({ assignedTo: userId });
+    const convertedLeads = await Lead.countDocuments({ assignedTo: userId, lifecycleStage: 'Converted' });
+    const conversionRate = totalLeads > 0 ? ((convertedLeads / totalLeads) * 100).toFixed(1) : '0';
+
+    res.json({
+      success: true,
+      data: {
+        totalLeads,
+        converted: convertedLeads,
+        conversionRate: `${conversionRate}%`
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching user stats:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch user stats' });
+  }
+};
