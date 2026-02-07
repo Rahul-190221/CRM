@@ -11,6 +11,8 @@ import LeadStage from '@/components/leads/LeadStage'
 import CourseDetails from '@/components/admin/CourseDetails'
 import MockTest from '@/components/admin/MockTest'
 import ExamRegistration from '@/components/admin/ExamRegistration'
+import NotificationsPage from '@/components/shared/NotificationsPage'
+import ProfilePage from '@/components/shared/ProfilePage'
 import { getUserIdFromToken } from '@/lib/helpers/jwt'
 import type { Page } from '@/types/navigation'
 
@@ -63,19 +65,9 @@ export default function BDMDashboardPage() {
       case 'exam-reg':
         return <ExamRegistration user={user} />
       case 'notification':
-        return (
-          <div className="p-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Notifications</h1>
-            <p className="text-gray-500">No new notifications</p>
-          </div>
-        )
+        return <NotificationsPage />
       case 'profile':
-        return (
-          <div className="p-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Profile</h1>
-            <p className="text-gray-500">Profile settings coming soon</p>
-          </div>
-        )
+        return <ProfilePage user={user} />
       default:
         return <BDMDashboard />
     }

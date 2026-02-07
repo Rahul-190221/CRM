@@ -137,7 +137,7 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
   return (
     <div className="w-full">
       {/* Header */}
-      <div className="flex justify-between items-start mb-6">
+      <div className="flex justify-between items-start mb-6 p-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Input Lead</h1>
           <p className="text-sm text-gray-500 mt-1">Add a new lead to the system manually or import from Excel</p>

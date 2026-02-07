@@ -36,79 +36,21 @@ import {
   getStatusDistribution
 } from '@/lib/api/dashboard'
 
-// Mock data for fallback
-const mockLineData = [
-  { month: 'Jun', Converted: 32, Hot: 45, Intake: 38, Processing: 28 },
-  { month: 'Jul', Converted: 35, Hot: 48, Intake: 42, Processing: 32 },
-  { month: 'Aug', Converted: 38, Hot: 42, Intake: 35, Processing: 38 },
-  { month: 'Sep', Converted: 42, Hot: 38, Intake: 45, Processing: 35 },
-  { month: 'Oct', Converted: 48, Hot: 52, Intake: 42, Processing: 45 },
-  { month: 'Nov', Converted: 55, Hot: 58, Intake: 48, Processing: 52 },
-]
-
-const mockPieData = [
-  { source: 'Website', percentage: 36, color: '#FACC15' },
-  { source: 'Referral', percentage: 27, color: '#22C55E' },
-  { source: 'Social Media', percentage: 18, color: '#3B82F6' },
-  { source: 'Email Campaign', percentage: 8, color: '#EC4899' },
-  { source: 'Walk-in', percentage: 11, color: '#F97316' },
-]
-
-const mockBarData = [
-  { month: 'Jun', rate: 28 },
-  { month: 'Jul', rate: 32 },
-  { month: 'Aug', rate: 35 },
-  { month: 'Sep', rate: 38 },
-  { month: 'Oct', rate: 42 },
-  { month: 'Nov', rate: 52 },
-]
-
-const mockStatusData = [
-  { label: 'New', count: 45, color: '#3B82F6' },
-  { label: 'In Progress', count: 68, color: '#F59E0B' },
-  { label: 'Contacted', count: 52, color: '#22C55E' },
-  { label: 'Qualified', count: 48, color: '#10B981' },
-  { label: 'Converted', count: 23, color: '#06B6D4' },
-  { label: 'Dead', count: 12, color: '#EF4444' },
-]
-
-const mockStageDistribution = [
-  { stage: 'Intake', count: 234 },
-  { stage: 'Processing', count: 189 },
-  { stage: 'Hot', count: 156 },
-  { stage: 'Converted', count: 423 },
-  { stage: 'Dead', count: 232 },
-]
-
-const mockRecentActivity = [
-  { id: '1', user: 'Sarah Johnson', action: 'Converted lead "Tech Corp"', type: 'success', timestamp: new Date(Date.now() - 2 * 60 * 1000) },
-  { id: '2', user: 'Michael Chen', action: 'Added new lead "StartupXYZ"', type: 'info', timestamp: new Date(Date.now() - 15 * 60 * 1000) },
-  { id: '3', user: 'Admin System', action: 'Generated monthly reports', type: 'info', timestamp: new Date(Date.now() - 60 * 60 * 1000) },
-  { id: '4', user: 'Emily Davis', action: 'Updated BDM profile', type: 'info', timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000) },
-  { id: '5', user: 'David Wilson', action: 'Marked 3 leads as dead', type: 'warning', timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000) },
-]
-
-const mockTopPerformers = [
-  { rank: 1, name: 'Sarah Johnson', totalLeads: 45, convertedLeads: 23, conversionRate: '51.1' },
-  { rank: 2, name: 'Michael Chen', totalLeads: 38, convertedLeads: 20, conversionRate: '52.6' },
-  { rank: 3, name: 'Emily Davis', totalLeads: 32, convertedLeads: 15, conversionRate: '46.9' },
-  { rank: 4, name: 'Robert Smith', totalLeads: 29, convertedLeads: 14, conversionRate: '48.3' },
-]
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
-    activeBDMs: { value: 28, change: 2 },
-    totalUsers: { value: 145, change: 12 },
-    totalLeads: { value: 1234, change: 23 },
-    conversionRate: { value: '34.5%', change: 5 }
+    activeBDMs: { value: 0, change: 0 },
+    totalUsers: { value: 0, change: 0 },
+    totalLeads: { value: 0, change: 0 },
+    conversionRate: { value: '0%', change: 0 }
   })
-  const [recentActivity, setRecentActivity] = useState(mockRecentActivity)
-  const [topPerformers, setTopPerformers] = useState(mockTopPerformers)
-  const [stageDistribution, setStageDistribution] = useState(mockStageDistribution)
-  const [stageTrend, setStageTrend] = useState(mockLineData)
-  const [sourceDistribution, setSourceDistribution] = useState(mockPieData)
-  const [conversionTrend, setConversionTrend] = useState(mockBarData)
-  const [statusDistribution, setStatusDistribution] = useState(mockStatusData)
+  const [recentActivity, setRecentActivity] = useState<any[]>([])
+  const [topPerformers, setTopPerformers] = useState<any[]>([])
+  const [stageDistribution, setStageDistribution] = useState<any[]>([])
+  const [stageTrend, setStageTrend] = useState<any[]>([])
+  const [sourceDistribution, setSourceDistribution] = useState<any[]>([])
+  const [conversionTrend, setConversionTrend] = useState<any[]>([])
+  const [statusDistribution, setStatusDistribution] = useState<any[]>([])
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -200,18 +142,18 @@ export default function AdminDashboard() {
   const maxStatusCount = Math.max(...statusDistribution.map(s => s.count))
 
   return (
-    <div className="flex-1 bg-[#F9FAFB] p-6 overflow-y-auto h-screen">
+    <div className="flex-1 bg-[#F9FAFB] p-4 overflow-y-auto h-screen">
       {/* Header */}
-      <div className="mb-6">
+      <div className="mb-2">
         <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
         <p className="text-gray-500 text-sm mt-1">Welcome back! Here's what's happening with your CRM today.</p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 mb-2">
         {/* Active BDMs */}
         <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-start justify-between mb-3">
+          <div className="flex items-start justify-between mb-4">
             <div className="bg-blue-50 p-2.5 rounded-lg">
               <Users className="w-5 h-5 text-blue-600" />
             </div>
@@ -259,7 +201,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Activity & Top Performers */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-4">
         {/* Recent Activity */}
         <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
           <h3 className="text-lg font-bold text-gray-900 mb-5">Recent Activity</h3>
@@ -302,9 +244,9 @@ export default function AdminDashboard() {
       </div>
 
       {/* Lead Stage Distribution */}
-      <div className="mb-6">
-        <h2 className="text-lg font-bold text-gray-900 mb-4">Lead Stage Distribution</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div className="mb-4">
+        <h2 className="text-lg font-bold text-gray-900 mb-2">Lead Stage Distribution</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
           {stageDistribution.map((item) => (
             <div key={item.stage} className={`p-4 rounded-xl border text-center ${stageColors[item.stage]}`}>
               <h4 className="text-2xl font-bold">{item.count}</h4>
@@ -317,10 +259,10 @@ export default function AdminDashboard() {
       </div>
 
       {/* Charts Row 1 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-4">
         {/* Lead Stage Trend */}
         <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-          <div className="flex items-center gap-2 mb-6">
+          <div className="flex items-center gap-2 mb-2">
             <BarChart3 className="w-5 h-5 text-gray-400" />
             <h3 className="text-lg font-bold text-gray-900">Lead Stage Trend</h3>
           </div>
@@ -343,7 +285,7 @@ export default function AdminDashboard() {
 
         {/* Lead Source Distribution */}
         <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-          <div className="flex items-center gap-2 mb-6">
+          <div className="flex items-center gap-2 mb-2">
             <PieChartIcon className="w-5 h-5 text-gray-400" />
             <h3 className="text-lg font-bold text-gray-900">Lead Source Distribution</h3>
           </div>
@@ -378,10 +320,10 @@ export default function AdminDashboard() {
       </div>
 
       {/* Charts Row 2 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
         {/* Conversion Rate Trend */}
         <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-          <div className="flex items-center gap-2 mb-6">
+          <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="w-5 h-5 text-gray-400" />
             <h3 className="text-lg font-bold text-gray-900">Conversion Rate Trend</h3>
           </div>
@@ -404,7 +346,7 @@ export default function AdminDashboard() {
 
         {/* Status Distribution */}
         <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-          <div className="flex items-center gap-2 mb-6">
+          <div className="flex items-center gap-2 mb-2">
             <Activity className="w-5 h-5 text-gray-400" />
             <h3 className="text-lg font-bold text-gray-900">Status Distribution</h3>
           </div>

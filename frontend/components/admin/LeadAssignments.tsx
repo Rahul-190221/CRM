@@ -75,7 +75,8 @@ export default function LeadAssignments({ user }: { user?: any }) {
     setIsLoading(true)
     try {
       const token = localStorage.getItem('accessToken')
-      const response = await fetch('http://localhost:5000/api/leads?unassigned=true', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const response = await fetch(`${apiUrl}/api/leads?unassigned=true`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -104,7 +105,8 @@ export default function LeadAssignments({ user }: { user?: any }) {
   const fetchBDMUsers = async () => {
     try {
       const token = localStorage.getItem('accessToken')
-      const response = await fetch('http://localhost:5000/api/auth/users?role=bdm,senior-bdm,junior-bdm', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const response = await fetch(`${apiUrl}/api/auth/users?role=bdm,senior-bdm,junior-bdm`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -170,7 +172,8 @@ export default function LeadAssignments({ user }: { user?: any }) {
     setIsAssigning(true)
     try {
       const token = localStorage.getItem('accessToken')
-      const response = await fetch('http://localhost:5000/api/leads/assign', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const response = await fetch(`${apiUrl}/api/leads/assign`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -458,11 +461,10 @@ export default function LeadAssignments({ user }: { user?: any }) {
                   <div
                     key={bdm._id}
                     onClick={() => setSelectedBDM(bdm._id)}
-                    className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                      selectedBDM === bdm._id
+                    className={`p-3 rounded-lg border cursor-pointer transition-all ${selectedBDM === bdm._id
                         ? 'border-yellow-400 bg-yellow-50'
                         : 'border-gray-100 hover:border-gray-200'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">

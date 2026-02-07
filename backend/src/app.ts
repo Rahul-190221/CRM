@@ -12,6 +12,7 @@ import examsRoutes from './routes/exams.routes';
 import leadsRoutes from './routes/leads.routes';
 import schedulesRoutes from './routes/schedules.routes';
 import mockTestPackagesRoutes from './routes/mockTestPackages.routes';
+import notificationRoutes from './routes/notification.routes';
 
 dotenv.config();
 
@@ -39,6 +40,7 @@ app.use('/api/exams', examsRoutes);
 app.use('/api/leads', leadsRoutes);
 app.use('/api/schedules', schedulesRoutes);
 app.use('/api/mock-test-packages', mockTestPackagesRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Health check
 app.get('/api/health', (req: Request, res: Response) => {

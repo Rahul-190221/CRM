@@ -164,14 +164,14 @@ export default function MockTest({ user }: { user?: any }) {
         // Merge API data with UI styling info
         const packagesWithStyles = data.map((pkg: any) => {
           const styleMap: Record<string, { borderColor: string; bgColor: string }> = {
-            'IELTS': { borderColor: 'border-l-yellow-400', bgColor: 'bg-yellow-400' },
-            'PTE': { borderColor: 'border-l-blue-500', bgColor: 'bg-blue-500' },
-            'GRE': { borderColor: 'border-l-green-500', bgColor: 'bg-green-500' },
-            'TOEFL': { borderColor: 'border-l-purple-500', bgColor: 'bg-purple-500' }
+            'IELTS': { borderColor: 'border-l-[#face39]', bgColor: 'bg-[#face39]' },
+            'PTE': { borderColor: 'border-l-[#00000f]', bgColor: 'bg-[#00000f]' },
+            'GRE': { borderColor: 'border-l-[#face39]', bgColor: 'bg-[#face39]' },
+            'TOEFL': { borderColor: 'border-l-[#00000f]', bgColor: 'bg-[#00000f]' }
           }
           return {
             ...pkg,
-            ...styleMap[pkg.testType] || { borderColor: 'border-l-gray-400', bgColor: 'bg-gray-400' }
+            ...styleMap[pkg.testType] || { borderColor: 'border-l-[#face39]', bgColor: 'bg-[#face39]' }
           }
         })
         setPackages(packagesWithStyles)

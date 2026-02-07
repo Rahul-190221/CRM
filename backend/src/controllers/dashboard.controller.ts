@@ -6,7 +6,7 @@ import User from '../models/User';
 // BDM Dashboard Stats - Filtered by logged-in user
 export const getBDMStats = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
 
     // Get counts for the BDM's leads
     const totalLeads = await Lead.countDocuments({ assignedTo: userId });
@@ -56,7 +56,7 @@ export const getBDMStats = async (req: Request, res: Response): Promise<void> =>
 // BDM Recent Leads
 export const getBDMRecentLeads = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     const limit = parseInt(req.query.limit as string) || 5;
 
     const recentLeads = await Lead.find({ assignedTo: userId })
@@ -83,7 +83,7 @@ export const getBDMRecentLeads = async (req: Request, res: Response): Promise<vo
 // BDM Upcoming Tasks
 export const getBDMUpcomingTasks = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     const limit = parseInt(req.query.limit as string) || 5;
 
     const tasks = await Task.find({
@@ -114,7 +114,7 @@ export const getBDMUpcomingTasks = async (req: Request, res: Response): Promise<
 // Lead Stage Distribution (works for both BDM and Admin)
 export const getLeadStageDistribution = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     const isAdmin = req.user?.role === 'admin';
     const filter = isAdmin ? {} : { assignedTo: userId };
 
@@ -136,7 +136,7 @@ export const getLeadStageDistribution = async (req: Request, res: Response): Pro
 // Lead Stage Trend (last 6 months)
 export const getLeadStageTrend = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     const isAdmin = req.user?.role === 'admin';
     const filter = isAdmin ? {} : { assignedTo: userId };
 
@@ -184,7 +184,7 @@ export const getLeadStageTrend = async (req: Request, res: Response): Promise<vo
 // Lead Source Distribution
 export const getLeadSourceDistribution = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     const isAdmin = req.user?.role === 'admin';
     const filter = isAdmin ? {} : { assignedTo: userId };
 
@@ -212,7 +212,7 @@ export const getLeadSourceDistribution = async (req: Request, res: Response): Pr
 // Conversion Rate Trend (last 6 months)
 export const getConversionRateTrend = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     const isAdmin = req.user?.role === 'admin';
     const filter = isAdmin ? {} : { assignedTo: userId };
 
@@ -250,7 +250,7 @@ export const getConversionRateTrend = async (req: Request, res: Response): Promi
 // Status Distribution (for task/lead status breakdown)
 export const getStatusDistribution = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     const isAdmin = req.user?.role === 'admin';
     const filter = isAdmin ? {} : { assignedTo: userId };
 

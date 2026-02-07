@@ -15,7 +15,7 @@ import Image from 'next/image'
 import mainlogo from '@/assets/mainlogo.png'
 
 import { useGoogleLogin } from '@react-oauth/google'
-import { googleLogin } from '@/lib/api/auth'
+import { googleLogin, registerUser } from '@/lib/api/auth'
 
 interface SignupProps {
   onSignup?: (user: any, token: string) => void
@@ -113,23 +113,13 @@ export default function SignupPage({ onSignup }: SignupProps) {
 
     setLoading(true)
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          role: formData.role
-        })
+      const data = await registerUser({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role
       })
 
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({ message: 'Signup failed' }))
-        throw new Error(error.message || 'Signup failed')
-      }
-
-      const data = await response.json()
       localStorage.setItem('accessToken', data.token)
       localStorage.setItem('user', JSON.stringify(data.user))
 

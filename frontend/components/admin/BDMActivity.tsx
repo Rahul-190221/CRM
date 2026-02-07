@@ -100,7 +100,8 @@ export default function BDMActivity({ user }: { user?: any }) {
     setIsLoading(true)
     try {
       const token = localStorage.getItem('accessToken')
-      const response = await fetch('http://localhost:5000/api/activities', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const response = await fetch(`${apiUrl}/api/activities`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

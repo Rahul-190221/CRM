@@ -76,7 +76,8 @@ export default function BDMAdd({ user }: { user?: any }) {
   const fetchRecentBDMs = async () => {
     try {
       const token = localStorage.getItem('accessToken')
-      const response = await fetch('http://localhost:5000/api/auth/users?role=bdm,senior-bdm,junior-bdm&limit=6', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const response = await fetch(`${apiUrl}/api/auth/users?role=bdm,senior-bdm,junior-bdm&limit=6`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -100,7 +101,8 @@ export default function BDMAdd({ user }: { user?: any }) {
   const fetchManagers = async () => {
     try {
       const token = localStorage.getItem('accessToken')
-      const response = await fetch('http://localhost:5000/api/auth/users?role=admin,senior-bdm', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const response = await fetch(`${apiUrl}/api/auth/users?role=admin,senior-bdm`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -151,7 +153,8 @@ export default function BDMAdd({ user }: { user?: any }) {
         password: 'Luminedge@123' // Default password
       }
 
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const response = await fetch(`${apiUrl}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

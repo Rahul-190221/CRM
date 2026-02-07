@@ -120,7 +120,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 export const getProfile = async (req: Request, res: Response): Promise<void> => {
   try {
     // @ts-ignore - userId added by auth middleware
-    const user = await User.findById(req.userId).select('-passwordHash');
+    const user = await User.findById(req.user?.userId).select('-passwordHash');
     if (!user) {
       res.status(404).json({ message: 'User not found' });
       return;
@@ -309,7 +309,7 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
 // Update profile
 export const updateProfile = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     const { firstName, lastName, phone, department } = req.body;
 
     const updateData: any = {};
@@ -349,7 +349,7 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
 // Change password
 export const changePassword = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     const { currentPassword, newPassword } = req.body;
 
     if (!currentPassword || !newPassword) {
@@ -395,7 +395,7 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
 // Get user stats for profile
 export const getUserStats = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
     const Lead = require('../models/Lead').default;
 
     const totalLeads = await Lead.countDocuments({ assignedTo: userId });

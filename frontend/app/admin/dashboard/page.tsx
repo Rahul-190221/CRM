@@ -17,6 +17,8 @@ import BDMRole from '@/components/admin/BDMRole'
 import BDMActivity from '@/components/admin/BDMActivity'
 import BDMReport from '@/components/admin/BDMReport'
 import LeadAssignments from '@/components/admin/LeadAssignments'
+import NotificationsPage from '@/components/shared/NotificationsPage'
+import ProfilePage from '@/components/shared/ProfilePage'
 import { getUserIdFromToken } from '@/lib/helpers/jwt'
 import type { Page } from '@/types/navigation'
 
@@ -80,6 +82,10 @@ export default function AdminDashboardPage() {
         return <BDMReport user={user} />
       case 'lead-assignments':
         return <LeadAssignments user={user} />
+      case 'notification':
+        return <NotificationsPage />
+      case 'profile':
+        return <ProfilePage user={user} />
       default:
         return <Dashboard />
     }

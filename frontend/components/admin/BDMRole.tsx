@@ -61,7 +61,8 @@ export default function BDMRole({ user }: { user?: any }) {
     setIsLoading(true)
     try {
       const token = localStorage.getItem('accessToken')
-      const response = await fetch('http://localhost:5000/api/auth/users?role=bdm,senior-bdm,junior-bdm', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const response = await fetch(`${apiUrl}/api/auth/users?role=bdm,senior-bdm,junior-bdm`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -117,7 +118,8 @@ export default function BDMRole({ user }: { user?: any }) {
     setIsSaving(true)
     try {
       const token = localStorage.getItem('accessToken')
-      const response = await fetch(`http://localhost:5000/api/auth/users/${bdmId}/role`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const response = await fetch(`${apiUrl}/api/auth/users/${bdmId}/role`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
