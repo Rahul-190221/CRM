@@ -38,13 +38,55 @@ export const getBDMStats = async (req: Request, res: Response): Promise<void> =>
       ? Math.round(((currentPeriodLeads - previousPeriodLeads) / previousPeriodLeads) * 100)
       : currentPeriodLeads > 0 ? 100 : 0;
 
+    const currentConverted = await Lead.countDocuments({
+      assignedTo: userId,
+      lifecycleStage: 'Converted',
+      updatedAt: { $gte: thirtyDaysAgo }
+    });
+    const previousConverted = await Lead.countDocuments({
+      assignedTo: userId,
+      lifecycleStage: 'Converted',
+      updatedAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo }
+    });
+    const convertedChange = previousConverted > 0
+      ? Math.round(((currentConverted - previousConverted) / previousConverted) * 100)
+      : currentConverted > 0 ? 100 : 0;
+
+    const currentInProgress = await Lead.countDocuments({
+      assignedTo: userId,
+      lifecycleStage: { $in: ['Intake', 'Processing', 'Hot'] },
+      updatedAt: { $gte: thirtyDaysAgo }
+    });
+    const previousInProgress = await Lead.countDocuments({
+      assignedTo: userId,
+      lifecycleStage: { $in: ['Intake', 'Processing', 'Hot'] },
+      updatedAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo }
+    });
+    const inProgressChange = previousInProgress > 0
+      ? Math.round(((currentInProgress - previousInProgress) / previousInProgress) * 100)
+      : currentInProgress > 0 ? 100 : 0;
+
+    const prevTotalLeads = await Lead.countDocuments({
+      assignedTo: userId,
+      createdAt: { $lt: thirtyDaysAgo }
+    });
+    const prevConverted = await Lead.countDocuments({
+      assignedTo: userId,
+      lifecycleStage: 'Converted',
+      createdAt: { $lt: thirtyDaysAgo }
+    });
+    const prevTargetPercentage = prevTotalLeads > 0 ? Math.round((prevConverted / prevTotalLeads) * 100) : 0;
+    const targetChange = prevTargetPercentage > 0
+      ? Math.round(((targetPercentage - prevTargetPercentage) / prevTargetPercentage) * 100)
+      : targetPercentage > 0 ? 100 : 0;
+
     res.json({
       success: true,
       data: {
         totalLeads: { value: totalLeads, change: leadsChange },
-        converted: { value: converted, change: 8 }, // Mock change for now
-        inProgress: { value: inProgress, change: 5 },
-        target: { value: `${targetPercentage}%`, change: 3 }
+        converted: { value: converted, change: convertedChange },
+        inProgress: { value: inProgress, change: inProgressChange },
+        target: { value: `${targetPercentage}%`, change: targetChange }
       }
     });
   } catch (error) {
@@ -294,14 +336,44 @@ export const getAdminStats = async (req: Request, res: Response): Promise<void> 
 
     const conversionRate = totalLeads > 0 ? ((convertedLeads / totalLeads) * 100).toFixed(1) : '0';
 
-    // Mock changes for now
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const sixtyDaysAgo = new Date();
+    sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
+
+    const currentLeads = await Lead.countDocuments({ createdAt: { $gte: thirtyDaysAgo } });
+    const previousLeads = await Lead.countDocuments({ createdAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo } });
+    const leadsChange = previousLeads > 0
+      ? Math.round(((currentLeads - previousLeads) / previousLeads) * 100)
+      : currentLeads > 0 ? 100 : 0;
+
+    const currentUsers = await User.countDocuments({ isActive: true, createdAt: { $gte: thirtyDaysAgo } });
+    const previousUsers = await User.countDocuments({ isActive: true, createdAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo } });
+    const usersChange = previousUsers > 0
+      ? Math.round(((currentUsers - previousUsers) / previousUsers) * 100)
+      : currentUsers > 0 ? 100 : 0;
+
+    const currentBDMs = await User.countDocuments({ role: { $in: ['bdm', 'senior-bdm', 'junior-bdm'] }, isActive: true, createdAt: { $gte: thirtyDaysAgo } });
+    const previousBDMs = await User.countDocuments({ role: { $in: ['bdm', 'senior-bdm', 'junior-bdm'] }, isActive: true, createdAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo } });
+    const bdmsChange = previousBDMs > 0
+      ? Math.round(((currentBDMs - previousBDMs) / previousBDMs) * 100)
+      : currentBDMs > 0 ? 100 : 0;
+
+    const prevTotalLeads = await Lead.countDocuments({ createdAt: { $lt: thirtyDaysAgo } });
+    const prevConverted = await Lead.countDocuments({ lifecycleStage: 'Converted', createdAt: { $lt: thirtyDaysAgo } });
+    const prevConversionRate = prevTotalLeads > 0 ? (prevConverted / prevTotalLeads) * 100 : 0;
+    const currentConversionRate = parseFloat(conversionRate);
+    const conversionChange = prevConversionRate > 0
+      ? Math.round(((currentConversionRate - prevConversionRate) / prevConversionRate) * 100)
+      : currentConversionRate > 0 ? 100 : 0;
+
     res.json({
       success: true,
       data: {
-        activeBDMs: { value: activeBDMs, change: 2 },
-        totalUsers: { value: totalUsers, change: 12 },
-        totalLeads: { value: totalLeads, change: 23 },
-        conversionRate: { value: `${conversionRate}%`, change: 5 }
+        activeBDMs: { value: activeBDMs, change: bdmsChange },
+        totalUsers: { value: totalUsers, change: usersChange },
+        totalLeads: { value: totalLeads, change: leadsChange },
+        conversionRate: { value: `${conversionRate}%`, change: conversionChange }
       }
     });
   } catch (error) {

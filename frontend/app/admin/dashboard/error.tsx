@@ -32,7 +32,7 @@ export default function AdminDashboardError({
           </button>
           <button
             onClick={() => reset()}
-            className="px-4 py-2 bg-yellow-400 text-gray-900 font-bold rounded-lg hover:bg-yellow-500 transition-colors"
+            className="px-4 py-2 bg-[#FACE39] text-gray-900 font-bold rounded-lg hover:bg-[#FACE39]/90 transition-colors"
           >
             Try again
           </button>

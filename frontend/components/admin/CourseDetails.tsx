@@ -162,7 +162,7 @@ export default function CourseDetails({ user }: { user?: any }) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FACE39]"></div>
       </div>
     )
   }
@@ -181,7 +181,7 @@ export default function CourseDetails({ user }: { user?: any }) {
               setSelectedCourse(null)
               setIsAddModalOpen(true)
             }}
-            className="flex items-center gap-2 bg-yellow-400 px-4 py-2.5 rounded-lg text-sm font-bold text-gray-900 hover:bg-yellow-500 transition-colors"
+            className="flex items-center gap-2 bg-[#FACE39] px-4 py-2.5 rounded-lg text-sm font-bold text-gray-900 hover:bg-[#FACE39]/90 transition-colors"
           >
             <Plus className="w-4 h-4" />
             <span>Add New Course</span>
@@ -198,13 +198,13 @@ export default function CourseDetails({ user }: { user?: any }) {
             placeholder="Search courses..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
           />
         </div>
         <select
           value={filters.testType}
           onChange={(e) => setFilters({ ...filters, testType: e.target.value as TestType | 'all' })}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
         >
           <option value="all">All Test Types</option>
           {testTypes.map(type => (
@@ -214,7 +214,7 @@ export default function CourseDetails({ user }: { user?: any }) {
         <select
           value={filters.sortBy}
           onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
         >
           <option value="date">Sort by Date</option>
           <option value="name">Sort by Name</option>

@@ -133,7 +133,7 @@ export default function ViewCourseModal({ isOpen, onClose, onEdit, onDelete, cou
             <ul className="space-y-2">
               {syllabus.map((item, index) => (
                 <li key={index} className="flex items-center gap-2 text-sm text-gray-600">
-                  <span className="w-1.5 h-1.5 bg-yellow-400 rounded-full"></span>
+                  <span className="w-1.5 h-1.5 bg-[#FACE39] rounded-full"></span>
                   {item}
                 </li>
               ))}
@@ -152,7 +152,7 @@ export default function ViewCourseModal({ isOpen, onClose, onEdit, onDelete, cou
               <>
                 <button
                   onClick={() => onEdit(course)}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-yellow-400 rounded-lg text-sm font-bold text-gray-900 hover:bg-yellow-500 transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FACE39] rounded-lg text-sm font-bold text-gray-900 hover:bg-[#FACE39]/90 transition-colors"
                 >
                   <Pencil className="w-4 h-4" />
                   Edit

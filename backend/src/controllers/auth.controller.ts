@@ -8,6 +8,11 @@ import User from '../models/User';
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is not set');
+}
+
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, email, password, role } = req.body;
@@ -24,7 +29,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     const token = jwt.sign(
       { userId: user._id, role: user.role },
-      process.env.JWT_SECRET || 'secret',
+      JWT_SECRET,
       { expiresIn: '7d' }
     );
 
@@ -58,22 +63,15 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
     const { email, name, picture } = payload;
     let user = await User.findOne({ email });
 
+    // User MUST exist - no auto-creation for signin
     if (!user) {
-      // Create new user if not exists
-      user = new User({
-        name: name || payload.given_name || 'User',
-        email,
-        role: 'bdm', // Default role
-        avatarUrl: picture,
-        isActive: true
-        // No password hash primarily, but we made it optional
-      });
-      await user.save();
+      res.status(401).json({ message: 'Account not found. Please sign up first.' });
+      return;
     }
 
     const jwtToken = jwt.sign(
       { userId: user._id, role: user.role },
-      process.env.JWT_SECRET || 'secret',
+      JWT_SECRET,
       { expiresIn: '7d' }
     );
 
@@ -81,6 +79,66 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
   } catch (error) {
     console.error('Google login error:', error);
     res.status(500).json({ message: 'Google authentication failed' });
+  }
+};
+
+export const googleRegister = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { token } = req.body;
+
+    // Fetch user info using the access token
+    const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (!response.ok) {
+      res.status(400).json({ message: 'Invalid Google token' });
+      return;
+    }
+
+    const payload: any = await response.json();
+
+    if (!payload.email) {
+      res.status(400).json({ message: 'Invalid Google token' });
+      return;
+    }
+
+    const { email, name, picture } = payload;
+    const { role } = req.body;
+
+    const validRoles = ['admin', 'bdm', 'senior-bdm', 'junior-bdm'];
+    if (!role || !validRoles.includes(role)) {
+      res.status(400).json({ message: 'A valid role is required to register.' });
+      return;
+    }
+
+    // Check if user already exists
+    let user = await User.findOne({ email });
+    if (user) {
+      res.status(400).json({ message: 'User already exists. Please sign in instead.' });
+      return;
+    }
+
+    // Create new user for signup
+    user = new User({
+      name: name || payload.given_name || 'User',
+      email,
+      role,
+      avatarUrl: picture,
+      isActive: true
+    });
+    await user.save();
+
+    const jwtToken = jwt.sign(
+      { userId: user._id, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.status(201).json({ accessToken: jwtToken, user: { id: user._id, name: user.name, email: user.email, role: user.role, avatarUrl: user.avatarUrl }, message: 'Account created successfully' });
+  } catch (error) {
+    console.error('Google register error:', error);
+    res.status(500).json({ message: 'Google registration failed' });
   }
 };
 
@@ -95,7 +153,41 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     if (!user.passwordHash) {
-      res.status(401).json({ message: 'Please sign in with Google' });
+      // Auto-send password setup email and prompt user to set one
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const resetTokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
+      user.resetPasswordToken = resetTokenHash;
+      user.resetPasswordExpires = new Date(Date.now() + 3600000);
+      await user.save();
+
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
+
+      try {
+        const transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST,
+          port: parseInt(process.env.SMTP_PORT || '587'),
+          secure: process.env.SMTP_SECURE === 'true',
+          auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+        });
+        await transporter.sendMail({
+          from: process.env.SMTP_FROM || 'noreply@luminedge.com',
+          to: user.email,
+          subject: 'Set Your Password - Luminedge CRM',
+          html: `
+            <h2>Set Your Password</h2>
+            <p>Hello ${user.name},</p>
+            <p>Your account was created with Google. Click below to set a password so you can also sign in with email:</p>
+            <p><a href="${resetUrl}" style="background-color: #FACE39; color: #000; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Set Password</a></p>
+            <p>This link expires in 1 hour.</p>
+            <br><p>Best regards,<br>Luminedge Team</p>
+          `,
+        });
+      } catch (emailErr) {
+        console.error('Failed to send setup email:', emailErr);
+      }
+
+      res.status(200).json({ message: 'PASSWORD_SETUP_REQUIRED', email: user.email });
       return;
     }
 
@@ -107,7 +199,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     const token = jwt.sign(
       { userId: user._id, role: user.role },
-      process.env.JWT_SECRET || 'secret',
+      JWT_SECRET,
       { expiresIn: '7d' }
     );
 
@@ -389,6 +481,50 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
   } catch (error) {
     console.error('Error changing password:', error);
     res.status(500).json({ success: false, message: 'Failed to change password' });
+  }
+};
+
+// Set password for Google-registered users (no auth required)
+export const setPassword = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      res.status(400).json({ message: 'Email and password are required' });
+      return;
+    }
+
+    if (password.length < 6) {
+      res.status(400).json({ message: 'Password must be at least 6 characters' });
+      return;
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
+
+    if (user.passwordHash) {
+      res.status(400).json({ message: 'Password already set. Use Forgot Password to change it.' });
+      return;
+    }
+
+    user.passwordHash = await bcrypt.hash(password, 10);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.json({ accessToken: token, user: { id: user._id, name: user.name, email: user.email, role: user.role, avatarUrl: user.avatarUrl } });
+  } catch (error) {
+    console.error('Set password error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 

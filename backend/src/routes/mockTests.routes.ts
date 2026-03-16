@@ -11,21 +11,22 @@ import {
   updateMockTestSchedule,
   deleteMockTestSchedule,
 } from '../controllers/mockTests.controller';
+import { authenticateToken } from '../middleware/auth.middleware';
 
 const router = express.Router();
 
 // Mock Test Packages
-router.get('/packages', getMockTestPackages);
-router.get('/packages/:id', getMockTestPackage);
-router.post('/packages', createMockTestPackage);
-router.patch('/packages/:id', updateMockTestPackage);
-router.delete('/packages/:id', deleteMockTestPackage);
+router.get('/packages', authenticateToken, getMockTestPackages);
+router.get('/packages/:id', authenticateToken, getMockTestPackage);
+router.post('/packages', authenticateToken, createMockTestPackage);
+router.patch('/packages/:id', authenticateToken, updateMockTestPackage);
+router.delete('/packages/:id', authenticateToken, deleteMockTestPackage);
 
 // Mock Test Schedules
-router.get('/schedules', getMockTestSchedules);
-router.get('/schedules/:id', getMockTestSchedule);
-router.post('/schedules', createMockTestSchedule);
-router.patch('/schedules/:id', updateMockTestSchedule);
-router.delete('/schedules/:id', deleteMockTestSchedule);
+router.get('/schedules', authenticateToken, getMockTestSchedules);
+router.get('/schedules/:id', authenticateToken, getMockTestSchedule);
+router.post('/schedules', authenticateToken, createMockTestSchedule);
+router.patch('/schedules/:id', authenticateToken, updateMockTestSchedule);
+router.delete('/schedules/:id', authenticateToken, deleteMockTestSchedule);
 
 export default router;

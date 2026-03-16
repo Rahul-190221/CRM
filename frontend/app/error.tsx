@@ -20,7 +20,7 @@ export default function Error({
         <p className="text-gray-600 mb-6">{error.message || 'An unexpected error occurred'}</p>
         <button
           onClick={() => reset()}
-          className="px-6 py-2.5 bg-yellow-400 text-gray-900 font-bold rounded-lg hover:bg-yellow-500 transition-colors"
+          className="px-6 py-2.5 bg-[#FACE39] text-gray-900 font-bold rounded-lg hover:bg-[#FACE39]/90 transition-colors"
         >
           Try again
         </button>

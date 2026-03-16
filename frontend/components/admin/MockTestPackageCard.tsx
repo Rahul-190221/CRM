@@ -1,17 +1,7 @@
 'use client'
 
 import { Edit2 } from 'lucide-react'
-import type { MockTestPackage, TestType } from '@/types/admin'
-import { testTypeBadgeColors } from '@/types/admin'
-
-// Border colors based on test type (matching the Figma design)
-const testTypeBorderColors: Record<TestType, string> = {
-  'IELTS': 'border-l-red-500',
-  'PTE': 'border-l-purple-500',
-  'GRE': 'border-l-green-500',
-  'TOEFL': 'border-l-blue-500',
-}
-
+import type { MockTestPackage } from '@/types/admin'
 interface MockTestPackageCardProps {
   package_: MockTestPackage
   onEdit: (pkg: MockTestPackage) => void
@@ -20,7 +10,7 @@ interface MockTestPackageCardProps {
 export default function MockTestPackageCard({ package_, onEdit, user }: MockTestPackageCardProps & { user?: any }) {
   const isAdmin = user?.role === 'admin';
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm border-l-4 border-l-yellow-400">
+    <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm border-l-4 border-l-[#FACE39]">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900">{package_.testType} Mock Test Packages</h3>
@@ -44,7 +34,7 @@ export default function MockTestPackageCard({ package_, onEdit, user }: MockTest
       <ul className="space-y-2 mb-5">
         {package_.features.map((feature, index) => (
           <li key={index} className="flex items-center gap-2 text-sm text-gray-600">
-            <span className="w-1.5 h-1.5 bg-yellow-400 rounded-full"></span>
+            <span className="w-1.5 h-1.5 bg-[#FACE39] rounded-full"></span>
             {feature}
           </li>
         ))}
@@ -52,7 +42,7 @@ export default function MockTestPackageCard({ package_, onEdit, user }: MockTest
 
       {/* Pricing Table */}
       <div className="border border-gray-200 rounded-lg overflow-hidden">
-        <div className="bg-yellow-400 px-4 py-2.5 grid grid-cols-2">
+        <div className="bg-[#FACE39] px-4 py-2.5 grid grid-cols-2">
           <span className="text-sm font-semibold text-gray-900">No. of Mock Test</span>
           <span className="text-sm font-semibold text-gray-900">Fee</span>
         </div>

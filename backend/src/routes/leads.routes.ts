@@ -12,20 +12,21 @@ import {
   getLeadStats,
   assignLeads
 } from '../controllers/leads.controller';
+import { authenticateToken } from '../middleware/auth.middleware';
 
 const router = express.Router();
 
 // Lead CRUD routes
-router.get('/', getLeads);
-router.get('/stats', getLeadStats);
-router.get('/bdms', getBDMs);
-router.get('/:id', getLead);
-router.post('/', createLead);
-router.post('/import', importLeads);
-router.post('/assign', assignLeads);
-router.patch('/:id', updateLead);
-router.patch('/:id/stage', updateLeadStage);
-router.patch('/:id/follow-up', addFollowUp);
-router.delete('/:id', deleteLead);
+router.get('/', authenticateToken, getLeads);
+router.get('/stats', authenticateToken, getLeadStats);
+router.get('/bdms', authenticateToken, getBDMs);
+router.get('/:id', authenticateToken, getLead);
+router.post('/', authenticateToken, createLead);
+router.post('/import', authenticateToken, importLeads);
+router.post('/assign', authenticateToken, assignLeads);
+router.patch('/:id', authenticateToken, updateLead);
+router.patch('/:id/stage', authenticateToken, updateLeadStage);
+router.patch('/:id/follow-up', authenticateToken, addFollowUp);
+router.delete('/:id', authenticateToken, deleteLead);
 
 export default router;

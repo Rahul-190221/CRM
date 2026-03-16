@@ -28,7 +28,7 @@ export default function MockTestScheduleTable({ schedules, totalCount }: MockTes
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="bg-yellow-400">
+            <tr className="bg-[#FACE39]">
               <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">List</th>
               <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Name</th>
               <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Test Type</th>

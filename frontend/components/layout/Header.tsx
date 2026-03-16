@@ -31,7 +31,7 @@ export default function Header({ user, onSearch, searchTerm, onLogout }: HeaderP
               placeholder="Search for anything..."
               value={searchTerm || ''}
               onChange={(e) => onSearch?.(e.target.value)}
-              className="w-full pl-11 pr-4 py-2.5 bg-gray-50/50 border border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:bg-white focus:border-primary-500 text-sm transition-all shadow-sm"
+              className="w-full pl-11 pr-4 py-2.5 bg-white/5 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FACE39]/30 focus:border-[#FACE39]/50 text-sm text-white placeholder-white/30 transition-all"
             />
           </div>
         </div>
@@ -39,18 +39,18 @@ export default function Header({ user, onSearch, searchTerm, onLogout }: HeaderP
         {/* Right Side: Actions & Profile */}
         <div className="flex items-center gap-4 ml-6">
           {/* Notifications */}
-          <button className="relative p-2.5 text-gray-500 hover:text-gray-900 transition-all rounded-xl hover:bg-gray-50 border border-transparent hover:border-gray-200">
+          <button className="relative p-2.5 text-[#00000F]/50 hover:text-white transition-all rounded-xl hover:bg-[#FACE39]/10 border border-transparent hover:border-gray-100">
             <Bell className="w-5 h-5" />
             <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-danger rounded-full border-2 border-white shadow-sm"></span>
           </button>
 
           {/* Vertical Divider */}
-          <div className="h-8 w-px bg-gray-100"></div>
+          <div className="h-8 w-px bg-white/10"></div>
 
           {/* User Profile */}
           <div className="flex items-center gap-3">
             <div className="relative group">
-              <div className="flex items-center gap-3 cursor-pointer p-1.5 rounded-xl hover:bg-gray-50 transition-all peer">
+              <div className="flex items-center gap-3 cursor-pointer p-1.5 rounded-xl hover:bg-[#FACE39]/10 transition-all peer">
                 <div className="relative">
                   <div className="w-9 h-9 bg-primary-500 rounded-lg flex items-center justify-center text-black font-extrabold text-sm shadow-sm border border-primary-600/10">
                     {getInitials(user.name)}
@@ -58,8 +58,8 @@ export default function Header({ user, onSearch, searchTerm, onLogout }: HeaderP
                   <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-success-dark border-2 border-white rounded-full"></div>
                 </div>
                 <div className="hidden lg:block text-left">
-                  <p className="text-sm font-bold text-gray-900 leading-none mb-1">{user.name}</p>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{user.role}</p>
+                  <p className="text-sm font-bold text-[#00000F] leading-none mb-1">{user.name}</p>
+                  <p className="text-[10px] font-bold text-[#00000F]/40 uppercase tracking-widest">{user.role}</p>
                 </div>
                 <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
               </div>

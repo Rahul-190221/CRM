@@ -1,6 +1,6 @@
 import type { MockTestPackage, MockTestSchedule, FilterState, LuminedgeSchedule } from '@/types/admin';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 const API_BASE_URL = API_URL.endsWith('/api') ? API_URL : `${API_URL}/api`;
 
 const getAuthHeader = (): HeadersInit => {

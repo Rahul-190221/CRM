@@ -14,6 +14,11 @@ declare global {
   }
 }
 
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is not set');
+}
+
 export const authenticateToken = (req: Request, res: Response, next: NextFunction): void => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -24,7 +29,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default-secret') as JwtPayload;
+    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
     req.user = decoded;
     next();
   } catch (error) {

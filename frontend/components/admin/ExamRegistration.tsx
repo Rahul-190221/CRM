@@ -1,4 +1,4 @@
-'use client'
+ 'use client'
 
 import { useState, useEffect } from 'react'
 import { Plus } from 'lucide-react'
@@ -8,94 +8,6 @@ import FilterBar from './FilterBar'
 import { getExams, createExam, updateExam, deleteExam } from '@/lib/api/exams'
 import type { Exam, FilterState } from '@/types/admin'
 
-// Mock data for exams
-const mockExams: Exam[] = [
-  {
-    _id: '1',
-    name: 'IELTS Academic',
-    examType: 'Computer-Based',
-    testType: 'IELTS',
-    examDate: '2026-02-15',
-    examTime: '09:00 AM',
-    venue: 'British Council, Dhaka',
-    registrationDeadline: '2026-02-01',
-    fee: 21000,
-    currency: 'BDT',
-    totalSlots: 30,
-    availableSlots: 15,
-    isActive: true,
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01'
-  },
-  {
-    _id: '2',
-    name: 'PTE Academic',
-    examType: 'Computer-Based',
-    testType: 'PTE',
-    examDate: '2026-02-18',
-    examTime: '02:00 PM',
-    venue: 'Pearson Test Center, Banani',
-    registrationDeadline: '2026-02-10',
-    fee: 18500,
-    currency: 'BDT',
-    totalSlots: 20,
-    availableSlots: 12,
-    isActive: true,
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01'
-  },
-  {
-    _id: '3',
-    name: 'IELTS General',
-    examType: 'Paper-Based',
-    testType: 'IELTS',
-    examDate: '2026-02-20',
-    examTime: '10:00 AM',
-    venue: 'IDP Education, Gulshan',
-    registrationDeadline: '2026-02-05',
-    fee: 21000,
-    currency: 'BDT',
-    totalSlots: 25,
-    availableSlots: 8,
-    isActive: true,
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01'
-  },
-  {
-    _id: '4',
-    name: 'TOEFL iBT',
-    examType: 'Computer-Based',
-    testType: 'TOEFL',
-    examDate: '2026-02-22',
-    examTime: '09:30 AM',
-    venue: 'ETS Authorized Center, Dhanmondi',
-    registrationDeadline: '2026-02-08',
-    fee: 22500,
-    currency: 'BDT',
-    totalSlots: 15,
-    availableSlots: 5,
-    isActive: true,
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01'
-  },
-  {
-    _id: '5',
-    name: 'GRE General Test',
-    examType: 'Computer-Based',
-    testType: 'GRE',
-    examDate: '2026-02-25',
-    examTime: '10:00 AM',
-    venue: 'ETS Authorized Center, Dhanmondi',
-    registrationDeadline: '2026-02-12',
-    fee: 25000,
-    currency: 'BDT',
-    totalSlots: 12,
-    availableSlots: 10,
-    isActive: true,
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01'
-  },
-]
 
 export default function ExamRegistration({ user }: { user?: any }) {
   const isAdmin = user?.role === 'admin';
@@ -120,8 +32,7 @@ export default function ExamRegistration({ user }: { user?: any }) {
       setExams(data)
     } catch (error) {
       console.error('Error fetching exams:', error)
-      // Use mock data as fallback
-      setExams(mockExams)
+      setExams([])
     } finally {
       setIsLoading(false)
     }
@@ -163,7 +74,7 @@ export default function ExamRegistration({ user }: { user?: any }) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FACE39]"></div>
       </div>
     )
   }
@@ -182,7 +93,7 @@ export default function ExamRegistration({ user }: { user?: any }) {
               setEditingExam(null)
               setIsModalOpen(true)
             }}
-            className="flex items-center gap-2 bg-yellow-400 px-4 py-2.5 rounded-lg text-sm font-bold text-gray-900 hover:bg-yellow-500 transition-colors"
+            className="flex items-center gap-2 bg-[#FACE39] px-4 py-2.5 rounded-lg text-sm font-bold text-[#00000F] hover:bg-[#FACE39]/90 transition-colors"
           >
             <Plus className="w-4 h-4" />
             <span>Add Exam</span>

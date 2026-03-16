@@ -8,37 +8,43 @@ dotenv.config();
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/crm_db';
 
+const DEFAULT_SEED_PASSWORD = process.env.SEED_PASSWORD;
+if (!DEFAULT_SEED_PASSWORD) {
+    console.error('Error: SEED_PASSWORD environment variable is required.');
+    process.exit(1);
+}
+
 const users = [
     {
         name: 'Admin User',
-        email: 'admin@luminedge.com',
-        password: 'password123',
+        email: process.env.SEED_ADMIN_EMAIL || 'admin@luminedge.com',
+        password: DEFAULT_SEED_PASSWORD,
         role: 'admin',
-        phone: '1234567890',
+        phone: '',
         isActive: true
     },
     {
-        name: 'John Doe',
-        email: 'john.bdm@luminedge.com',
-        password: 'password123',
+        name: 'BDM User',
+        email: process.env.SEED_BDM_EMAIL || 'bdm@luminedge.com',
+        password: DEFAULT_SEED_PASSWORD,
         role: 'bdm',
-        phone: '0987654321',
+        phone: '',
         isActive: true
     },
     {
-        name: 'Jane Smith',
-        email: 'jane.bdm@luminedge.com',
-        password: 'password123',
+        name: 'Senior BDM User',
+        email: process.env.SEED_SENIOR_BDM_EMAIL || 'senior.bdm@luminedge.com',
+        password: DEFAULT_SEED_PASSWORD,
         role: 'senior-bdm',
-        phone: '1122334455',
+        phone: '',
         isActive: true
     },
     {
-        name: 'Robert Johnson',
-        email: 'robert.bdm@luminedge.com',
-        password: 'password123',
+        name: 'Junior BDM User',
+        email: process.env.SEED_JUNIOR_BDM_EMAIL || 'junior.bdm@luminedge.com',
+        password: DEFAULT_SEED_PASSWORD,
         role: 'junior-bdm',
-        phone: '5544332211',
+        phone: '',
         isActive: true
     }
 ];

@@ -95,7 +95,7 @@ export default function AddCourseModal({ isOpen, onClose, onSubmit, editingCours
                 placeholder="Enter course name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-sm"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent text-sm"
                 required
               />
             </div>
@@ -104,7 +104,7 @@ export default function AddCourseModal({ isOpen, onClose, onSubmit, editingCours
               <select
                 value={formData.testType}
                 onChange={(e) => setFormData({ ...formData, testType: e.target.value as TestType })}
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-sm bg-white"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent text-sm bg-white"
                 required
               >
                 <option value="">Select type</option>
@@ -123,7 +123,7 @@ export default function AddCourseModal({ isOpen, onClose, onSubmit, editingCours
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows={2}
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-sm resize-none"
+              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent text-sm resize-none"
               required
             />
           </div>
@@ -140,7 +140,7 @@ export default function AddCourseModal({ isOpen, onClose, onSubmit, editingCours
                   const num = parseInt(e.target.value.replace(/[^0-9]/g, '')) || 0
                   setFormData({ ...formData, durationMonths: num })
                 }}
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-sm"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent text-sm"
                 required
               />
             </div>
@@ -154,7 +154,7 @@ export default function AddCourseModal({ isOpen, onClose, onSubmit, editingCours
                   const num = parseInt(e.target.value.replace(/[^0-9]/g, '')) || 0
                   setFormData({ ...formData, price: num })
                 }}
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-sm"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent text-sm"
                 required
               />
             </div>
@@ -169,7 +169,7 @@ export default function AddCourseModal({ isOpen, onClose, onSubmit, editingCours
                 placeholder="Instructor name"
                 value={formData.instructor}
                 onChange={(e) => setFormData({ ...formData, instructor: e.target.value })}
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-sm"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent text-sm"
               />
             </div>
             <div>
@@ -179,7 +179,7 @@ export default function AddCourseModal({ isOpen, onClose, onSubmit, editingCours
                 placeholder="Max students"
                 value={formData.capacity > 0 ? formData.capacity : ''}
                 onChange={(e) => setFormData({ ...formData, capacity: parseInt(e.target.value) || 0 })}
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-sm"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent text-sm"
               />
             </div>
           </div>
@@ -192,7 +192,7 @@ export default function AddCourseModal({ isOpen, onClose, onSubmit, editingCours
                 type="date"
                 value={formData.startDate}
                 onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-sm"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent text-sm"
                 required
               />
             </div>
@@ -203,7 +203,7 @@ export default function AddCourseModal({ isOpen, onClose, onSubmit, editingCours
                 placeholder="e.g., Mon, Wed, Fri - 10:00 AM"
                 value={formData.schedule}
                 onChange={(e) => setFormData({ ...formData, schedule: e.target.value })}
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-sm"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent text-sm"
               />
             </div>
           </div>
@@ -219,7 +219,7 @@ export default function AddCourseModal({ isOpen, onClose, onSubmit, editingCours
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2.5 bg-yellow-400 rounded-lg text-sm font-bold text-gray-900 hover:bg-yellow-500 transition-colors"
+              className="flex-1 px-4 py-2.5 bg-[#FACE39] rounded-lg text-sm font-bold text-gray-900 hover:bg-[#FACE39]/90 transition-colors"
             >
               {editingCourse ? 'Update Course' : 'Add Course'}
             </button>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, Filter, UserX, Users, UserCheck, UserMinus, AlertCircle } from 'lucide-react'
+import { Search, UserX, Users, UserCheck, UserMinus, AlertCircle } from 'lucide-react'
 
 interface BDMUser {
   _id: string
@@ -22,7 +22,7 @@ interface BDMUser {
 // Avatar color generator based on name
 const getAvatarColor = (name: string): string => {
   const colors = [
-    'bg-yellow-400',
+    'bg-[#FACE39]',
     'bg-blue-500',
     'bg-purple-500',
     'bg-green-500',
@@ -42,7 +42,7 @@ const getInitials = (name: string): string => {
     : name.charAt(0).toUpperCase()
 }
 
-export default function BDMRemove({ user }: { user?: any }) {
+export default function BDMRemove() {
   const [bdmUsers, setBdmUsers] = useState<BDMUser[]>([])
   const [filteredUsers, setFilteredUsers] = useState<BDMUser[]>([])
   const [searchTerm, setSearchTerm] = useState('')
@@ -77,14 +77,7 @@ export default function BDMRemove({ user }: { user?: any }) {
       }
     } catch (error) {
       console.error('Error fetching BDM users:', error)
-      // Mock data for display
-      setBdmUsers([
-        { _id: '1', firstName: 'Sarah', lastName: 'Johnson', name: 'Sarah Johnson', email: 'sarah@luminedge.com', role: 'senior-bdm', status: 'active', activeLeads: 12, convertedLeads: 45, joinDate: '2024-01-15' },
-        { _id: '2', firstName: 'Michael', lastName: 'Chen', name: 'Michael Chen', email: 'michael@luminedge.com', role: 'bdm', status: 'active', activeLeads: 8, convertedLeads: 32, joinDate: '2024-02-20' },
-        { _id: '3', firstName: 'Emily', lastName: 'Davis', name: 'Emily Davis', email: 'emily@luminedge.com', role: 'junior-bdm', status: 'active', activeLeads: 5, convertedLeads: 18, joinDate: '2024-03-10' },
-        { _id: '4', firstName: 'James', lastName: 'Wilson', name: 'James Wilson', email: 'james@luminedge.com', role: 'bdm', status: 'inactive', activeLeads: 0, convertedLeads: 28, joinDate: '2023-11-05' },
-        { _id: '5', firstName: 'Lisa', lastName: 'Anderson', name: 'Lisa Anderson', email: 'lisa@luminedge.com', role: 'senior-bdm', status: 'active', activeLeads: 15, convertedLeads: 67, joinDate: '2023-08-12' },
-      ])
+      setBdmUsers([])
     } finally {
       setIsLoading(false)
     }
@@ -136,9 +129,7 @@ export default function BDMRemove({ user }: { user?: any }) {
       }
     } catch (error) {
       console.error('Error removing BDM:', error)
-      // For demo, remove from local state
-      setBdmUsers(prev => prev.filter(u => u._id !== selectedBDM._id))
-      alert('BDM removed successfully!')
+      alert('Failed to remove BDM. Please try again.')
     } finally {
       setIsRemoving(false)
       setShowConfirmModal(false)
@@ -189,15 +180,16 @@ export default function BDMRemove({ user }: { user?: any }) {
               placeholder="Search by name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
             />
           </div>
 
           {/* Role Filter */}
           <select
+            title="Filter by role"
             value={filterRole}
             onChange={(e) => setFilterRole(e.target.value)}
-            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent bg-white min-w-[150px]"
+            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent bg-white min-w-[150px]"
           >
             <option value="all">All Roles</option>
             <option value="junior-bdm">Junior BDM</option>
@@ -212,7 +204,7 @@ export default function BDMRemove({ user }: { user?: any }) {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#FDE047]">
+              <tr className="bg-[#FACE39]">
                 <th className="text-left px-4 py-3 text-sm font-semibold text-gray-900">Name</th>
                 <th className="text-left px-4 py-3 text-sm font-semibold text-gray-900">Email</th>
                 <th className="text-left px-4 py-3 text-sm font-semibold text-gray-900">Role</th>
@@ -228,7 +220,7 @@ export default function BDMRemove({ user }: { user?: any }) {
                 <tr>
                   <td colSpan={8} className="text-center py-8">
                     <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FACE39]"></div>
                     </div>
                   </td>
                 </tr>

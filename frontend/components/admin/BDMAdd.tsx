@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { UserPlus, Upload, RotateCcw } from 'lucide-react'
+import { UserPlus, Upload } from 'lucide-react'
 
 interface BDMUser {
   _id: string
@@ -26,6 +26,7 @@ interface FormData {
   employeeId: string
   reportingTo: string
   joinDate: string
+  password: string
   profileImage: File | null
 }
 
@@ -38,13 +39,14 @@ const initialFormData: FormData = {
   employeeId: '',
   reportingTo: '',
   joinDate: '',
+  password: '',
   profileImage: null
 }
 
 // Avatar color generator based on name
 const getAvatarColor = (name: string): string => {
   const colors = [
-    'bg-yellow-400',
+    'bg-[#FACE39]',
     'bg-blue-500',
     'bg-purple-500',
     'bg-green-500',
@@ -61,7 +63,7 @@ const getInitials = (firstName: string, lastName: string): string => {
   return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
 }
 
-export default function BDMAdd({ user }: { user?: any }) {
+export default function BDMAdd() {
   const [formData, setFormData] = useState<FormData>(initialFormData)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [recentBDMs, setRecentBDMs] = useState<BDMUser[]>([])
@@ -76,7 +78,7 @@ export default function BDMAdd({ user }: { user?: any }) {
   const fetchRecentBDMs = async () => {
     try {
       const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '')
       const response = await fetch(`${apiUrl}/api/auth/users?role=bdm,senior-bdm,junior-bdm&limit=6`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -89,19 +91,14 @@ export default function BDMAdd({ user }: { user?: any }) {
       }
     } catch (error) {
       console.error('Error fetching recent BDMs:', error)
-      // Mock data for display
-      setRecentBDMs([
-        { _id: '1', firstName: 'Sarah', lastName: 'Johnson', name: 'Sarah Johnson', email: 'sarah@luminedge.com', role: 'senior-bdm' },
-        { _id: '2', firstName: 'Michael', lastName: 'Chen', name: 'Michael Chen', email: 'michael@luminedge.com', role: 'bdm' },
-        { _id: '3', firstName: 'Emily', lastName: 'Davis', name: 'Emily Davis', email: 'emily@luminedge.com', role: 'junior-bdm' }
-      ])
+      setRecentBDMs([])
     }
   }
 
   const fetchManagers = async () => {
     try {
       const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '')
       const response = await fetch(`${apiUrl}/api/auth/users?role=admin,senior-bdm`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -150,10 +147,10 @@ export default function BDMAdd({ user }: { user?: any }) {
         employeeId: formData.employeeId,
         reportingTo: formData.reportingTo || undefined,
         joinDate: formData.joinDate || undefined,
-        password: 'Luminedge@123' // Default password
+        password: formData.password
       }
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '')
       const response = await fetch(`${apiUrl}/api/auth/register`, {
         method: 'POST',
         headers: {
@@ -209,9 +206,10 @@ export default function BDMAdd({ user }: { user?: any }) {
             {/* Profile Image Upload */}
             <div className="flex-shrink-0">
               <label className="block text-sm font-medium text-gray-700 mb-2">Profile Image</label>
-              <div className="w-48 h-40 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-yellow-400 transition-colors relative">
+              <div className="w-48 h-40 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-[#FACE39] transition-colors relative">
                 <input
                   type="file"
+                  title="Upload profile image"
                   accept="image/*"
                   onChange={handleImageChange}
                   className="absolute inset-0 opacity-0 cursor-pointer"
@@ -244,7 +242,7 @@ export default function BDMAdd({ user }: { user?: any }) {
                   onChange={handleInputChange}
                   placeholder="Enter first name"
                   required
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
                 />
               </div>
 
@@ -260,7 +258,7 @@ export default function BDMAdd({ user }: { user?: any }) {
                   onChange={handleInputChange}
                   placeholder="Enter last name"
                   required
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
                 />
               </div>
 
@@ -276,7 +274,7 @@ export default function BDMAdd({ user }: { user?: any }) {
                   onChange={handleInputChange}
                   placeholder="email@luminedge.com"
                   required
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
                 />
               </div>
 
@@ -292,7 +290,7 @@ export default function BDMAdd({ user }: { user?: any }) {
                   onChange={handleInputChange}
                   placeholder="+1 (555) 000-0000"
                   required
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
                 />
               </div>
 
@@ -302,11 +300,12 @@ export default function BDMAdd({ user }: { user?: any }) {
                   Role <span className="text-red-500">*</span>
                 </label>
                 <select
+                  title="Select role"
                   name="role"
                   value={formData.role}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent bg-white"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent bg-white"
                 >
                   <option value="">Select role</option>
                   <option value="junior-bdm">Junior BDM</option>
@@ -324,7 +323,7 @@ export default function BDMAdd({ user }: { user?: any }) {
                   value={formData.employeeId}
                   onChange={handleInputChange}
                   placeholder="EMP-001"
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
                 />
               </div>
 
@@ -332,10 +331,11 @@ export default function BDMAdd({ user }: { user?: any }) {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Reporting To</label>
                 <select
+                  title="Select reporting manager"
                   name="reportingTo"
                   value={formData.reportingTo}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent bg-white"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent bg-white"
                 >
                   <option value="">Select manager</option>
                   {managers.map(manager => (
@@ -351,11 +351,30 @@ export default function BDMAdd({ user }: { user?: any }) {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Join Date</label>
                 <input
                   type="date"
+                  title="Join date"
                   name="joinDate"
                   value={formData.joinDate}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
                 />
+              </div>
+
+              {/* Temporary Password */}
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Temporary Password <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  placeholder="Set a temporary password (min. 8 characters)"
+                  required
+                  minLength={8}
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
+                />
+                <p className="text-xs text-gray-400 mt-1">The BDM will be prompted to change this on first login.</p>
               </div>
             </div>
           </div>

@@ -153,7 +153,7 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
       </div>
 
       {/* Manual Input Section */}
-      <div className="bg-[#FCFCFC] rounded-lg border border-gray-100 p-8 mb-6">
+      <div className="bg-white rounded-lg border border-gray-100 p-8 mb-6">
         <div className="mb-8">
           <h2 className="text-lg font-bold text-gray-900">Manual Input</h2>
           <p className="text-sm text-gray-400 mt-1">Fill in the form below to add a lead manually</p>
@@ -168,7 +168,7 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
                 placeholder="Enter lead name"
                 value={formData.fullName}
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                className="w-full px-4 py-3 bg-[#F8F9FA] border border-gray-100 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-gray-200 placeholder-gray-300 transition-all font-medium"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FACE39]/40 placeholder-gray-300 transition-all font-medium"
                 required
               />
             </div>
@@ -179,7 +179,7 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
                 placeholder="Enter email address"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-3 bg-[#F8F9FA] border border-gray-100 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-gray-200 placeholder-gray-300 transition-all font-medium"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FACE39]/40 placeholder-gray-300 transition-all font-medium"
                 required
               />
             </div>
@@ -190,17 +190,18 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
                 placeholder="Enter phone number"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full px-4 py-3 bg-[#F8F9FA] border border-gray-100 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-gray-200 placeholder-gray-300 transition-all font-medium"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FACE39]/40 placeholder-gray-300 transition-all font-medium"
                 required
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-700 uppercase tracking-tight">Lead Source</label>
+              <label htmlFor="source" className="text-xs font-bold text-gray-700 uppercase tracking-tight">Lead Source</label>
               <div className="relative">
                 <select
+                  id="source"
                   value={formData.source}
                   onChange={(e) => setFormData({ ...formData, source: e.target.value as LeadSource })}
-                  className="w-full px-4 py-3 bg-[#F8F9FA] border border-gray-100 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-gray-200 transition-all appearance-none text-gray-500 font-medium"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FACE39]/40 transition-all appearance-none text-gray-500 font-medium"
                 >
                   <option value="">Select source</option>
                   {leadSources.map(source => (
@@ -211,12 +212,13 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
               </div>
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-700 uppercase tracking-tight">Service Interest</label>
+              <label htmlFor="serviceInterest" className="text-xs font-bold text-gray-700 uppercase tracking-tight">Service Interest</label>
               <div className="relative">
                 <select
+                  id="serviceInterest"
                   value={formData.serviceInterest}
                   onChange={(e) => setFormData({ ...formData, serviceInterest: e.target.value as ServiceInterest })}
-                  className="w-full px-4 py-3 bg-[#F8F9FA] border border-gray-100 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-gray-200 transition-all appearance-none text-gray-500 font-medium"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FACE39]/40 transition-all appearance-none text-gray-500 font-medium"
                 >
                   <option value="">Select service</option>
                   {serviceInterests.map(service => (
@@ -227,12 +229,13 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
               </div>
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-700 uppercase tracking-tight">Assign to BDM</label>
+              <label htmlFor="assignedTo" className="text-xs font-bold text-gray-700 uppercase tracking-tight">Assign to BDM</label>
               <div className="relative">
                 <select
+                  id="assignedTo"
                   value={formData.assignedTo}
                   onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
-                  className="w-full px-4 py-3 bg-[#F8F9FA] border border-gray-100 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-gray-200 transition-all appearance-none text-gray-500 font-medium"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FACE39]/40 transition-all appearance-none text-gray-500 font-medium"
                 >
                   <option value="">Select BDM</option>
                   {bdms.map(bdm => (
@@ -251,7 +254,7 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               rows={4}
-              className="w-full px-4 py-3 bg-[#F8F9FA] border border-gray-100 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-gray-200 placeholder-gray-300 transition-all font-medium resize-none"
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FACE39]/40 placeholder-gray-300 transition-all font-medium resize-none"
             />
           </div>
 
@@ -262,11 +265,11 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
             {followUps.map((followUp, index) => (
               <div key={followUp.id} className="mb-8">
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="px-4 py-1.5 border border-gray-200 rounded-md text-xs font-bold text-gray-600 bg-white">
+                  <span className="px-4 py-1.5 border border-gray-200 rounded-lg text-xs font-bold text-gray-600 bg-white">
                     Follow Up {index + 1}
                   </span>
                   {followUps.length > 1 && (
-                    <button type="button" onClick={() => handleRemoveFollowUp(followUp.id)} className="p-1 text-gray-400 hover:text-red-500 transition-colors">
+                    <button type="button" aria-label="Remove follow-up" onClick={() => handleRemoveFollowUp(followUp.id)} className="p-1 text-gray-400 hover:text-red-500 transition-colors">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   )}
@@ -274,12 +277,13 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-1.5 relative">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-tight">Date</label>
+                    <label htmlFor={`date-${followUp.id}`} className="text-xs font-bold text-gray-700 uppercase tracking-tight">Date</label>
                     <input
+                      id={`date-${followUp.id}`}
                       type="date"
                       value={followUp.date}
                       onChange={(e) => handleFollowUpChange(followUp.id, 'date', e.target.value)}
-                      className="w-full px-4 py-3 bg-[#F8F9FA] border border-gray-100 rounded-md text-sm focus:outline-none font-medium appearance-none"
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none font-medium appearance-none"
                     />
                     <Calendar className="absolute right-4 bottom-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
                   </div>
@@ -290,16 +294,17 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
                       placeholder="Add follow-up note"
                       value={followUp.note}
                       onChange={(e) => handleFollowUpChange(followUp.id, 'note', e.target.value)}
-                      className="w-full px-4 py-3 bg-[#F8F9FA] border border-gray-100 rounded-md text-sm focus:outline-none placeholder-gray-300 font-medium"
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none placeholder-gray-300 font-medium"
                     />
                   </div>
                   <div className="space-y-1.5 relative">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-tight">Next F.Up Date</label>
+                    <label htmlFor={`nextDate-${followUp.id}`} className="text-xs font-bold text-gray-700 uppercase tracking-tight">Next F.Up Date</label>
                     <input
+                      id={`nextDate-${followUp.id}`}
                       type="date"
                       value={followUp.nextFollowUpDate}
                       onChange={(e) => handleFollowUpChange(followUp.id, 'nextFollowUpDate', e.target.value)}
-                      className="w-full px-4 py-3 bg-[#F8F9FA] border border-gray-100 rounded-md text-sm focus:outline-none font-medium appearance-none"
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none font-medium appearance-none"
                     />
                     <Calendar className="absolute right-4 bottom-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
                   </div>
@@ -322,14 +327,14 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-8 py-3 bg-[#111827] rounded-md text-sm font-bold text-white hover:bg-black transition-all disabled:opacity-50"
+              className="px-8 py-3 bg-[#111827] rounded-lg text-sm font-bold text-white hover:bg-black transition-all disabled:opacity-50"
             >
               {isSubmitting ? 'Saving...' : 'Save Lead'}
             </button>
             <button
               type="button"
               onClick={onCancel}
-              className="px-8 py-3 border border-gray-200 rounded-md text-sm font-bold text-gray-600 hover:bg-gray-50 transition-all"
+              className="px-8 py-3 border border-gray-200 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-50 transition-all"
             >
               Cancel
             </button>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   LayoutDashboard,
   Users,
@@ -17,6 +17,9 @@ import {
   UserCircle
 } from 'lucide-react'
 import type { Page } from '@/types/navigation'
+import { getNotifications } from '@/lib/api/notifications'
+import { useSocket } from '@/components/providers/SocketProvider'
+import Cookies from 'js-cookie'
 
 interface SidebarProps {
   activePage: Page
@@ -26,6 +29,37 @@ interface SidebarProps {
 
 export default function Sidebar({ activePage, setActivePage, onLogout }: SidebarProps) {
   const [isServicesOpen, setIsServicesOpen] = useState(true)
+  const [unreadCount, setUnreadCount] = useState(0)
+
+  const socketService = useSocket()
+
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      const token = Cookies.get('token') || localStorage.getItem('token')
+      if (token) {
+        try {
+          const res = await getNotifications(token)
+          const count = res.data?.filter((n: any) => !n.isRead).length || 0
+          setUnreadCount(count)
+        } catch (error) {
+          console.error("Failed to fetch notification count", error)
+        }
+      }
+    }
+    fetchUnreadCount()
+  }, [])
+
+  useEffect(() => {
+    if (socketService?.socket) {
+      const handleNewNotification = () => {
+        setUnreadCount(prev => prev + 1)
+      }
+      socketService.socket.on('new-notification', handleNewNotification)
+      return () => {
+        socketService.socket?.off('new-notification', handleNewNotification)
+      }
+    }
+  }, [socketService?.socket])
 
   const menuItems = [
     { id: 'dashboard' as Page, label: 'Dashboard', icon: LayoutDashboard },
@@ -44,9 +78,9 @@ export default function Sidebar({ activePage, setActivePage, onLogout }: Sidebar
       <button
         onClick={() => setActivePage(item.id)}
         className={`w-full flex items-center gap-3 px-4 py-2 my-0.5 rounded-lg transition-all duration-200 ${isActive
-          ? 'bg-[#FDE047] text-gray-900 font-semibold'
-          : 'text-gray-600 hover:bg-gray-50'
-          } ${isSub ? 'pl-9 text-[13px]' : 'text-sm font-medium'}`}
+          ? 'bg-[#FACE39] text-[#00000F] font-semibold'
+          : 'text-[#00000F]/60 hover:bg-[#FACE39]/10 hover:text-[#00000F]'
+          } ${isSub ? 'pl-9 text-xs' : 'text-sm font-medium'}`}
       >
         <Icon className={`${isSub ? 'w-4 h-4' : 'w-5 h-5'}`} />
         <span>{item.label}</span>
@@ -55,7 +89,7 @@ export default function Sidebar({ activePage, setActivePage, onLogout }: Sidebar
   }
 
   return (
-    <div className="w-64 flex-shrink-0 bg-white border-r border-gray-100 flex flex-col h-screen overflow-hidden text-gray-900">
+    <div className="w-64 flex-shrink-0 bg-white border-r border-gray-100 flex flex-col h-screen overflow-hidden text-white">
       {/* Logo Section */}
       <div className="p-5">
         <div className="p-4 border-b border-gray-100 bg-white">
@@ -73,7 +107,7 @@ export default function Sidebar({ activePage, setActivePage, onLogout }: Sidebar
         <div className="mt-2">
           <button
             onClick={() => setIsServicesOpen(!isServicesOpen)}
-            className={`w-full flex items-center justify-between px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${isServicesOpen ? 'text-gray-900' : 'text-gray-600 hover:bg-gray-50'}`}
+            className={`w-full flex items-center justify-between px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${isServicesOpen ? 'text-[#00000F]' : 'text-[#00000F]/60 hover:bg-[#FACE39]/10 hover:text-[#00000F]'}`}
           >
             <div className="flex items-center gap-3">
               <Briefcase className="w-5 h-5" />
@@ -91,7 +125,7 @@ export default function Sidebar({ activePage, setActivePage, onLogout }: Sidebar
         <div className="mt-2">
           <button
             onClick={() => setActivePage('lead-center')}
-            className={`w-full flex items-center gap-3 px-4 py-2.5 my-0.5 rounded-lg text-sm font-medium transition-all duration-200 ${activePage === 'lead-center' ? 'bg-[#FDE047] text-gray-900 font-bold shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`}
+            className={`w-full flex items-center gap-3 px-4 py-2.5 my-0.5 rounded-lg text-sm font-medium transition-all duration-200 ${activePage === 'lead-center' ? 'bg-[#FACE39] text-[#00000F] font-bold shadow-sm' : 'text-[#00000F]/60 hover:bg-[#FACE39]/10 hover:text-[#00000F]'}`}
           >
             <Users className="w-5 h-5" />
             <span>Lead Center</span>
@@ -101,7 +135,7 @@ export default function Sidebar({ activePage, setActivePage, onLogout }: Sidebar
         <div className="mt-1">
           <button
             onClick={() => setActivePage('lead-stage')}
-            className={`w-full flex items-center gap-3 px-4 py-2.5 my-0.5 rounded-lg text-sm font-medium transition-all duration-200 ${activePage === 'lead-stage' ? 'bg-[#FDE047] text-gray-900 font-bold shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`}
+            className={`w-full flex items-center gap-3 px-4 py-2.5 my-0.5 rounded-lg text-sm font-medium transition-all duration-200 ${activePage === 'lead-stage' ? 'bg-[#FACE39] text-[#00000F] font-bold shadow-sm' : 'text-[#00000F]/60 hover:bg-[#FACE39]/10 hover:text-[#00000F]'}`}
           >
             <Activity className="w-5 h-5" />
             <span>Lead Stage</span>
@@ -110,20 +144,24 @@ export default function Sidebar({ activePage, setActivePage, onLogout }: Sidebar
       </div>
 
       {/* Bottom Section */}
-      <div className="px-3 py-4 border-t border-gray-50 space-y-1">
+      <div className="px-3 py-4 border-t border-gray-100 space-y-1">
         <button
           onClick={() => setActivePage('notification')}
-          className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${activePage === 'notification' ? 'bg-[#FDE047] text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
+          className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${activePage === 'notification' ? 'bg-[#FACE39] text-[#00000F] font-semibold' : 'text-[#00000F]/60 hover:bg-[#FACE39]/10 hover:text-[#00000F]'}`}
         >
           <div className="flex items-center gap-3">
             <Bell className="w-5 h-5" />
             <span>Notification</span>
           </div>
-          <span className="w-5 h-5 bg-[#EF4444] text-white text-[10px] flex items-center justify-center rounded-full font-bold">5</span>
+          {unreadCount > 0 && (
+            <span className="w-5 h-5 bg-[#EF4444] text-white text-[10px] flex items-center justify-center rounded-full font-bold">
+              {unreadCount}
+            </span>
+          )}
         </button>
         <button
           onClick={() => setActivePage('profile')}
-          className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${activePage === 'profile' ? 'bg-[#FDE047] text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
+          className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${activePage === 'profile' ? 'bg-[#FACE39] text-[#00000F] font-semibold' : 'text-[#00000F]/60 hover:bg-[#FACE39]/10 hover:text-[#00000F]'}`}
         >
           <UserCircle className="w-5 h-5" />
           <span>Profile</span>

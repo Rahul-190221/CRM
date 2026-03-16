@@ -1,78 +1,110 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Bell, CheckCircle, AlertCircle, Info, X } from 'lucide-react'
+import { getNotifications, markNotificationAsRead, markAllNotificationsAsRead } from '@/lib/api/notifications'
+import { useSocket } from '@/components/providers/SocketProvider'
+import { toast } from 'react-hot-toast'
+import Cookies from 'js-cookie'
 
 interface Notification {
-  id: string
+  _id: string
   type: 'success' | 'warning' | 'info'
   title: string
   message: string
-  timestamp: string
+  createdAt: string
   isRead: boolean
 }
 
-// Mock notifications data - In production, this would come from an API
-const initialNotifications: Notification[] = [
-  {
-    id: '1',
-    type: 'success',
-    title: 'Lead Converted',
-    message: 'John Doe has been successfully converted to a customer',
-    timestamp: '5 minutes ago',
-    isRead: false
-  },
-  {
-    id: '2',
-    type: 'warning',
-    title: 'Follow-up Reminder',
-    message: 'You have 3 leads pending follow-up today',
-    timestamp: '1 hour ago',
-    isRead: false
-  },
-  {
-    id: '3',
-    type: 'info',
-    title: 'New Lead Assigned',
-    message: 'A new lead "Jane Smith" has been assigned to you',
-    timestamp: '2 hours ago',
-    isRead: true
-  },
-  {
-    id: '4',
-    type: 'success',
-    title: 'Report Generated',
-    message: 'Your monthly BDM report is ready for download',
-    timestamp: '3 hours ago',
-    isRead: true
-  },
-  {
-    id: '5',
-    type: 'warning',
-    title: 'Deadline Approaching',
-    message: 'Course enrollment deadline is in 2 days',
-    timestamp: '5 hours ago',
-    isRead: true
-  }
-]
-
 export default function Notifications() {
-  const [notifications, setNotifications] = useState<Notification[]>(initialNotifications)
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const socketService = useSocket()
 
   const unreadCount = notifications.filter(n => !n.isRead).length
 
-  const markAllAsRead = () => {
-    setNotifications(notifications.map(n => ({ ...n, isRead: true })))
+  useEffect(() => {
+    // 1. Fetch historical from API
+    const fetchNotifs = async () => {
+      const token = Cookies.get('token') || localStorage.getItem('token')
+      if (token) {
+        try {
+          const res = await getNotifications(token)
+          setNotifications(res.data || [])
+        } catch (error) {
+          console.error("Failed to load notifications", error)
+        }
+      }
+    }
+    fetchNotifs()
+  }, [])
+
+  useEffect(() => {
+    // 2. Listen to websocket for live incoming notifications
+    if (socketService?.socket) {
+      const handleNewNotification = (newNotif: Notification) => {
+        setNotifications(prev => [newNotif, ...prev])
+        toast.custom((t) => (
+          <div
+            className={`${t.visible ? 'animate-enter' : 'animate-leave'
+              } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+          >
+            <div className="flex-1 w-0 p-4">
+              <div className="flex items-start">
+                <div className="flex-shrink-0 pt-0.5 border border-[#FACE39] bg-[#FACE39]/10 rounded-full p-2">
+                  <Bell className="w-5 h-5 text-[#00000F]" />
+                </div>
+                <div className="ml-3 flex-1">
+                  <p className="text-sm font-medium text-gray-900">
+                    {newNotif.title}
+                  </p>
+                  <p className="mt-1 text-sm text-gray-500">
+                    {newNotif.message}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))
+      }
+
+      socketService.socket.on('new-notification', handleNewNotification)
+
+      return () => {
+        socketService.socket?.off('new-notification', handleNewNotification)
+      }
+    }
+  }, [socketService?.socket])
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      const token = Cookies.get('token') || localStorage.getItem('token')
+      if (token) {
+        await markAllNotificationsAsRead(token)
+        setNotifications(notifications.map(n => ({ ...n, isRead: true })))
+      }
+    } catch (e) {
+      console.error(e)
+    }
   }
 
-  const markAsRead = (id: string) => {
-    setNotifications(notifications.map(n =>
-      n.id === id ? { ...n, isRead: true } : n
-    ))
+  const handleMarkAsRead = async (id: string, isRead: boolean) => {
+    if (isRead) return; // Don't call API if already read
+    try {
+      const token = Cookies.get('token') || localStorage.getItem('token')
+      if (token) {
+        await markNotificationAsRead(token, id)
+        setNotifications(notifications.map(n =>
+          n._id === id ? { ...n, isRead: true } : n
+        ))
+      }
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   const deleteNotification = (id: string) => {
-    setNotifications(notifications.filter(n => n.id !== id))
+    // If backend implements delete, wire it here. Otherwise, hide locally.
+    setNotifications(notifications.filter(n => n._id !== id))
   }
 
   const getIcon = (type: string) => {
@@ -89,9 +121,13 @@ export default function Notifications() {
 
   const getBorderColor = (notification: Notification) => {
     if (!notification.isRead) {
-      return 'border-l-4 border-l-yellow-400 bg-yellow-50'
+      return 'border-l-4 border-l-[#FACE39] bg-[#FACE39]/5'
     }
     return 'border-l-4 border-l-transparent bg-white'
+  }
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleString()
   }
 
   return (
@@ -99,8 +135,8 @@ export default function Notifications() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-yellow-100 rounded-lg">
-            <Bell className="w-6 h-6 text-yellow-600" />
+          <div className="p-2 bg-[#FACE39]/10 rounded-lg">
+            <Bell className="w-6 h-6 text-[#00000F]" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
           {unreadCount > 0 && (
@@ -111,7 +147,7 @@ export default function Notifications() {
         </div>
         {unreadCount > 0 && (
           <button
-            onClick={markAllAsRead}
+            onClick={handleMarkAllAsRead}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
           >
             Mark all as read
@@ -129,9 +165,9 @@ export default function Notifications() {
         ) : (
           notifications.map((notification) => (
             <div
-              key={notification.id}
-              className={`relative p-4 rounded-lg shadow-sm border border-gray-200 transition-all hover:shadow-md ${getBorderColor(notification)}`}
-              onClick={() => markAsRead(notification.id)}
+              key={notification._id}
+              className={`relative p-4 rounded-lg shadow-sm border border-gray-200 transition-all hover:shadow-md cursor-pointer ${getBorderColor(notification)}`}
+              onClick={() => handleMarkAsRead(notification._id, notification.isRead)}
             >
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0 mt-0.5">
@@ -145,7 +181,7 @@ export default function Notifications() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
-                        deleteNotification(notification.id)
+                        deleteNotification(notification._id)
                       }}
                       className="p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
                     >
@@ -156,7 +192,7 @@ export default function Notifications() {
                     {notification.message}
                   </p>
                   <p className="text-xs text-gray-400 mt-2">
-                    {notification.timestamp}
+                    {formatDate(notification.createdAt)}
                   </p>
                 </div>
                 {!notification.isRead && (

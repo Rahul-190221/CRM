@@ -19,7 +19,7 @@ interface BDMUser {
 // Avatar color generator based on name
 const getAvatarColor = (name: string): string => {
   const colors = [
-    'bg-yellow-400',
+    'bg-[#FACE39]',
     'bg-blue-500',
     'bg-purple-500',
     'bg-green-500',
@@ -39,7 +39,7 @@ const getInitials = (name: string): string => {
     : name.charAt(0).toUpperCase()
 }
 
-export default function BDMRole({ user }: { user?: any }) {
+export default function BDMRole() {
   const [bdmUsers, setBdmUsers] = useState<BDMUser[]>([])
   const [filteredUsers, setFilteredUsers] = useState<BDMUser[]>([])
   const [searchTerm, setSearchTerm] = useState('')
@@ -74,14 +74,7 @@ export default function BDMRole({ user }: { user?: any }) {
       }
     } catch (error) {
       console.error('Error fetching BDM users:', error)
-      // Mock data for display
-      setBdmUsers([
-        { _id: '1', firstName: 'Sarah', lastName: 'Johnson', name: 'Sarah Johnson', email: 'sarah@luminedge.com', role: 'senior-bdm', status: 'active', activeLeads: 12, reportingToName: 'Admin' },
-        { _id: '2', firstName: 'Michael', lastName: 'Chen', name: 'Michael Chen', email: 'michael@luminedge.com', role: 'bdm', status: 'active', activeLeads: 8, reportingToName: 'Sarah Johnson' },
-        { _id: '3', firstName: 'Emily', lastName: 'Davis', name: 'Emily Davis', email: 'emily@luminedge.com', role: 'junior-bdm', status: 'active', activeLeads: 5, reportingToName: 'Michael Chen' },
-        { _id: '4', firstName: 'James', lastName: 'Wilson', name: 'James Wilson', email: 'james@luminedge.com', role: 'bdm', status: 'active', activeLeads: 10, reportingToName: 'Sarah Johnson' },
-        { _id: '5', firstName: 'Lisa', lastName: 'Anderson', name: 'Lisa Anderson', email: 'lisa@luminedge.com', role: 'senior-bdm', status: 'active', activeLeads: 15, reportingToName: 'Admin' },
-      ])
+      setBdmUsers([])
     } finally {
       setIsLoading(false)
     }
@@ -139,11 +132,7 @@ export default function BDMRole({ user }: { user?: any }) {
       }
     } catch (error) {
       console.error('Error updating role:', error)
-      // For demo, update local state
-      setBdmUsers(prev => prev.map(u =>
-        u._id === bdmId ? { ...u, role: editRole } : u
-      ))
-      alert('Role updated successfully!')
+      alert('Failed to update role. Please try again.')
     } finally {
       setIsSaving(false)
       setEditingUserId(null)
@@ -230,15 +219,16 @@ export default function BDMRole({ user }: { user?: any }) {
               placeholder="Search by name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
             />
           </div>
 
           {/* Role Filter */}
           <select
+            title="Filter by role"
             value={filterRole}
             onChange={(e) => setFilterRole(e.target.value)}
-            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent bg-white min-w-[150px]"
+            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent bg-white min-w-[150px]"
           >
             <option value="all">All Roles</option>
             <option value="junior-bdm">Junior BDM</option>
@@ -253,7 +243,7 @@ export default function BDMRole({ user }: { user?: any }) {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#FDE047]">
+              <tr className="bg-[#FACE39]">
                 <th className="text-left px-4 py-3 text-sm font-semibold text-gray-900">Name</th>
                 <th className="text-left px-4 py-3 text-sm font-semibold text-gray-900">Email</th>
                 <th className="text-left px-4 py-3 text-sm font-semibold text-gray-900">Current Role</th>
@@ -267,7 +257,7 @@ export default function BDMRole({ user }: { user?: any }) {
                 <tr>
                   <td colSpan={6} className="text-center py-8">
                     <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FACE39]"></div>
                     </div>
                   </td>
                 </tr>
@@ -292,9 +282,10 @@ export default function BDMRole({ user }: { user?: any }) {
                     <td className="px-4 py-3">
                       {editingUserId === bdm._id ? (
                         <select
+                          title="Change role"
                           value={editRole}
                           onChange={(e) => setEditRole(e.target.value)}
-                          className="px-2 py-1 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent bg-white"
+                          className="px-2 py-1 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent bg-white"
                         >
                           <option value="junior-bdm">Junior BDM</option>
                           <option value="bdm">BDM</option>
@@ -312,6 +303,7 @@ export default function BDMRole({ user }: { user?: any }) {
                       {editingUserId === bdm._id ? (
                         <div className="flex items-center justify-center gap-2">
                           <button
+                            title="Save"
                             onClick={() => handleSaveRole(bdm._id)}
                             disabled={isSaving}
                             className="p-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50"
@@ -319,6 +311,7 @@ export default function BDMRole({ user }: { user?: any }) {
                             <Check className="w-4 h-4" />
                           </button>
                           <button
+                            title="Cancel"
                             onClick={handleCancelEdit}
                             className="p-1.5 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
                           >

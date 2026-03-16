@@ -19,8 +19,8 @@ interface MockTestPackage {
 const initialMockTestPackages: MockTestPackage[] = [
   {
     testType: 'IELTS',
-    borderColor: 'border-l-yellow-400',
-    bgColor: 'bg-yellow-400',
+    borderColor: 'border-l-[#FACE39]',
+    bgColor: 'bg-[#FACE39]',
     features: [
       'Flexible mock test schedule',
       'Real exam experience',
@@ -309,7 +309,7 @@ export default function MockTest({ user }: { user?: any }) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FACE39]"></div>
       </div>
     )
   }
@@ -350,7 +350,7 @@ export default function MockTest({ user }: { user?: any }) {
                       <button
                         onClick={handleSavePackage}
                         disabled={isSaving}
-                        className="px-3 py-1.5 bg-yellow-400 text-white text-sm rounded-lg hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-3 py-1.5 bg-[#FACE39] text-white text-sm rounded-lg hover:bg-[#FACE39]/90 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {isSaving ? 'Saving...' : 'Save'}
                       </button>
@@ -372,7 +372,7 @@ export default function MockTest({ user }: { user?: any }) {
                           type="text"
                           value={feature}
                           onChange={(e) => handleFeatureChange(idx, e.target.value)}
-                          className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400"
+                          className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40"
                         />
                         <button
                           onClick={() => handleRemoveFeature(idx)}
@@ -399,7 +399,7 @@ export default function MockTest({ user }: { user?: any }) {
                           type="number"
                           value={price.testCount}
                           onChange={(e) => handlePricingChange(idx, 'testCount', parseInt(e.target.value) || 0)}
-                          className="w-20 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400"
+                          className="w-20 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40"
                           placeholder="Count"
                         />
                         <span className="text-sm text-gray-500">tests</span>
@@ -407,7 +407,7 @@ export default function MockTest({ user }: { user?: any }) {
                           type="number"
                           value={price.fee}
                           onChange={(e) => handlePricingChange(idx, 'fee', parseInt(e.target.value) || 0)}
-                          className="w-28 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400"
+                          className="w-28 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40"
                           placeholder="Fee"
                         />
                         <span className="text-sm text-gray-500">BDT</span>
@@ -437,7 +437,7 @@ export default function MockTest({ user }: { user?: any }) {
                     <ul className="space-y-2 mb-4">
                       {pkg.features.map((feature, idx) => (
                         <li key={idx} className="flex items-center text-sm text-gray-700">
-                          <span className="w-1.5 h-1.5 bg-yellow-400 rounded-full mr-2"></span>
+                          <span className="w-1.5 h-1.5 bg-[#FACE39] rounded-full mr-2"></span>
                           {feature}
                         </li>
                       ))}
@@ -478,7 +478,7 @@ export default function MockTest({ user }: { user?: any }) {
           <select
             value={filters.testType || 'all'}
             onChange={(e) => setFilters({ ...filters, testType: e.target.value as any })}
-            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-yellow-400 focus:border-transparent min-w-[160px]"
+            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent min-w-[160px]"
           >
             <option value="all">All Course Types</option>
             {courses.map(course => (
@@ -490,7 +490,7 @@ export default function MockTest({ user }: { user?: any }) {
           <select
             value={filters.examType || 'all'}
             onChange={(e) => setFilters({ ...filters, examType: e.target.value as any })}
-            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-yellow-400 focus:border-transparent min-w-[160px]"
+            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent min-w-[160px]"
           >
             <option value="all">All Test Types</option>
             {testTypes.map(type => (
@@ -502,7 +502,7 @@ export default function MockTest({ user }: { user?: any }) {
           <select
             value={filters.sortBy || 'date-asc'}
             onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })}
-            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-yellow-400 focus:border-transparent min-w-[180px]"
+            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent min-w-[180px]"
           >
             <option value="date-asc">Start Date Ascending</option>
             <option value="date-desc">Start Date Descending</option>
@@ -513,7 +513,7 @@ export default function MockTest({ user }: { user?: any }) {
           <select
             value={filters.status || 'all'}
             onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-yellow-400 focus:border-transparent min-w-[140px]"
+            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent min-w-[140px]"
           >
             <option value="upcoming">Upcoming</option>
             <option value="all">All</option>
@@ -530,7 +530,7 @@ export default function MockTest({ user }: { user?: any }) {
               dateRange: { start: e.target.value, end: filters.dateRange?.end || '' }
             })}
             placeholder="dd/mm/yyyy"
-            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-yellow-400 focus:border-transparent min-w-[150px]"
+            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent min-w-[150px]"
           />
         </div>
       </div>

@@ -24,8 +24,7 @@ const stageColors: Record<LeadStageType, { bg: string; text: string; border: str
 
 const stages: LeadStageType[] = ['Intake', 'Processing', 'Hot', 'Converted', 'Dead'];
 
-const LeadStage: React.FC<{ user?: any }> = ({ user }) => {
-    const isAdmin = user?.role === 'admin';
+const LeadStage: React.FC<{ user?: any }> = ({ user: _user }) => {
     const [leads, setLeads] = useState<Lead[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -204,7 +203,7 @@ const LeadStage: React.FC<{ user?: any }> = ({ user }) => {
                     placeholder="Search by name, email or phone..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full max-w-md pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                    className="w-full max-w-md pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
                 />
             </div>
 
@@ -285,7 +284,7 @@ const LeadStage: React.FC<{ user?: any }> = ({ user }) => {
                                                 <select
                                                     value={lead.lifecycleStage}
                                                     onChange={(e) => handleStageChange(lead._id, e.target.value as LeadStageType)}
-                                                    className={`appearance-none px-3 py-1.5 pr-8 rounded-md text-xs font-medium border cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-400 ${stageColors[lead.lifecycleStage].bg
+                                                    className={`appearance-none px-3 py-1.5 pr-8 rounded-md text-xs font-medium border cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FACE39]/40 ${stageColors[lead.lifecycleStage].bg
                                                         } ${stageColors[lead.lifecycleStage].text} ${stageColors[lead.lifecycleStage].border}`}
                                                 >
                                                     {stages.map(stage => (

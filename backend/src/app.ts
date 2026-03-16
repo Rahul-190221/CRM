@@ -1,5 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 
 // Import routes
@@ -13,20 +15,51 @@ import leadsRoutes from './routes/leads.routes';
 import schedulesRoutes from './routes/schedules.routes';
 import mockTestPackagesRoutes from './routes/mockTestPackages.routes';
 import notificationRoutes from './routes/notification.routes';
+import { createAndEmitNotification } from './services/notification.service';
 
 dotenv.config();
 
 const app = express();
 
-// Middleware
+// Security headers
+app.use(helmet());
+
+// CORS
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+  : ['http://localhost:3000', 'http://localhost:3001'];
+
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001'],
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   exposedHeaders: ['Content-Range', 'X-Content-Range'],
-  maxAge: 86400 // 24 hours
+  maxAge: 86400
 }));
+
+// Rate limiting
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20,
+  message: { message: 'Too many requests, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  message: { message: 'Too many requests, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
+app.use('/api/auth/forget-password', authLimiter);
+app.use('/api', generalLimiter);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -41,6 +74,17 @@ app.use('/api/leads', leadsRoutes);
 app.use('/api/schedules', schedulesRoutes);
 app.use('/api/mock-test-packages', mockTestPackagesRoutes);
 app.use('/api/notifications', notificationRoutes);
+
+// Test Socket.io trigger (Temp for Verification)
+app.post('/api/test-notification', async (req, res) => {
+  try {
+    const { userId, title, message } = req.body;
+    await createAndEmitNotification(userId, title, message, 'success');
+    res.json({ success: true, message: 'Test notification sent!' });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // Health check
 app.get('/api/health', (req: Request, res: Response) => {

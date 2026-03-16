@@ -7,25 +7,26 @@ import {
   deletePackage,
   seedPackages
 } from '../controllers/mockTestPackages.controller';
+import { authenticateToken } from '../middleware/auth.middleware';
 
 const router = Router();
 
 // GET /api/mock-test-packages - Get all packages
-router.get('/', getAllPackages);
+router.get('/', authenticateToken, getAllPackages);
 
 // POST /api/mock-test-packages/seed - Seed initial packages
-router.post('/seed', seedPackages);
+router.post('/seed', authenticateToken, seedPackages);
 
 // GET /api/mock-test-packages/:testType - Get package by test type
-router.get('/:testType', getPackageByTestType);
+router.get('/:testType', authenticateToken, getPackageByTestType);
 
 // POST /api/mock-test-packages - Create new package
-router.post('/', createPackage);
+router.post('/', authenticateToken, createPackage);
 
 // PUT /api/mock-test-packages/:testType - Update package
-router.put('/:testType', updatePackage);
+router.put('/:testType', authenticateToken, updatePackage);
 
 // DELETE /api/mock-test-packages/:testType - Delete package
-router.delete('/:testType', deletePackage);
+router.delete('/:testType', authenticateToken, deletePackage);
 
 export default router;

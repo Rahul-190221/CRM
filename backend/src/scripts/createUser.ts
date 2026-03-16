@@ -11,11 +11,16 @@ const createUser = async () => {
         await mongoose.connect(mongoURI);
         console.log('Connected to MongoDB');
 
-        // User details
-        const email = 'rahul.luminedge21@gmail.com';
-        const password = '123456';
-        const name = 'Rahul';
-        const role = 'admin';
+        // User details — set via environment variables
+        const email = process.env.SEED_EMAIL;
+        const password = process.env.SEED_PASSWORD;
+        const name = process.env.SEED_NAME || 'Admin';
+        const role = process.env.SEED_ROLE || 'admin';
+
+        if (!email || !password) {
+            console.error('Error: SEED_EMAIL and SEED_PASSWORD environment variables are required.');
+            process.exit(1);
+        }
 
         // Check if user exists
         const existingUser = await User.findOne({ email });
@@ -40,9 +45,6 @@ const createUser = async () => {
             console.log(`User created successfully: ${email}`);
         }
 
-        console.log('\nLogin credentials:');
-        console.log(`Email: ${email}`);
-        console.log(`Password: ${password}`);
         console.log(`Role: ${role}`);
 
         await mongoose.disconnect();

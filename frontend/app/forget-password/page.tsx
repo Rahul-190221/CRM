@@ -62,7 +62,7 @@ export default function ForgetPassword() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@company.com"
                     required
-                    className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-yellow-400 focus:ring-4 focus:ring-yellow-50 transition-all"
+                    className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#FACE39] focus:ring-4 focus:ring-[#FACE39]/10 transition-all"
                   />
                 </div>
               </div>
@@ -70,7 +70,7 @@ export default function ForgetPassword() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#FDE047] hover:bg-yellow-400 text-gray-900 font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2"
+                className="w-full bg-[#FACE39] hover:bg-[#FACE39]/90 text-gray-900 font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2"
               >
                 {isLoading ? (
                   <>

@@ -1,4 +1,7 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+if (process.env.NODE_ENV === 'production' && !process.env.NEXT_PUBLIC_API_URL) {
+  throw new Error('NEXT_PUBLIC_API_URL environment variable is not set');
+}
 
 export const registerUser = async (formData: any) => {
   const response = await fetch(`${API_URL}/auth/register`, {
@@ -33,6 +36,22 @@ export const googleLogin = async (token: string) => {
   return data;
 };
 
+export const googleRegister = async (token: string, role: string) => {
+  const response = await fetch(`${API_URL}/auth/google-register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, role }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Google registration failed');
+  }
+
+  return data;
+};
+
 export const loginUser = async (credentials: any) => {
   const response = await fetch(`${API_URL}/auth/login`, {
     method: 'POST',
@@ -43,7 +62,9 @@ export const loginUser = async (credentials: any) => {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.message || 'Login failed');
+    const err: any = new Error(data.message || 'Login failed');
+    err.code = data.code;
+    throw err;
   }
 
   return data;
@@ -161,4 +182,50 @@ export const getUserStats = async (token: string) => {
   }
 
   return data;
+};
+
+export const setPassword = async (email: string, password: string) => {
+  const response = await fetch(`${API_URL}/auth/set-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to set password');
+  }
+
+  return data;
+};
+
+export const checkUserExists = async (email: string) => {
+  const response = await fetch(`${API_URL}/auth/check-user`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to check user');
+  }
+
+  return data.exists; // Returns true/false
+};
+
+export const getGoogleUserInfo = async (accessToken: string) => {
+  const response = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Failed to fetch Google user info');
+  }
+
+  return data; // Returns { email, name, picture, etc }
 };

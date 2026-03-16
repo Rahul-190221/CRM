@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, RefreshCw, Users, Activity, Mail, Phone, MoreHorizontal, Trash2 } from 'lucide-react';
+import { Search, Plus, RefreshCw, Users, Mail, Phone, Trash2 } from 'lucide-react';
 import { getLeads, deleteLead } from '@/lib/api/leads';
 import type { Lead } from '@/types/admin';
 import InputLead from './InputLead';
-import LeadStage from './LeadStage';
+
 
 const LeadCenter: React.FC<{ user?: any }> = ({ user }) => {
     const isAdmin = user?.role === 'admin';
@@ -62,7 +62,7 @@ const LeadCenter: React.FC<{ user?: any }> = ({ user }) => {
                     </button>
                     <button
                         onClick={() => setView('form')}
-                        className="flex items-center gap-2 bg-yellow-400 px-4 py-2 rounded-lg text-sm font-bold text-gray-900 hover:bg-yellow-500 transition-colors shadow-sm"
+                        className="flex items-center gap-2 bg-[#FACE39] px-4 py-2 rounded-lg text-sm font-bold text-gray-900 hover:bg-[#FACE39]/90 transition-colors shadow-sm"
                     >
                         <Plus className="w-4 h-4" />
                         <span>Add New Lead</span>
@@ -79,7 +79,7 @@ const LeadCenter: React.FC<{ user?: any }> = ({ user }) => {
                         placeholder="Search leads by name, email or phone..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+                        className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent transition-all"
                     />
                 </div>
             </div>

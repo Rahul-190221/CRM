@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, Filter, Activity, Clock, Phone, Mail, FileText, UserPlus, CheckCircle, XCircle, Calendar } from 'lucide-react'
+import { Search, Activity, Clock, Phone, Mail, FileText, UserPlus, CheckCircle, XCircle, Calendar } from 'lucide-react'
 
 interface ActivityLog {
   _id: string
@@ -18,7 +18,7 @@ interface ActivityLog {
 // Avatar color generator based on name
 const getAvatarColor = (name: string): string => {
   const colors = [
-    'bg-yellow-400',
+    'bg-[#FACE39]',
     'bg-blue-500',
     'bg-purple-500',
     'bg-green-500',
@@ -80,7 +80,7 @@ const getActionLabel = (actionType: string): string => {
   return labels[actionType] || actionType
 }
 
-export default function BDMActivity({ user }: { user?: any }) {
+export default function BDMActivity() {
   const [activities, setActivities] = useState<ActivityLog[]>([])
   const [filteredActivities, setFilteredActivities] = useState<ActivityLog[]>([])
   const [searchTerm, setSearchTerm] = useState('')
@@ -100,7 +100,7 @@ export default function BDMActivity({ user }: { user?: any }) {
     setIsLoading(true)
     try {
       const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '')
       const response = await fetch(`${apiUrl}/api/activities`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -113,18 +113,7 @@ export default function BDMActivity({ user }: { user?: any }) {
       }
     } catch (error) {
       console.error('Error fetching activities:', error)
-      // Mock data for display
-      const mockActivities: ActivityLog[] = [
-        { _id: '1', userId: '1', userName: 'Sarah Johnson', userRole: 'senior-bdm', action: 'Called lead', actionType: 'call', description: 'Discussed IELTS preparation package', leadName: 'John Smith', timestamp: new Date().toISOString() },
-        { _id: '2', userId: '2', userName: 'Michael Chen', userRole: 'bdm', action: 'Created lead', actionType: 'lead_created', description: 'New lead from website inquiry', leadName: 'Alice Brown', timestamp: new Date(Date.now() - 3600000).toISOString() },
-        { _id: '3', userId: '1', userName: 'Sarah Johnson', userRole: 'senior-bdm', action: 'Converted lead', actionType: 'lead_converted', description: 'Lead converted to customer - PTE Premium Package', leadName: 'David Lee', timestamp: new Date(Date.now() - 7200000).toISOString() },
-        { _id: '4', userId: '3', userName: 'Emily Davis', userRole: 'junior-bdm', action: 'Sent email', actionType: 'email', description: 'Follow-up email with course details', leadName: 'Emma Wilson', timestamp: new Date(Date.now() - 10800000).toISOString() },
-        { _id: '5', userId: '2', userName: 'Michael Chen', userRole: 'bdm', action: 'Added note', actionType: 'note_added', description: 'Lead interested in GRE preparation', leadName: 'Robert Garcia', timestamp: new Date(Date.now() - 14400000).toISOString() },
-        { _id: '6', userId: '4', userName: 'James Wilson', userRole: 'bdm', action: 'Scheduled meeting', actionType: 'meeting', description: 'Demo session scheduled for tomorrow', leadName: 'Sophie Taylor', timestamp: new Date(Date.now() - 18000000).toISOString() },
-        { _id: '7', userId: '3', userName: 'Emily Davis', userRole: 'junior-bdm', action: 'Follow up', actionType: 'follow_up', description: 'Scheduled follow-up call for next week', leadName: 'Chris Anderson', timestamp: new Date(Date.now() - 21600000).toISOString() },
-        { _id: '8', userId: '5', userName: 'Lisa Anderson', userRole: 'senior-bdm', action: 'Lead lost', actionType: 'lead_lost', description: 'Lead chose competitor', leadName: 'Mark Thompson', timestamp: new Date(Date.now() - 25200000).toISOString() },
-      ]
-      setActivities(mockActivities)
+      setActivities([])
     } finally {
       setIsLoading(false)
     }
@@ -278,15 +267,16 @@ export default function BDMActivity({ user }: { user?: any }) {
               placeholder="Search by BDM name, lead, or description..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
             />
           </div>
 
           {/* Activity Type Filter */}
           <select
+            title="Filter by activity type"
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent bg-white min-w-[150px]"
+            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent bg-white min-w-[150px]"
           >
             <option value="all">All Activities</option>
             <option value="call">Phone Calls</option>
@@ -302,9 +292,10 @@ export default function BDMActivity({ user }: { user?: any }) {
           {/* Date Filter */}
           <input
             type="date"
+            title="Filter by date"
             value={filterDate}
             onChange={(e) => setFilterDate(e.target.value)}
-            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
           />
         </div>
       </div>
@@ -314,7 +305,7 @@ export default function BDMActivity({ user }: { user?: any }) {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#FDE047]">
+              <tr className="bg-[#FACE39]">
                 <th className="text-left px-4 py-3 text-sm font-semibold text-gray-900">BDM</th>
                 <th className="text-left px-4 py-3 text-sm font-semibold text-gray-900">Activity Type</th>
                 <th className="text-left px-4 py-3 text-sm font-semibold text-gray-900">Description</th>
@@ -327,7 +318,7 @@ export default function BDMActivity({ user }: { user?: any }) {
                 <tr>
                   <td colSpan={5} className="text-center py-8">
                     <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FACE39]"></div>
                     </div>
                   </td>
                 </tr>

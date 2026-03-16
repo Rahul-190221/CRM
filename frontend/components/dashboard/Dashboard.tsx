@@ -141,80 +141,84 @@ export default function AdminDashboard() {
 
   const maxStatusCount = Math.max(...statusDistribution.map(s => s.count))
 
+  const statusBarStyles = statusDistribution.map((item, i) =>
+    `.sd-bar-${i}{width:${maxStatusCount > 0 ? ((item.count / maxStatusCount) * 100).toFixed(2) : 0}%;background-color:${item.color}}`
+  ).join('')
+
   return (
-    <div className="flex-1 bg-[#F9FAFB] p-4 overflow-y-auto h-screen">
+    <div className="flex-1 bg-[#FAFAFA] p-4 overflow-y-auto h-screen">
       {/* Header */}
       <div className="mb-2">
-        <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-        <p className="text-gray-500 text-sm mt-1">Welcome back! Here's what's happening with your CRM today.</p>
+        <h1 className="text-2xl font-bold text-[#00000F]">Admin Dashboard</h1>
+        <p className="text-[#00000F]/50 text-sm mt-1">Welcome back! Here's what's happening with your CRM today.</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 mb-2">
         {/* Active BDMs */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm card-lift shimmer-hover card-lift shimmer-hover">
           <div className="flex items-start justify-between mb-4">
             <div className="bg-blue-50 p-2.5 rounded-lg">
               <Users className="w-5 h-5 text-blue-600" />
             </div>
             <span className="text-sm font-bold text-green-500">+{stats.activeBDMs.change}</span>
           </div>
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Active BDMs</p>
-          <p className="text-2xl font-bold text-gray-900">{stats.activeBDMs.value}</p>
+          <p className="text-xs font-medium text-[#00000F]/50 uppercase tracking-wide mb-1">Active BDMs</p>
+          <p className="text-2xl font-bold text-[#00000F]">{stats.activeBDMs.value}</p>
         </div>
 
         {/* Total Users */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm card-lift shimmer-hover card-lift shimmer-hover">
           <div className="flex items-start justify-between mb-3">
             <div className="bg-purple-50 p-2.5 rounded-lg">
               <UserPlus className="w-5 h-5 text-purple-600" />
             </div>
             <span className="text-sm font-bold text-green-500">+{stats.totalUsers.change}%</span>
           </div>
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Total Users</p>
-          <p className="text-2xl font-bold text-gray-900">{stats.totalUsers.value}</p>
+          <p className="text-xs font-medium text-[#00000F]/50 uppercase tracking-wide mb-1">Total Users</p>
+          <p className="text-2xl font-bold text-[#00000F]">{stats.totalUsers.value}</p>
         </div>
 
         {/* Total Leads */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm card-lift shimmer-hover card-lift shimmer-hover">
           <div className="flex items-start justify-between mb-3">
             <div className="bg-green-50 p-2.5 rounded-lg">
               <Target className="w-5 h-5 text-green-600" />
             </div>
             <span className="text-sm font-bold text-green-500">+{stats.totalLeads.change}%</span>
           </div>
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Total Leads</p>
-          <p className="text-2xl font-bold text-gray-900">{stats.totalLeads.value.toLocaleString()}</p>
+          <p className="text-xs font-medium text-[#00000F]/50 uppercase tracking-wide mb-1">Total Leads</p>
+          <p className="text-2xl font-bold text-[#00000F]">{stats.totalLeads.value.toLocaleString()}</p>
         </div>
 
         {/* Conversion Rate */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm card-lift shimmer-hover card-lift shimmer-hover">
           <div className="flex items-start justify-between mb-3">
             <div className="bg-orange-50 p-2.5 rounded-lg">
               <TrendingUp className="w-5 h-5 text-orange-600" />
             </div>
             <span className="text-sm font-bold text-green-500">+{stats.conversionRate.change}%</span>
           </div>
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Conversion Rate</p>
-          <p className="text-2xl font-bold text-gray-900">{stats.conversionRate.value}</p>
+          <p className="text-xs font-medium text-[#00000F]/50 uppercase tracking-wide mb-1">Conversion Rate</p>
+          <p className="text-2xl font-bold text-[#00000F]">{stats.conversionRate.value}</p>
         </div>
       </div>
 
       {/* Recent Activity & Top Performers */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-4">
         {/* Recent Activity */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-          <h3 className="text-lg font-bold text-gray-900 mb-5">Recent Activity</h3>
+        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm card-lift">
+          <h3 className="text-lg font-bold text-[#00000F] mb-5">Recent Activity</h3>
           <div className="space-y-5">
             {recentActivity.map((item) => (
               <div key={item.id} className="flex gap-4 items-start">
                 <div className={`w-2 h-2 rounded-full mt-2 shrink-0 ${getActivityColor(item.type)}`} />
                 <div>
                   <p className="text-sm">
-                    <span className="font-bold text-gray-900">{item.user}</span>
-                    <span className="text-gray-600 ml-1">{item.action}</span>
+                    <span className="font-bold text-[#00000F]">{item.user}</span>
+                    <span className="text-[#00000F]/60 ml-1">{item.action}</span>
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">{formatTimeAgo(item.timestamp)}</p>
+                  <p className="text-xs text-[#00000F]/40 mt-1">{formatTimeAgo(item.timestamp)}</p>
                 </div>
               </div>
             ))}
@@ -222,20 +226,20 @@ export default function AdminDashboard() {
         </div>
 
         {/* Top Performers */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-          <h3 className="text-lg font-bold text-gray-900 mb-5">Top Performers (This Month)</h3>
+        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm card-lift">
+          <h3 className="text-lg font-bold text-[#00000F] mb-5">Top Performers (This Month)</h3>
           <div className="space-y-3">
             {topPerformers.map((performer) => (
-              <div key={performer.rank} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors">
+              <div key={performer.rank} className="flex items-center justify-between p-3 rounded-lg hover:bg-white transition-colors">
                 <div className="flex items-center gap-4">
-                  <div className="w-8 h-8 rounded-full bg-yellow-50 flex items-center justify-center text-yellow-600 font-bold text-sm border border-yellow-200">
+                  <div className="w-8 h-8 rounded-full bg-[#FACE39]/20 flex items-center justify-center text-[#FACE39] font-bold text-sm border border-[#FACE39]/30">
                     {performer.rank}
                   </div>
-                  <span className="text-sm font-semibold text-gray-900">{performer.name}</span>
+                  <span className="text-sm font-semibold text-[#00000F]">{performer.name}</span>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-gray-500">{performer.convertedLeads}/{performer.totalLeads} converted</p>
-                  <p className="text-sm font-bold text-green-600">{performer.conversionRate}% <span className="text-[10px] uppercase text-gray-400">rate</span></p>
+                  <p className="text-xs text-[#00000F]/50">{performer.convertedLeads}/{performer.totalLeads} converted</p>
+                  <p className="text-sm font-bold text-green-600">{performer.conversionRate}% <span className="text-[10px] uppercase text-[#00000F]/40">rate</span></p>
                 </div>
               </div>
             ))}
@@ -245,7 +249,7 @@ export default function AdminDashboard() {
 
       {/* Lead Stage Distribution */}
       <div className="mb-4">
-        <h2 className="text-lg font-bold text-gray-900 mb-2">Lead Stage Distribution</h2>
+        <h2 className="text-lg font-bold text-[#00000F] mb-2">Lead Stage Distribution</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
           {stageDistribution.map((item) => (
             <div key={item.stage} className={`p-4 rounded-xl border text-center ${stageColors[item.stage]}`}>
@@ -261,15 +265,15 @@ export default function AdminDashboard() {
       {/* Charts Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-4">
         {/* Lead Stage Trend */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
+        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm card-lift">
           <div className="flex items-center gap-2 mb-2">
-            <BarChart3 className="w-5 h-5 text-gray-400" />
-            <h3 className="text-lg font-bold text-gray-900">Lead Stage Trend</h3>
+            <BarChart3 className="w-5 h-5 text-[#00000F]/40" />
+            <h3 className="text-lg font-bold text-[#00000F]">Lead Stage Trend</h3>
           </div>
           <div className="h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={stageTrend}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                 <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#9CA3AF' }} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#9CA3AF' }} />
                 <Tooltip />
@@ -284,10 +288,10 @@ export default function AdminDashboard() {
         </div>
 
         {/* Lead Source Distribution */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
+        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm card-lift">
           <div className="flex items-center gap-2 mb-2">
-            <PieChartIcon className="w-5 h-5 text-gray-400" />
-            <h3 className="text-lg font-bold text-gray-900">Lead Source Distribution</h3>
+            <PieChartIcon className="w-5 h-5 text-[#00000F]/40" />
+            <h3 className="text-lg font-bold text-[#00000F]">Lead Source Distribution</h3>
           </div>
           <div className="h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -311,7 +315,7 @@ export default function AdminDashboard() {
                   layout="vertical"
                   align="right"
                   verticalAlign="middle"
-                  formatter={(value) => <span className="text-xs text-gray-600">{value}</span>}
+                  formatter={(value) => <span className="text-xs text-[#00000F]/60">{value}</span>}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -322,49 +326,44 @@ export default function AdminDashboard() {
       {/* Charts Row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
         {/* Conversion Rate Trend */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
+        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm card-lift">
           <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="w-5 h-5 text-gray-400" />
-            <h3 className="text-lg font-bold text-gray-900">Conversion Rate Trend</h3>
+            <TrendingUp className="w-5 h-5 text-[#00000F]/40" />
+            <h3 className="text-lg font-bold text-[#00000F]">Conversion Rate Trend</h3>
           </div>
           <div className="h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={conversionTrend}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                 <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#9CA3AF' }} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#9CA3AF' }} tickFormatter={(val) => `${val}%`} />
-                <Tooltip cursor={{ fill: '#F9FAFB' }} formatter={(value) => [`${value}%`, 'Rate']} />
-                <Bar dataKey="rate" fill="#FACC15" radius={[4, 4, 0, 0]} barSize={35} />
+                <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} formatter={(value) => [`${value}%`, 'Rate']} />
+                <Bar dataKey="rate" fill="#FACE39" radius={[4, 4, 0, 0]} barSize={35} />
               </BarChart>
             </ResponsiveContainer>
           </div>
           <div className="mt-4 flex items-center justify-center gap-2">
-            <div className="w-3 h-3 bg-yellow-400 rounded-sm" />
-            <span className="text-xs text-gray-500 font-medium">Conversion Rate (%)</span>
+            <div className="w-3 h-3 bg-[#FACE39] rounded-sm" />
+            <span className="text-xs text-[#00000F]/50 font-medium">Conversion Rate (%)</span>
           </div>
         </div>
 
         {/* Status Distribution */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
+        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm card-lift">
+          <style>{statusBarStyles}</style>
           <div className="flex items-center gap-2 mb-2">
-            <Activity className="w-5 h-5 text-gray-400" />
-            <h3 className="text-lg font-bold text-gray-900">Status Distribution</h3>
+            <Activity className="w-5 h-5 text-[#00000F]/40" />
+            <h3 className="text-lg font-bold text-[#00000F]">Status Distribution</h3>
           </div>
           <div className="space-y-4">
-            {statusDistribution.map((item) => (
+            {statusDistribution.map((item, i) => (
               <div key={item.label} className="space-y-1.5">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-700 font-medium">{item.label}</span>
-                  <span className="text-gray-900 font-bold">{item.count}</span>
+                  <span className="text-[#00000F]/70 font-medium">{item.label}</span>
+                  <span className="text-[#00000F] font-bold">{item.count}</span>
                 </div>
                 <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{
-                      width: `${(item.count / maxStatusCount) * 100}%`,
-                      backgroundColor: item.color
-                    }}
-                  />
+                  <div className={`progress-bar sd-bar-${i}`} />
                 </div>
               </div>
             ))}

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, Send, Users, UserPlus, Clock, AlertCircle, CheckCircle } from 'lucide-react'
+import { Search, Send, Users, UserPlus, Clock, CheckCircle } from 'lucide-react'
 
 interface Lead {
   _id: string
@@ -28,7 +28,7 @@ interface BDMUser {
 // Avatar color generator based on name
 const getAvatarColor = (name?: string): string => {
   const colors = [
-    'bg-yellow-400',
+    'bg-[#FACE39]',
     'bg-blue-500',
     'bg-purple-500',
     'bg-green-500',
@@ -50,7 +50,7 @@ const getInitials = (name?: string): string => {
     : name.charAt(0).toUpperCase()
 }
 
-export default function LeadAssignments({ user }: { user?: any }) {
+export default function LeadAssignments() {
   const [unassignedLeads, setUnassignedLeads] = useState<Lead[]>([])
   const [filteredLeads, setFilteredLeads] = useState<Lead[]>([])
   const [bdmUsers, setBdmUsers] = useState<BDMUser[]>([])
@@ -88,15 +88,7 @@ export default function LeadAssignments({ user }: { user?: any }) {
       }
     } catch (error) {
       console.error('Error fetching unassigned leads:', error)
-      // Mock data for display
-      setUnassignedLeads([
-        { _id: '1', name: 'John Smith', email: 'john@email.com', phone: '+1 555-0101', course: 'IELTS', source: 'Website', status: 'new', createdAt: new Date().toISOString() },
-        { _id: '2', name: 'Alice Brown', email: 'alice@email.com', phone: '+1 555-0102', course: 'PTE', source: 'Referral', status: 'new', createdAt: new Date(Date.now() - 3600000).toISOString() },
-        { _id: '3', name: 'David Lee', email: 'david@email.com', phone: '+1 555-0103', course: 'GRE', source: 'Facebook', status: 'new', createdAt: new Date(Date.now() - 7200000).toISOString() },
-        { _id: '4', name: 'Emma Wilson', email: 'emma@email.com', phone: '+1 555-0104', course: 'TOEFL', source: 'Google', status: 'new', createdAt: new Date(Date.now() - 10800000).toISOString() },
-        { _id: '5', name: 'Robert Garcia', email: 'robert@email.com', phone: '+1 555-0105', course: 'IELTS', source: 'Website', status: 'new', createdAt: new Date(Date.now() - 14400000).toISOString() },
-        { _id: '6', name: 'Sophie Taylor', email: 'sophie@email.com', phone: '+1 555-0106', course: 'PTE', source: 'Instagram', status: 'new', createdAt: new Date(Date.now() - 18000000).toISOString() },
-      ])
+      setUnassignedLeads([])
     } finally {
       setIsLoading(false)
     }
@@ -118,14 +110,7 @@ export default function LeadAssignments({ user }: { user?: any }) {
       }
     } catch (error) {
       console.error('Error fetching BDM users:', error)
-      // Mock data
-      setBdmUsers([
-        { _id: '1', firstName: 'Sarah', lastName: 'Johnson', name: 'Sarah Johnson', email: 'sarah@luminedge.com', role: 'senior-bdm', activeLeads: 12 },
-        { _id: '2', firstName: 'Michael', lastName: 'Chen', name: 'Michael Chen', email: 'michael@luminedge.com', role: 'bdm', activeLeads: 8 },
-        { _id: '3', firstName: 'Emily', lastName: 'Davis', name: 'Emily Davis', email: 'emily@luminedge.com', role: 'junior-bdm', activeLeads: 5 },
-        { _id: '4', firstName: 'James', lastName: 'Wilson', name: 'James Wilson', email: 'james@luminedge.com', role: 'bdm', activeLeads: 10 },
-        { _id: '5', firstName: 'Lisa', lastName: 'Anderson', name: 'Lisa Anderson', email: 'lisa@luminedge.com', role: 'senior-bdm', activeLeads: 15 },
-      ])
+      setBdmUsers([])
     }
   }
 
@@ -197,12 +182,7 @@ export default function LeadAssignments({ user }: { user?: any }) {
       }
     } catch (error) {
       console.error('Error assigning leads:', error)
-      // For demo, remove from local state
-      setUnassignedLeads(prev => prev.filter(l => !selectedLeads.includes(l._id)))
-      setSelectedLeads([])
-      setSelectedBDM('')
-      setShowAssignModal(false)
-      alert(`Successfully assigned ${selectedLeads.length} lead(s)!`)
+      alert('Failed to assign leads. Please try again.')
     } finally {
       setIsAssigning(false)
     }
@@ -318,15 +298,16 @@ export default function LeadAssignments({ user }: { user?: any }) {
               placeholder="Search by name, email, or phone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
             />
           </div>
 
           {/* Course Filter */}
           <select
+            title="Filter by course"
             value={filterCourse}
             onChange={(e) => setFilterCourse(e.target.value)}
-            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent bg-white min-w-[150px]"
+            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent bg-white min-w-[150px]"
           >
             <option value="all">All Courses</option>
             <option value="IELTS">IELTS</option>
@@ -342,13 +323,14 @@ export default function LeadAssignments({ user }: { user?: any }) {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#FDE047]">
+              <tr className="bg-[#FACE39]">
                 <th className="text-left px-4 py-3">
                   <input
                     type="checkbox"
+                    aria-label="Select all leads"
                     checked={selectedLeads.length === filteredLeads.length && filteredLeads.length > 0}
                     onChange={handleSelectAll}
-                    className="w-4 h-4 rounded border-gray-300 text-yellow-500 focus:ring-yellow-400"
+                    className="w-4 h-4 rounded border-gray-300 text-[#FACE39] focus:ring-[#FACE39]/40"
                   />
                 </th>
                 <th className="text-left px-4 py-3 text-sm font-semibold text-gray-900">Lead Name</th>
@@ -365,7 +347,7 @@ export default function LeadAssignments({ user }: { user?: any }) {
                 <tr>
                   <td colSpan={8} className="text-center py-8">
                     <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FACE39]"></div>
                     </div>
                   </td>
                 </tr>
@@ -382,9 +364,11 @@ export default function LeadAssignments({ user }: { user?: any }) {
                     <td className="px-4 py-3">
                       <input
                         type="checkbox"
+                        title="Select lead"
+                        aria-label="Select lead"
                         checked={selectedLeads.includes(lead._id)}
                         onChange={() => handleSelectLead(lead._id)}
-                        className="w-4 h-4 rounded border-gray-300 text-yellow-500 focus:ring-yellow-400"
+                        className="w-4 h-4 rounded border-gray-300 text-[#FACE39] focus:ring-[#FACE39]/40"
                       />
                     </td>
                     <td className="px-4 py-3">
@@ -406,6 +390,7 @@ export default function LeadAssignments({ user }: { user?: any }) {
                     <td className="px-4 py-3 text-sm text-gray-600">{formatTime(lead.createdAt)}</td>
                     <td className="px-4 py-3 text-center">
                       <button
+                        type="button"
                         onClick={() => {
                           setSelectedLeads([lead._id])
                           setShowAssignModal(true)
@@ -440,9 +425,10 @@ export default function LeadAssignments({ user }: { user?: any }) {
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">Select BDM</label>
               <select
+                title="Select BDM"
                 value={selectedBDM}
                 onChange={(e) => setSelectedBDM(e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent bg-white"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent bg-white"
               >
                 <option value="">Choose a BDM...</option>
                 {bdmUsers.map(bdm => (
@@ -462,7 +448,7 @@ export default function LeadAssignments({ user }: { user?: any }) {
                     key={bdm._id}
                     onClick={() => setSelectedBDM(bdm._id)}
                     className={`p-3 rounded-lg border cursor-pointer transition-all ${selectedBDM === bdm._id
-                        ? 'border-yellow-400 bg-yellow-50'
+                        ? 'border-[#FACE39] bg-[#FACE39]/5'
                         : 'border-gray-100 hover:border-gray-200'
                       }`}
                   >
@@ -488,6 +474,7 @@ export default function LeadAssignments({ user }: { user?: any }) {
 
             <div className="flex gap-3">
               <button
+                type="button"
                 onClick={() => {
                   setShowAssignModal(false)
                   setSelectedBDM('')
@@ -497,6 +484,7 @@ export default function LeadAssignments({ user }: { user?: any }) {
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={handleAssignLeads}
                 disabled={isAssigning || !selectedBDM}
                 className="flex-1 px-4 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50"

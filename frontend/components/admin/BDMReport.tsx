@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Calendar, Download, Users, TrendingUp, Target, Phone, Mail, CheckCircle, Clock, BarChart3, PieChart } from 'lucide-react'
+import { Download, Users, TrendingUp, Target, Phone, Mail, CheckCircle, Clock, BarChart3 } from 'lucide-react'
 
 interface BDMPerformance {
   _id: string
@@ -30,7 +30,7 @@ interface ReportSummary {
 // Avatar color generator based on name
 const getAvatarColor = (name: string): string => {
   const colors = [
-    'bg-yellow-400',
+    'bg-[#FACE39]',
     'bg-blue-500',
     'bg-purple-500',
     'bg-green-500',
@@ -50,7 +50,7 @@ const getInitials = (name: string): string => {
     : name.charAt(0).toUpperCase()
 }
 
-export default function BDMReport({ user }: { user?: any }) {
+export default function BDMReport() {
   const [dateRange, setDateRange] = useState('this_month')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
@@ -81,14 +81,7 @@ export default function BDMReport({ user }: { user?: any }) {
       }
     } catch (error) {
       console.error('Error fetching BDM list:', error)
-      // Mock data
-      setBdmList([
-        { _id: '1', name: 'Sarah Johnson' },
-        { _id: '2', name: 'Michael Chen' },
-        { _id: '3', name: 'Emily Davis' },
-        { _id: '4', name: 'James Wilson' },
-        { _id: '5', name: 'Lisa Anderson' },
-      ])
+      setBdmList([])
     }
   }
 
@@ -110,24 +103,8 @@ export default function BDMReport({ user }: { user?: any }) {
       }
     } catch (error) {
       console.error('Error fetching report data:', error)
-      // Mock data
-      setPerformances([
-        { _id: '1', name: 'Sarah Johnson', role: 'senior-bdm', leadsAssigned: 45, leadsConverted: 28, conversionRate: 62.2, totalCalls: 156, totalEmails: 89, avgResponseTime: '2h 15m', revenue: 125000 },
-        { _id: '2', name: 'Michael Chen', role: 'bdm', leadsAssigned: 38, leadsConverted: 19, conversionRate: 50.0, totalCalls: 124, totalEmails: 67, avgResponseTime: '3h 30m', revenue: 85000 },
-        { _id: '3', name: 'Emily Davis', role: 'junior-bdm', leadsAssigned: 25, leadsConverted: 10, conversionRate: 40.0, totalCalls: 78, totalEmails: 45, avgResponseTime: '4h 45m', revenue: 45000 },
-        { _id: '4', name: 'James Wilson', role: 'bdm', leadsAssigned: 32, leadsConverted: 15, conversionRate: 46.9, totalCalls: 98, totalEmails: 56, avgResponseTime: '3h 15m', revenue: 67500 },
-        { _id: '5', name: 'Lisa Anderson', role: 'senior-bdm', leadsAssigned: 52, leadsConverted: 35, conversionRate: 67.3, totalCalls: 178, totalEmails: 102, avgResponseTime: '1h 45m', revenue: 157500 },
-      ])
-      setSummary({
-        totalBDMs: 5,
-        activeLeads: 192,
-        convertedLeads: 107,
-        overallConversionRate: 55.7,
-        totalRevenue: 480000,
-        totalCalls: 634,
-        totalEmails: 359,
-        avgResponseTime: '3h 06m'
-      })
+      setPerformances([])
+      setSummary(null)
     } finally {
       setIsLoading(false)
     }
@@ -191,9 +168,10 @@ export default function BDMReport({ user }: { user?: any }) {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
             <select
+              title="Select date range"
               value={dateRange}
               onChange={(e) => setDateRange(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent bg-white"
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent bg-white"
             >
               <option value="today">Today</option>
               <option value="this_week">This Week</option>
@@ -211,18 +189,20 @@ export default function BDMReport({ user }: { user?: any }) {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
                 <input
                   type="date"
+                  title="Start date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
                 <input
                   type="date"
+                  title="End date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
                 />
               </div>
             </>
@@ -232,9 +212,10 @@ export default function BDMReport({ user }: { user?: any }) {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">BDM</label>
             <select
+              title="Filter by BDM"
               value={selectedBDM}
               onChange={(e) => setSelectedBDM(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-yellow-400 focus:border-transparent bg-white"
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent bg-white"
             >
               <option value="all">All BDMs</option>
               {bdmList.map(bdm => (
@@ -247,7 +228,7 @@ export default function BDMReport({ user }: { user?: any }) {
           <div className="flex items-end">
             <button
               onClick={handleGenerateReport}
-              className="w-full px-4 py-2.5 bg-[#FDE047] text-gray-900 rounded-lg text-sm font-medium hover:bg-yellow-300"
+              className="w-full px-4 py-2.5 bg-[#FACE39] text-gray-900 rounded-lg text-sm font-medium hover:bg-yellow-300"
             >
               Generate Report
             </button>
@@ -313,7 +294,7 @@ export default function BDMReport({ user }: { user?: any }) {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#FDE047]">
+              <tr className="bg-[#FACE39]">
                 <th className="text-left px-4 py-3 text-sm font-semibold text-gray-900">BDM</th>
                 <th className="text-center px-4 py-3 text-sm font-semibold text-gray-900">Leads Assigned</th>
                 <th className="text-center px-4 py-3 text-sm font-semibold text-gray-900">Converted</th>
@@ -329,7 +310,7 @@ export default function BDMReport({ user }: { user?: any }) {
                 <tr>
                   <td colSpan={8} className="text-center py-8">
                     <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FACE39]"></div>
                     </div>
                   </td>
                 </tr>
