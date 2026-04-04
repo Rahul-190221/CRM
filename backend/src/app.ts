@@ -1,8 +1,10 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import dotenv from 'dotenv';
 
 // Import routes
 import authRoutes from './routes/auth.routes';
@@ -16,8 +18,6 @@ import schedulesRoutes from './routes/schedules.routes';
 import mockTestPackagesRoutes from './routes/mockTestPackages.routes';
 import notificationRoutes from './routes/notification.routes';
 import { createAndEmitNotification } from './services/notification.service';
-
-dotenv.config();
 
 const app = express();
 
