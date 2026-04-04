@@ -21,6 +21,9 @@ import { createAndEmitNotification } from './services/notification.service';
 
 const app = express();
 
+// Trust proxy (required for Vercel/reverse proxies with express-rate-limit)
+app.set('trust proxy', 1);
+
 // Security headers
 app.use(helmet());
 
