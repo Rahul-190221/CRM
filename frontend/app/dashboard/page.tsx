@@ -24,6 +24,7 @@ export default function DashboardPage() {
   const [activePage, setActivePage] = useState<Page>('dashboard')
   const [user, setUser] = useState<any>(null)
   const [isInitialized, setIsInitialized] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
 
   useEffect(() => {
@@ -95,13 +96,13 @@ export default function DashboardPage() {
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       {user?.role === 'admin' ? (
-        <AdminSidebar activePage={activePage} setActivePage={setActivePage} onLogout={handleLogout} />
+        <AdminSidebar activePage={activePage} setActivePage={setActivePage} onLogout={handleLogout} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       ) : (
-        <Sidebar activePage={activePage} setActivePage={setActivePage} onLogout={handleLogout} />
+        <Sidebar activePage={activePage} setActivePage={setActivePage} onLogout={handleLogout} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       )}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header user={user} onLogout={handleLogout} />
-        <main className="flex-1 overflow-y-auto p-8 scrollbar-hide">
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+        <Header user={user} onLogout={handleLogout} onMenuToggle={() => setSidebarOpen(prev => !prev)} />
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 scrollbar-hide">
           {renderContent()}
         </main>
       </div>
