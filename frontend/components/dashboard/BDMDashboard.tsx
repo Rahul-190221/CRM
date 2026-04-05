@@ -310,7 +310,8 @@ export default function BDMDashboard({ activePage, setActivePage }: BDMDashboard
             <BarChart3 className="w-4 h-4 text-[#00000F]/40" />
             <h3 className="text-sm sm:text-base font-bold text-[#00000F]">Lead Stage Trend</h3>
           </div>
-          <div className="h-[190px] sm:h-[240px]">
+          <div className="h-[190px] sm:h-[240px] relative">
+            <div className="absolute inset-0">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={stageTrend}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
@@ -324,6 +325,7 @@ export default function BDMDashboard({ activePage, setActivePage }: BDMDashboard
                 <Line type="monotone" dataKey="Processing" stroke="#A855F7" strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
+            </div>
           </div>
         </div>
 
@@ -333,7 +335,8 @@ export default function BDMDashboard({ activePage, setActivePage }: BDMDashboard
             <PieChartIcon className="w-4 h-4 text-[#00000F]/40" />
             <h3 className="text-sm sm:text-base font-bold text-[#00000F]">Lead Source Distribution</h3>
           </div>
-          <div className="h-[190px] sm:h-[240px]">
+          <div className="h-[190px] sm:h-[240px] relative">
+            <div className="absolute inset-0">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -360,6 +363,7 @@ export default function BDMDashboard({ activePage, setActivePage }: BDMDashboard
                 />
               </PieChart>
             </ResponsiveContainer>
+            </div>
           </div>
         </div>
       </div>
@@ -372,7 +376,8 @@ export default function BDMDashboard({ activePage, setActivePage }: BDMDashboard
             <TrendingUp className="w-4 h-4 text-[#00000F]/40" />
             <h3 className="text-sm sm:text-base font-bold text-[#00000F]">Conversion Rate Trend</h3>
           </div>
-          <div className="h-[190px] sm:h-[240px]">
+          <div className="h-[190px] sm:h-[240px] relative">
+            <div className="absolute inset-0">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={conversionTrend}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
@@ -382,6 +387,7 @@ export default function BDMDashboard({ activePage, setActivePage }: BDMDashboard
                 <Bar dataKey="rate" fill="#FACE39" radius={[4, 4, 0, 0]} barSize={25} />
               </BarChart>
             </ResponsiveContainer>
+            </div>
           </div>
           <div className="mt-2 flex items-center justify-center gap-2">
             <div className="w-2.5 h-2.5 bg-[#FACE39] rounded-sm" />
