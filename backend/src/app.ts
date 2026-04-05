@@ -5,6 +5,8 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import mongoose from 'mongoose';
+import connectDB from './config/db';
 
 // Import routes
 import authRoutes from './routes/auth.routes';
@@ -65,6 +67,20 @@ app.use('/api', generalLimiter);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Ensure DB is connected before handling requests (required for serverless/Vercel)
+app.use(async (req: Request, res: Response, next: NextFunction) => {
+  if (mongoose.connection.readyState !== 1) {
+    try {
+      await connectDB();
+    } catch (err) {
+      console.error('DB connection failed:', err);
+      res.status(500).json({ message: 'Database connection failed' });
+      return;
+    }
+  }
+  next();
+});
 
 // Routes
 app.use('/api/auth', authRoutes);
