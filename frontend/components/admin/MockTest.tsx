@@ -315,15 +315,15 @@ export default function MockTest({ user }: { user?: any }) {
   }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-full">
+    <div className="min-h-full">
       {/* Page Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Mock Test</h1>
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Mock Test</h1>
         <p className="text-sm text-gray-500 mt-1">Browse mock test details and available schedules</p>
       </div>
 
       {/* Mock Test Packages Section */}
-      <div className="bg-white rounded-xl p-6 mb-6">
+      <div className="bg-white rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-1">Mock Test Packages</h2>
         <p className="text-sm text-gray-500 mb-6">Available mock test packages with pricing details</p>
 
@@ -471,16 +471,16 @@ export default function MockTest({ user }: { user?: any }) {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl p-5 mb-6">
+      <div className="bg-white rounded-xl p-4 sm:p-5 mb-4 sm:mb-6">
         <h3 className="text-sm font-bold text-gray-900 mb-3">Filter by</h3>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-3">
           {/* Course Type */}
           <select
             value={filters.testType || 'all'}
             onChange={(e) => setFilters({ ...filters, testType: e.target.value as any })}
-            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent min-w-[160px]"
+            className="w-full sm:w-auto px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
           >
-            <option value="all">All Course Types</option>
+            <option value="all">All Courses</option>
             {courses.map(course => (
               <option key={course._id} value={course.name}>{course.name}</option>
             ))}
@@ -490,9 +490,9 @@ export default function MockTest({ user }: { user?: any }) {
           <select
             value={filters.examType || 'all'}
             onChange={(e) => setFilters({ ...filters, examType: e.target.value as any })}
-            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent min-w-[160px]"
+            className="w-full sm:w-auto px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
           >
-            <option value="all">All Test Types</option>
+            <option value="all">All Types</option>
             {testTypes.map(type => (
               <option key={type} value={type}>{type}</option>
             ))}
@@ -502,10 +502,10 @@ export default function MockTest({ user }: { user?: any }) {
           <select
             value={filters.sortBy || 'date-asc'}
             onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })}
-            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent min-w-[180px]"
+            className="w-full sm:w-auto px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
           >
-            <option value="date-asc">Start Date Ascending</option>
-            <option value="date-desc">Start Date Descending</option>
+            <option value="date-asc">Date ↑</option>
+            <option value="date-desc">Date ↓</option>
             <option value="name">Name</option>
           </select>
 
@@ -513,12 +513,12 @@ export default function MockTest({ user }: { user?: any }) {
           <select
             value={filters.status || 'all'}
             onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent min-w-[140px]"
+            className="w-full sm:w-auto px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
           >
             <option value="upcoming">Upcoming</option>
             <option value="all">All</option>
             <option value="today">Today</option>
-            <option value="previous">Previous Day</option>
+            <option value="previous">Previous</option>
           </select>
 
           {/* Date Picker */}
@@ -529,8 +529,7 @@ export default function MockTest({ user }: { user?: any }) {
               ...filters,
               dateRange: { start: e.target.value, end: filters.dateRange?.end || '' }
             })}
-            placeholder="dd/mm/yyyy"
-            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent min-w-[150px]"
+            className="col-span-2 sm:col-span-1 w-full sm:w-auto px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
           />
         </div>
       </div>

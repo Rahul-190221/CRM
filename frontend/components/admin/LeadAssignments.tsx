@@ -233,25 +233,25 @@ export default function LeadAssignments() {
   }).length
 
   return (
-    <div className="p-6 bg-gray-50 min-h-full">
+    <div className="min-h-full">
       {/* Page Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-start sm:items-center justify-between gap-4 mb-4 sm:mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Lead Assignments</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Lead Assignments</h1>
           <p className="text-sm text-gray-500 mt-1">Assign unassigned leads to BDMs</p>
         </div>
         <button
           onClick={() => setShowAssignModal(true)}
           disabled={selectedLeads.length === 0}
-          className="flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-shrink-0 flex items-center gap-2 px-3 sm:px-4 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Send className="w-4 h-4" />
-          Assign Selected ({selectedLeads.length})
+          <span>Assign Selected ({selectedLeads.length})</span>
         </button>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
         <div className="bg-white rounded-xl p-4 border border-gray-100">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -288,8 +288,8 @@ export default function LeadAssignments() {
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="bg-white rounded-xl p-4 mb-6">
-        <div className="flex items-center gap-4">
+      <div className="bg-white rounded-xl p-4 mb-4 sm:mb-6">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           {/* Search Input */}
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -307,7 +307,7 @@ export default function LeadAssignments() {
             title="Filter by course"
             value={filterCourse}
             onChange={(e) => setFilterCourse(e.target.value)}
-            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent bg-white min-w-[150px]"
+            className="w-full sm:w-auto px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent bg-white"
           >
             <option value="all">All Courses</option>
             <option value="IELTS">IELTS</option>
@@ -321,7 +321,7 @@ export default function LeadAssignments() {
       {/* Leads Table */}
       <div className="bg-white rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full min-w-[500px]">
             <thead>
               <tr className="bg-[#FACE39]">
                 <th className="text-left px-4 py-3">

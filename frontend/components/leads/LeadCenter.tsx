@@ -47,7 +47,7 @@ const LeadCenter: React.FC<{ user?: any }> = ({ user }) => {
     }
 
     return (
-        <div className="p-6 bg-gray-50 min-h-full">
+        <div className="min-h-full">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div>
                     <h2 className="text-2xl font-bold text-gray-900">Lead Center</h2>

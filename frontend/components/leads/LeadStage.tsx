@@ -154,7 +154,7 @@ const LeadStage: React.FC<{ user?: any }> = ({ user: _user }) => {
     ];
 
     return (
-        <div className="p-6 bg-gray-50 min-h-full">
+        <div className="min-h-full">
             {/* Header */}
             <div className="flex justify-between items-start mb-6">
                 <div>

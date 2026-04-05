@@ -144,26 +144,27 @@ export default function BDMReport() {
   }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-full">
+    <div className="min-h-full">
       {/* Page Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-start sm:items-center justify-between gap-4 mb-4 sm:mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">BDM Reports</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">BDM Reports</h1>
           <p className="text-sm text-gray-500 mt-1">View performance metrics and generate reports</p>
         </div>
         <button
           onClick={handleExportReport}
-          className="flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800"
+          className="flex-shrink-0 flex items-center gap-2 px-3 sm:px-4 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800"
         >
           <Download className="w-4 h-4" />
-          Export Report
+          <span className="hidden sm:inline">Export Report</span>
+          <span className="sm:hidden">Export</span>
         </button>
       </div>
 
       {/* Report Configuration */}
-      <div className="bg-white rounded-xl p-6 mb-6">
+      <div className="bg-white rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Report Configuration</h2>
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           {/* Date Range */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
@@ -238,7 +239,7 @@ export default function BDMReport() {
 
       {/* Summary Stats */}
       {summary && (
-        <div className="grid grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
           <div className="bg-white rounded-xl p-4 border border-gray-100">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">

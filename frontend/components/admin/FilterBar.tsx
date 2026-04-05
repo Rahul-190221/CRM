@@ -50,10 +50,10 @@ export default function FilterBar({
   }
 
   return (
-    <div className="bg-white rounded-xl p-4 mb-6 space-y-4">
+    <div className="bg-white rounded-xl p-3 sm:p-4 mb-4 sm:mb-6 space-y-3">
       {/* Filter Dropdowns */}
-      <div className="flex flex-wrap items-center gap-3">
-        <span className="text-sm font-medium text-gray-600 flex items-center gap-2">
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-3">
+        <span className="col-span-2 sm:col-span-1 text-sm font-medium text-gray-600 flex items-center gap-2">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
           </svg>
@@ -64,9 +64,9 @@ export default function FilterBar({
           <select
             value={filters.testType || 'all'}
             onChange={(e) => onFilterChange({ ...filters, testType: e.target.value as TestType | 'all' })}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
+            className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
           >
-            <option value="all">All Test Types</option>
+            <option value="all">All Types</option>
             {testTypes.map(type => (
               <option key={type} value={type}>{type}</option>
             ))}
@@ -77,7 +77,7 @@ export default function FilterBar({
           <select
             value={filters.examType || 'all'}
             onChange={(e) => onFilterChange({ ...filters, examType: e.target.value as ExamType | 'all' })}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
+            className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
           >
             <option value="all">All Exam Types</option>
             {examTypes.map(type => (
@@ -90,10 +90,10 @@ export default function FilterBar({
           <select
             value={filters.sortBy || 'date-asc'}
             onChange={(e) => onFilterChange({ ...filters, sortBy: e.target.value })}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
+            className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
           >
-            <option value="date-asc">Date (Ascending)</option>
-            <option value="date-desc">Date (Descending)</option>
+            <option value="date-asc">Date ↑</option>
+            <option value="date-desc">Date ↓</option>
             <option value="name">Name</option>
           </select>
         )}
@@ -102,7 +102,7 @@ export default function FilterBar({
           <select
             value={filters.status || 'all'}
             onChange={(e) => onFilterChange({ ...filters, status: e.target.value })}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
+            className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
           >
             {statusOptions.map(option => (
               <option key={option.value} value={option.value}>{option.label}</option>
@@ -118,7 +118,7 @@ export default function FilterBar({
               ...filters,
               dateRange: { ...filters.dateRange, start: e.target.value, end: filters.dateRange?.end || '' }
             })}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
+            className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
           />
         )}
       </div>

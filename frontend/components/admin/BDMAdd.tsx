@@ -192,19 +192,19 @@ export default function BDMAdd() {
   }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-full">
+    <div className="min-h-full">
       {/* Page Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Add New BDM</h1>
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Add New BDM</h1>
         <p className="text-sm text-gray-500 mt-1">Add a new Business Development Manager to the system</p>
       </div>
 
       {/* Form Card */}
-      <div className="bg-white rounded-xl p-6 mb-6">
+      <div className="bg-white rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
         <form onSubmit={handleSubmit}>
-          <div className="flex gap-8">
+          <div className="flex flex-col sm:flex-row gap-6">
             {/* Profile Image Upload */}
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 flex sm:block justify-center">
               <label className="block text-sm font-medium text-gray-700 mb-2">Profile Image</label>
               <div className="w-48 h-40 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-[#FACE39] transition-colors relative">
                 <input
@@ -229,7 +229,7 @@ export default function BDMAdd() {
             </div>
 
             {/* Form Fields */}
-            <div className="flex-1 grid grid-cols-2 gap-x-6 gap-y-4">
+            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
               {/* First Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">

@@ -162,16 +162,16 @@ export default function BDMRemove() {
   const removableBDMs = bdmUsers.filter(u => (u.activeLeads || 0) === 0).length
 
   return (
-    <div className="p-6 bg-gray-50 min-h-full">
+    <div className="min-h-full">
       {/* Page Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Remove BDM</h1>
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Remove BDM</h1>
         <p className="text-sm text-gray-500 mt-1">Manage and remove Business Development Managers from the system</p>
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="bg-white rounded-xl p-4 mb-6">
-        <div className="flex items-center gap-4">
+      <div className="bg-white rounded-xl p-4 mb-4 sm:mb-6">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           {/* Search Input */}
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -189,7 +189,7 @@ export default function BDMRemove() {
             title="Filter by role"
             value={filterRole}
             onChange={(e) => setFilterRole(e.target.value)}
-            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent bg-white min-w-[150px]"
+            className="w-full sm:w-auto px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent bg-white"
           >
             <option value="all">All Roles</option>
             <option value="junior-bdm">Junior BDM</option>
@@ -200,9 +200,9 @@ export default function BDMRemove() {
       </div>
 
       {/* BDM Table */}
-      <div className="bg-white rounded-xl overflow-hidden mb-6">
+      <div className="bg-white rounded-xl overflow-hidden mb-4 sm:mb-6">
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full min-w-[640px]">
             <thead>
               <tr className="bg-[#FACE39]">
                 <th className="text-left px-4 py-3 text-sm font-semibold text-gray-900">Name</th>
@@ -276,7 +276,7 @@ export default function BDMRemove() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         <div className="bg-white rounded-xl p-4 border border-gray-100">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">

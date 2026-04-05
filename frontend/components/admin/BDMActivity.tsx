@@ -201,15 +201,15 @@ export default function BDMActivity() {
   }).length
 
   return (
-    <div className="p-6 bg-gray-50 min-h-full">
+    <div className="min-h-full">
       {/* Page Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">BDM Activity Log</h1>
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">BDM Activity Log</h1>
         <p className="text-sm text-gray-500 mt-1">Track all BDM activities and interactions</p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
         <div className="bg-white rounded-xl p-4 border border-gray-100">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -257,14 +257,14 @@ export default function BDMActivity() {
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="bg-white rounded-xl p-4 mb-6">
-        <div className="flex items-center gap-4">
+      <div className="bg-white rounded-xl p-4 mb-4 sm:mb-6">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           {/* Search Input */}
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Search by BDM name, lead, or description..."
+              placeholder="Search activities..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
@@ -276,7 +276,7 @@ export default function BDMActivity() {
             title="Filter by activity type"
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent bg-white min-w-[150px]"
+            className="w-full sm:w-auto px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent bg-white"
           >
             <option value="all">All Activities</option>
             <option value="call">Phone Calls</option>
@@ -295,7 +295,7 @@ export default function BDMActivity() {
             title="Filter by date"
             value={filterDate}
             onChange={(e) => setFilterDate(e.target.value)}
-            className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
+            className="w-full sm:w-auto px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
           />
         </div>
       </div>
@@ -303,14 +303,14 @@ export default function BDMActivity() {
       {/* Activity Table */}
       <div className="bg-white rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full min-w-[560px]">
             <thead>
               <tr className="bg-[#FACE39]">
-                <th className="text-left px-4 py-3 text-sm font-semibold text-gray-900">BDM</th>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-gray-900">Activity Type</th>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-gray-900">Description</th>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-gray-900">Lead</th>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-gray-900">Time</th>
+                <th className="text-left px-3 sm:px-4 py-3 text-xs sm:text-sm font-semibold text-gray-900">BDM</th>
+                <th className="text-left px-3 sm:px-4 py-3 text-xs sm:text-sm font-semibold text-gray-900">Type</th>
+                <th className="text-left px-3 sm:px-4 py-3 text-xs sm:text-sm font-semibold text-gray-900">Description</th>
+                <th className="text-left px-3 sm:px-4 py-3 text-xs sm:text-sm font-semibold text-gray-900">Lead</th>
+                <th className="text-left px-3 sm:px-4 py-3 text-xs sm:text-sm font-semibold text-gray-900">Time</th>
               </tr>
             </thead>
             <tbody>
