@@ -146,61 +146,61 @@ export default function AdminDashboard() {
   ).join('')
 
   return (
-    <div className="flex-1 bg-[#FAFAFA] p-4 overflow-y-auto h-screen">
+    <div>
       {/* Header */}
-      <div className="mb-2">
-        <h1 className="text-2xl font-bold text-[#00000F]">Admin Dashboard</h1>
-        <p className="text-[#00000F]/50 text-sm mt-1">Welcome back! Here's what's happening with your CRM today.</p>
+      <div className="mb-3">
+        <h1 className="text-xl sm:text-2xl font-bold text-[#00000F]">Admin Dashboard</h1>
+        <p className="text-[#00000F]/50 text-xs sm:text-sm mt-1">Welcome back! Here's what's happening with your CRM today.</p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 mb-2">
+      {/* Stats Cards — 2 cols on mobile, 4 on desktop */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-3">
         {/* Active BDMs */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm card-lift shimmer-hover card-lift shimmer-hover">
-          <div className="flex items-start justify-between mb-4">
-            <div className="bg-blue-50 p-2.5 rounded-lg">
-              <Users className="w-5 h-5 text-blue-600" />
+        <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-4 shadow-sm card-lift shimmer-hover">
+          <div className="flex items-start justify-between mb-2">
+            <div className="bg-blue-50 p-2 rounded-lg">
+              <Users className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
             </div>
-            <span className="text-sm font-bold text-green-500">+{stats.activeBDMs.change}</span>
+            <span className="text-xs sm:text-sm font-bold text-green-500">+{stats.activeBDMs.change}</span>
           </div>
-          <p className="text-xs font-medium text-[#00000F]/50 uppercase tracking-wide mb-1">Active BDMs</p>
-          <p className="text-2xl font-bold text-[#00000F]">{stats.activeBDMs.value}</p>
+          <p className="text-[10px] sm:text-xs font-medium text-[#00000F]/50 uppercase tracking-wide mb-1">Active BDMs</p>
+          <p className="text-lg sm:text-2xl font-bold text-[#00000F]">{stats.activeBDMs.value}</p>
         </div>
 
         {/* Total Users */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm card-lift shimmer-hover card-lift shimmer-hover">
-          <div className="flex items-start justify-between mb-3">
-            <div className="bg-purple-50 p-2.5 rounded-lg">
-              <UserPlus className="w-5 h-5 text-purple-600" />
+        <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-4 shadow-sm card-lift shimmer-hover">
+          <div className="flex items-start justify-between mb-2">
+            <div className="bg-purple-50 p-2 rounded-lg">
+              <UserPlus className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
             </div>
-            <span className="text-sm font-bold text-green-500">+{stats.totalUsers.change}%</span>
+            <span className="text-xs sm:text-sm font-bold text-green-500">+{stats.totalUsers.change}%</span>
           </div>
-          <p className="text-xs font-medium text-[#00000F]/50 uppercase tracking-wide mb-1">Total Users</p>
-          <p className="text-2xl font-bold text-[#00000F]">{stats.totalUsers.value}</p>
+          <p className="text-[10px] sm:text-xs font-medium text-[#00000F]/50 uppercase tracking-wide mb-1">Total Users</p>
+          <p className="text-lg sm:text-2xl font-bold text-[#00000F]">{stats.totalUsers.value}</p>
         </div>
 
         {/* Total Leads */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm card-lift shimmer-hover card-lift shimmer-hover">
-          <div className="flex items-start justify-between mb-3">
-            <div className="bg-green-50 p-2.5 rounded-lg">
-              <Target className="w-5 h-5 text-green-600" />
+        <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-4 shadow-sm card-lift shimmer-hover">
+          <div className="flex items-start justify-between mb-2">
+            <div className="bg-green-50 p-2 rounded-lg">
+              <Target className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
             </div>
-            <span className="text-sm font-bold text-green-500">+{stats.totalLeads.change}%</span>
+            <span className="text-xs sm:text-sm font-bold text-green-500">+{stats.totalLeads.change}%</span>
           </div>
-          <p className="text-xs font-medium text-[#00000F]/50 uppercase tracking-wide mb-1">Total Leads</p>
-          <p className="text-2xl font-bold text-[#00000F]">{stats.totalLeads.value.toLocaleString()}</p>
+          <p className="text-[10px] sm:text-xs font-medium text-[#00000F]/50 uppercase tracking-wide mb-1">Total Leads</p>
+          <p className="text-lg sm:text-2xl font-bold text-[#00000F]">{stats.totalLeads.value.toLocaleString()}</p>
         </div>
 
         {/* Conversion Rate */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm card-lift shimmer-hover card-lift shimmer-hover">
-          <div className="flex items-start justify-between mb-3">
-            <div className="bg-orange-50 p-2.5 rounded-lg">
-              <TrendingUp className="w-5 h-5 text-orange-600" />
+        <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-4 shadow-sm card-lift shimmer-hover">
+          <div className="flex items-start justify-between mb-2">
+            <div className="bg-orange-50 p-2 rounded-lg">
+              <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
             </div>
-            <span className="text-sm font-bold text-green-500">+{stats.conversionRate.change}%</span>
+            <span className="text-xs sm:text-sm font-bold text-green-500">+{stats.conversionRate.change}%</span>
           </div>
-          <p className="text-xs font-medium text-[#00000F]/50 uppercase tracking-wide mb-1">Conversion Rate</p>
-          <p className="text-2xl font-bold text-[#00000F]">{stats.conversionRate.value}</p>
+          <p className="text-[10px] sm:text-xs font-medium text-[#00000F]/50 uppercase tracking-wide mb-1">Conversion Rate</p>
+          <p className="text-lg sm:text-2xl font-bold text-[#00000F]">{stats.conversionRate.value}</p>
         </div>
       </div>
 

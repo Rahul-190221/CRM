@@ -161,7 +161,7 @@ export default function BDMDashboard({ activePage, setActivePage }: BDMDashboard
 
   if (loading) {
     return (
-      <div className="flex-1 bg-[#FAFAFA] p-6 overflow-y-auto h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-4 border-[#FACE39] border-t-transparent rounded-full animate-spin" />
           <p className="text-sm text-[#00000F]/50">Loading dashboard...</p>
@@ -171,61 +171,61 @@ export default function BDMDashboard({ activePage, setActivePage }: BDMDashboard
   }
 
   return (
-    <div className="flex-1 bg-[#FAFAFA] p-6 overflow-y-auto h-screen">
+    <div>
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#00000F]">Dashboard</h1>
-        <p className="text-[#00000F]/50 text-sm mt-1">Welcome back! Here's your overview for today.</p>
+      <div className="mb-3">
+        <h1 className="text-xl sm:text-2xl font-bold text-[#00000F]">Dashboard</h1>
+        <p className="text-[#00000F]/50 text-xs sm:text-sm mt-1">Welcome back! Here's your overview for today.</p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      {/* Stats Cards — 2 cols on mobile, 4 on desktop */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-3">
         {/* Total Leads */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm card-lift shimmer-hover">
-          <div className="flex items-start justify-between mb-3">
-            <div className="bg-blue-50 p-2.5 rounded-lg">
-              <Users className="w-5 h-5 text-blue-600" />
+        <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-4 shadow-sm card-lift shimmer-hover">
+          <div className="flex items-start justify-between mb-2">
+            <div className="bg-blue-50 p-2 rounded-lg">
+              <Users className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
             </div>
-            <span className="text-sm font-bold text-green-500">+{stats.totalLeads.change}%</span>
+            <span className="text-xs sm:text-sm font-bold text-green-500">+{stats.totalLeads.change}%</span>
           </div>
-          <p className="text-xs font-medium text-[#00000F]/50 uppercase tracking-wide mb-1">Total Leads</p>
-          <p className="text-2xl font-bold text-[#00000F]">{stats.totalLeads.value}</p>
+          <p className="text-[10px] sm:text-xs font-medium text-[#00000F]/50 uppercase tracking-wide mb-1">Total Leads</p>
+          <p className="text-lg sm:text-2xl font-bold text-[#00000F]">{stats.totalLeads.value}</p>
         </div>
 
         {/* Converted */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm card-lift shimmer-hover">
-          <div className="flex items-start justify-between mb-3">
-            <div className="bg-green-50 p-2.5 rounded-lg">
-              <CheckCircle className="w-5 h-5 text-green-600" />
+        <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-4 shadow-sm card-lift shimmer-hover">
+          <div className="flex items-start justify-between mb-2">
+            <div className="bg-green-50 p-2 rounded-lg">
+              <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
             </div>
-            <span className="text-sm font-bold text-green-500">+{stats.converted.change}%</span>
+            <span className="text-xs sm:text-sm font-bold text-green-500">+{stats.converted.change}%</span>
           </div>
-          <p className="text-xs font-medium text-[#00000F]/50 uppercase tracking-wide mb-1">Converted</p>
-          <p className="text-2xl font-bold text-[#00000F]">{stats.converted.value}</p>
+          <p className="text-[10px] sm:text-xs font-medium text-[#00000F]/50 uppercase tracking-wide mb-1">Converted</p>
+          <p className="text-lg sm:text-2xl font-bold text-[#00000F]">{stats.converted.value}</p>
         </div>
 
         {/* In Progress */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm card-lift shimmer-hover">
-          <div className="flex items-start justify-between mb-3">
-            <div className="bg-orange-50 p-2.5 rounded-lg">
-              <Clock className="w-5 h-5 text-orange-600" />
+        <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-4 shadow-sm card-lift shimmer-hover">
+          <div className="flex items-start justify-between mb-2">
+            <div className="bg-orange-50 p-2 rounded-lg">
+              <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
             </div>
-            <span className="text-sm font-bold text-green-500">+{stats.inProgress.change}%</span>
+            <span className="text-xs sm:text-sm font-bold text-green-500">+{stats.inProgress.change}%</span>
           </div>
-          <p className="text-xs font-medium text-[#00000F]/50 uppercase tracking-wide mb-1">In Progress</p>
-          <p className="text-2xl font-bold text-[#00000F]">{stats.inProgress.value}</p>
+          <p className="text-[10px] sm:text-xs font-medium text-[#00000F]/50 uppercase tracking-wide mb-1">In Progress</p>
+          <p className="text-lg sm:text-2xl font-bold text-[#00000F]">{stats.inProgress.value}</p>
         </div>
 
         {/* Target */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm card-lift shimmer-hover">
-          <div className="flex items-start justify-between mb-3">
-            <div className="bg-purple-50 p-2.5 rounded-lg">
-              <Target className="w-5 h-5 text-purple-600" />
+        <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-4 shadow-sm card-lift shimmer-hover">
+          <div className="flex items-start justify-between mb-2">
+            <div className="bg-purple-50 p-2 rounded-lg">
+              <Target className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
             </div>
-            <span className="text-sm font-bold text-green-500">+{stats.target.change}%</span>
+            <span className="text-xs sm:text-sm font-bold text-green-500">+{stats.target.change}%</span>
           </div>
-          <p className="text-xs font-medium text-[#00000F]/50 uppercase tracking-wide mb-1">Target</p>
-          <p className="text-2xl font-bold text-[#00000F]">{stats.target.value}</p>
+          <p className="text-[10px] sm:text-xs font-medium text-[#00000F]/50 uppercase tracking-wide mb-1">Target</p>
+          <p className="text-lg sm:text-2xl font-bold text-[#00000F]">{stats.target.value}</p>
         </div>
       </div>
 
