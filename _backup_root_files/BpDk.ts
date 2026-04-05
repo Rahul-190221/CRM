@@ -5,7 +5,7 @@ export const fetchAllUsers = async () => {
 
   try {
     const response = await fetch(
-      `http://localhost:5000/api/v1/user/all`,
+      `https://crm-eta-blush.vercel.app/api/v1/user/all`,
       {
         method: "GET",
         cache: "no-store",

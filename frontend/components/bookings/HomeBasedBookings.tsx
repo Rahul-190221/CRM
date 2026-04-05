@@ -7,7 +7,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { motion } from "framer-motion";
 
-const API = "http://localhost:5000";
+const API = "https://crm-eta-blush.vercel.app";
 
 // Booking Type Definition
 type Booking = {

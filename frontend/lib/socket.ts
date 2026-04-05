@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '');
+const API_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'https://crm-eta-blush.vercel.app' : '');
 
 class ClientSocketService {
     public socket: Socket | null = null;

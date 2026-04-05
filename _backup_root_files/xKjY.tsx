@@ -120,7 +120,7 @@ export default function HomeBasedPage() {
   const fetchedEmailRef = React.useRef<Set<string>>(new Set()); // scheduleId set for TRF email status
 
   const API_BASE = (
-    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000"
+    process.env.NEXT_PUBLIC_API_BASE_URL || "https://crm-eta-blush.vercel.app"
   ).replace(/\/$/, "");
 
   // -------- fetch bookings with embedded users --------

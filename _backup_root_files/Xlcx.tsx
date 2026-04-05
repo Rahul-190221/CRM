@@ -57,7 +57,7 @@ export default function HomeBasedPage() {
   const [dateFilter, setDateFilter] = useState("past");
   const [startDateFilter, setStartDateFilter] = useState("");
 
-  const API_BASE = "http://localhost:5000";
+  const API_BASE = "https://crm-eta-blush.vercel.app";
 
   const fetchHomeBookingsAndUsers = useCallback(async () => {
     setLoading(true);

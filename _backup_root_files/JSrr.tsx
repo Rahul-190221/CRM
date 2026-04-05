@@ -30,7 +30,7 @@ declare global {
 }
 
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE?.replace(/\/$/, "") || "http://localhost:5000";
+  process.env.NEXT_PUBLIC_API_BASE?.replace(/\/$/, "") || "https://crm-eta-blush.vercel.app";
 
 const segments = [
   { key: "listening", label: "Listening", color: "#2563EB" },

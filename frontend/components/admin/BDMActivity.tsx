@@ -100,7 +100,7 @@ export default function BDMActivity() {
     setIsLoading(true)
     try {
       const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '')
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'https://crm-eta-blush.vercel.app' : '')
       const response = await fetch(`${apiUrl}/api/activities`, {
         headers: {
           'Authorization': `Bearer ${token}`,

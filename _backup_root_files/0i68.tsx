@@ -82,7 +82,7 @@ const toYMDLoose = (v: any): string => {
 const API_BASE = (
   process.env.NEXT_PUBLIC_API_BASE_URL ||
   process.env.NEXT_PUBLIC_API_BASE ||
-  "http://localhost:5000"
+  "https://crm-eta-blush.vercel.app"
 ).replace(/\/$/, "");
 
 type SegmentKey = "listening" | "reading" | "writing" | "speaking";

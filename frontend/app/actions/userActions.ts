@@ -1,6 +1,6 @@
 "use server";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://crm-eta-blush.vercel.app";
 
 export const blockUserStatus = async (userId: string, newStatus: string) => {
   const response = await fetch(

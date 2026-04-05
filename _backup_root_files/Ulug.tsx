@@ -43,7 +43,7 @@ function AvailableSchedulesBDMPage() {
 
   const fetchSchedules = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/v1/admin/get-schedules", { cache: "no-store" });
+      const response = await fetch("https://crm-eta-blush.vercel.app/api/v1/admin/get-schedules", { cache: "no-store" });
       const raw = await response.json();
 
       // keep ONLY real schedules; normalize fields

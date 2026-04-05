@@ -29,7 +29,7 @@ type ScheduleDoc = {
 
 // ===== Small helpers =====
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE?.replace(/\/$/, "") || "http://localhost:5000";
+  process.env.NEXT_PUBLIC_API_BASE?.replace(/\/$/, "") || "https://crm-eta-blush.vercel.app";
 
 const isScheduleRow = (row: any): row is ScheduleDoc => {
   if (!row || typeof row !== "object") return false;

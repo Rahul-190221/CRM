@@ -5,16 +5,19 @@ import { socketService } from './services/socket.service';
 
 const PORT = process.env.PORT || 5000;
 
-// Connect to MongoDB
-connectDB();
+// Connect to MongoDB first, then start server
+connectDB().then(() => {
+  // Create HTTP server
+  const server = http.createServer(app);
 
-// Create HTTP server
-const server = http.createServer(app);
+  // Initialize Socket.io
+  socketService.init(server);
 
-// Initialize Socket.io
-socketService.init(server);
-
-// Start server
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  // Start server
+  server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}).catch((err) => {
+  console.error('Failed to connect to MongoDB, server not started:', err);
+  process.exit(1);
 });

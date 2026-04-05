@@ -63,8 +63,8 @@ const SettingsPage = () => {
     try {
       setLoading(true);
       const userId = getUserIdFromToken();
-      const profileRes = await axios.get(`http://localhost:5000/api/v1/profile/${userId}`);
-      const mockRes = await axios.get(`http://localhost:5000/api/v1/user/${userId}`);
+      const profileRes = await axios.get(`https://crm-eta-blush.vercel.app/api/v1/profile/${userId}`);
+      const mockRes = await axios.get(`https://crm-eta-blush.vercel.app/api/v1/user/${userId}`);
 
       const user = {
         ...mockRes.data.user,
@@ -104,7 +104,7 @@ const SettingsPage = () => {
         return;
       }
 
-      const res = await axios.post("http://localhost:5000/api/v1/user/request-profile-edit", {
+      const res = await axios.post("https://crm-eta-blush.vercel.app/api/v1/user/request-profile-edit", {
         userId,
         note: requestNote,
       });

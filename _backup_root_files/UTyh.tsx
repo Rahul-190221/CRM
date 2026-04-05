@@ -105,7 +105,7 @@ function TrfAvailableSchedulesBDMPage() {
 
   const fetchSchedules = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/v1/admin/get-schedules");
+      const response = await fetch("https://crm-eta-blush.vercel.app/api/v1/admin/get-schedules");
       const raw = await response.json();
       const cleaned = Array.isArray(raw) ? raw.filter(isScheduleLike) : [];
       setSchedules(cleaned);

@@ -1,6 +1,6 @@
 "use server";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://crm-eta-blush.vercel.app";
 
 export const deleteSchedule = async (id: string) => {
   const response = await fetch(

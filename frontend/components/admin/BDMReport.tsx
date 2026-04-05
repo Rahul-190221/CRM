@@ -68,7 +68,7 @@ export default function BDMReport() {
   const fetchBDMList = async () => {
     try {
       const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://crm-eta-blush.vercel.app'
       const response = await fetch(`${apiUrl}/api/auth/users?role=bdm,senior-bdm,junior-bdm`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -89,7 +89,7 @@ export default function BDMReport() {
     setIsLoading(true)
     try {
       const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://crm-eta-blush.vercel.app'
       const response = await fetch(`${apiUrl}/api/reports/bdm?range=${dateRange}&bdm=${selectedBDM}`, {
         headers: {
           'Authorization': `Bearer ${token}`,

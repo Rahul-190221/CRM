@@ -30,7 +30,7 @@ const useUser = (): {
 
         if (userIdFromToken?.userId) {
           const response = await axios.get(
-            `http://localhost:5000/api/v1/user/${userIdFromToken.userId}`
+            `https://crm-eta-blush.vercel.app/api/v1/user/${userIdFromToken.userId}`
           );
 
           const fetchedMocks: Mock[] = response.data?.mocks || [];

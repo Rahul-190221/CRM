@@ -25,7 +25,7 @@ const bandOrNull = (v: any): number | null => {
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ||
-  "http://localhost:5000";
+  "https://crm-eta-blush.vercel.app";
 
 const segments = [
   { key: "listening", label: "Listening", color: "#2563EB" },

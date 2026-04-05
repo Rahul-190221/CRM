@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://crm-eta-blush.vercel.app/api';
 
 export const getNotifications = async (token: string, limit = 50) => {
     const response = await fetch(`${API_URL}/notifications?limit=${limit}`, {

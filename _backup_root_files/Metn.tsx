@@ -60,7 +60,7 @@ export default function HomeBasedPage() {
     setError(null);
   
     try {
-      const response = await axios.get("http://localhost:5000/api/v1/admin/bookings/home-with-users");
+      const response = await axios.get("https://crm-eta-blush.vercel.app/api/v1/admin/bookings/home-with-users");
       const homeBookings = response.data.bookings;
   
       if (!homeBookings || homeBookings.length === 0) {

@@ -75,7 +75,7 @@ export default function LeadAssignments() {
     setIsLoading(true)
     try {
       const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://crm-eta-blush.vercel.app'
       const response = await fetch(`${apiUrl}/api/leads?unassigned=true`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -97,7 +97,7 @@ export default function LeadAssignments() {
   const fetchBDMUsers = async () => {
     try {
       const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://crm-eta-blush.vercel.app'
       const response = await fetch(`${apiUrl}/api/auth/users?role=bdm,senior-bdm,junior-bdm`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -157,7 +157,7 @@ export default function LeadAssignments() {
     setIsAssigning(true)
     try {
       const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://crm-eta-blush.vercel.app'
       const response = await fetch(`${apiUrl}/api/leads/assign`, {
         method: 'POST',
         headers: {

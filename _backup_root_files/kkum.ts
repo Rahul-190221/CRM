@@ -2,7 +2,7 @@
 export const createSchedules = async (formData: FormData) => {
   console.log(formData);
   const res = await fetch(  
-    `http://localhost:5000/api/v1/admin/create-schedule`,
+    `https://crm-eta-blush.vercel.app/api/v1/admin/create-schedule`,
     {
       method: "POST",
       headers: {

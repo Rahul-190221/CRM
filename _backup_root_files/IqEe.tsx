@@ -24,7 +24,7 @@ export default function Login({ onSwitchToSignup }: LoginProps) {
         setError('')
 
         // Determine API URL (fallback to localhost:5000 if not set)
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://crm-eta-blush.vercel.app'
         console.log('Login attempt:', { email, apiUrl })
 
         try {

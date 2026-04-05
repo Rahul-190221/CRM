@@ -103,7 +103,7 @@ function AvailableSchedulesPage() {
   // Fetch + normalize
   const fetchSchedules = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/v1/admin/get-schedules", {
+      const res = await fetch("https://crm-eta-blush.vercel.app/api/v1/admin/get-schedules", {
         cache: "no-store",
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -192,7 +192,7 @@ function AvailableSchedulesPage() {
   const deleteSchedule = async (id: string) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/v1/admin/delete-schedule/${id}`,
+        `https://crm-eta-blush.vercel.app/api/v1/admin/delete-schedule/${id}`,
         { method: "DELETE", headers: { "Content-Type": "application/json" } }
       );
       const result = await res.json();

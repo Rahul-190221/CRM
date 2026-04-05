@@ -11,7 +11,7 @@ export const updateMockNumber = async (
 ) => {
   console.log('mock', mockType);
   const res = await fetch(
-    `http://localhost:5000/api/v1/user/update/${selectedUser._id}/${mockNumber}`,
+    `https://crm-eta-blush.vercel.app/api/v1/user/update/${selectedUser._id}/${mockNumber}`,
     {
       method: "PUT",
       headers: {

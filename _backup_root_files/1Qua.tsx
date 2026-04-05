@@ -20,7 +20,7 @@ import {
 // Prefer env in production, fallback to localhost in dev
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ||
-  "http://localhost:5000/api/v1";
+  "https://crm-eta-blush.vercel.app/api/v1";
 
 // ---- BD-local date helpers (avoid UTC shifts visually) ----
 const BD_TZ = "Asia/Dhaka";

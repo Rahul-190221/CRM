@@ -21,7 +21,7 @@ const CashMemoPage = () => {
     const generateMemoNumber = async () => {
       const year = new Date().getFullYear();
       try {
-        const { data } = await axios.get("http://localhost:5000/api/v1/admin/cash-memos/count");
+        const { data } = await axios.get("https://crm-eta-blush.vercel.app/api/v1/admin/cash-memos/count");
         const count = data.count || 0;
         const next = (count + 1).toString().padStart(4, "0");
         setMemoData((prev) => ({ ...prev, memoNumber: `CM-${year}-${next}` }));
@@ -49,7 +49,7 @@ const CashMemoPage = () => {
     }
   
     try {
-      const res = await axios.post("http://localhost:5000/api/v1/admin/save-cash-memo", memoData, {
+      const res = await axios.post("https://crm-eta-blush.vercel.app/api/v1/admin/save-cash-memo", memoData, {
         headers: {
           "Content-Type": "application/json"
         }
@@ -189,7 +189,7 @@ const CashMemoPage = () => {
       <span className="text-gray-600">Memo: {memoData.memoNumber}</span>
 
       <a
-        href={`http://localhost:5000/api/v1/admin/cash-memo/${memoData.memoNumber}/pdf`}
+        href={`https://crm-eta-blush.vercel.app/api/v1/admin/cash-memo/${memoData.memoNumber}/pdf`}
         download={`${memoData.memoNumber}.pdf`}
         target="_blank"
         rel="noopener noreferrer"
@@ -201,7 +201,7 @@ const CashMemoPage = () => {
 
     <iframe
       title="Memo PDF Preview"
-      src={`http://localhost:5000/api/v1/admin/cash-memo/${memoData.memoNumber}/pdf`}
+      src={`https://crm-eta-blush.vercel.app/api/v1/admin/cash-memo/${memoData.memoNumber}/pdf`}
       className="w-full h-[500px] border"
     ></iframe>
   </div>

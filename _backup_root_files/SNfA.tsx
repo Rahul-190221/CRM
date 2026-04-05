@@ -109,7 +109,7 @@ const BookingId = ({ params }: { params: { bookingId: string } }) => {
     }
     try {
       const { data: allSchedules } = await axios.get(
-        "http://localhost:5000/api/v1/admin/get-schedules"
+        "https://crm-eta-blush.vercel.app/api/v1/admin/get-schedules"
       );
       const today = new Date();
 
@@ -153,7 +153,7 @@ const BookingId = ({ params }: { params: { bookingId: string } }) => {
       setUserId(id);
 
       try {
-        const res = await axios.get(`http://localhost:5000/api/v1/user/${id}`);
+        const res = await axios.get(`https://crm-eta-blush.vercel.app/api/v1/user/${id}`);
         const data = res.data;
 
         const mocks = data?.mocks || [];
@@ -182,7 +182,7 @@ const BookingId = ({ params }: { params: { bookingId: string } }) => {
 
         // user bookings (matches backend: GET /api/v1/user/bookings/:userId)
         const bookingsRes = await axios.get(
-          `http://localhost:5000/api/v1/user/bookings/${id}`
+          `https://crm-eta-blush.vercel.app/api/v1/user/bookings/${id}`
         );
         setExistingBookings(bookingsRes.data.bookings || []);
       } catch (error: any) {
@@ -221,7 +221,7 @@ const BookingId = ({ params }: { params: { bookingId: string } }) => {
         const formattedDate = selectedDate.toLocaleDateString("en-CA");
 
         const response = await axios.get(
-          `http://localhost:5000/api/v1/schedule/${formattedDate}/${params.bookingId}`
+          `https://crm-eta-blush.vercel.app/api/v1/schedule/${formattedDate}/${params.bookingId}`
         );
 
         setScheduleData(response?.data?.schedules || []);
@@ -314,14 +314,14 @@ const BookingId = ({ params }: { params: { bookingId: string } }) => {
       }
 
       try {
-        await axios.post(`http://localhost:5000/api/v1/user/book-slot`, {
+        await axios.post(`https://crm-eta-blush.vercel.app/api/v1/user/book-slot`, {
           ...bookingPayload,
           testTime: selectedSlotId,
         });
 
         if (oldBookingId) {
           await axios.delete(
-            `http://localhost:5000/api/v1/bookings/${oldBookingId}`
+            `https://crm-eta-blush.vercel.app/api/v1/bookings/${oldBookingId}`
           );
           toast.success("Rescheduled successfully! 🎯");
         } else {
@@ -341,9 +341,9 @@ const BookingId = ({ params }: { params: { bookingId: string } }) => {
         ) {
           try {
             await axios.delete(
-              `http://localhost:5000/api/v1/bookings/${oldBookingId}`
+              `https://crm-eta-blush.vercel.app/api/v1/bookings/${oldBookingId}`
             );
-            await axios.post(`http://localhost:5000/api/v1/user/book-slot`, {
+            await axios.post(`https://crm-eta-blush.vercel.app/api/v1/user/book-slot`, {
               ...bookingPayload,
               testTime: selectedSlotId,
             });
@@ -392,14 +392,14 @@ const BookingId = ({ params }: { params: { bookingId: string } }) => {
       }
 
       // Backend requires testSystem if the selection was shown (IELTS branch handled above)
-      await axios.post(`http://localhost:5000/api/v1/user/book-slot`, {
+      await axios.post(`https://crm-eta-blush.vercel.app/api/v1/user/book-slot`, {
         ...bookingPayload,
         scheduleId,
         slotId: selectedSlotId,
       });
 
       if (oldBookingId) {
-        await axios.delete(`http://localhost:5000/api/v1/bookings/${oldBookingId}`);
+        await axios.delete(`https://crm-eta-blush.vercel.app/api/v1/bookings/${oldBookingId}`);
         toast.success("Rescheduled successfully! 🎯");
       } else {
         toast.success("Test Center booking successful! 🏢");
@@ -418,9 +418,9 @@ const BookingId = ({ params }: { params: { bookingId: string } }) => {
       ) {
         try {
           await axios.delete(
-            `http://localhost:5000/api/v1/bookings/${oldBookingId}`
+            `https://crm-eta-blush.vercel.app/api/v1/bookings/${oldBookingId}`
           );
-          await axios.post(`http://localhost:5000/api/v1/user/book-slot`, {
+          await axios.post(`https://crm-eta-blush.vercel.app/api/v1/user/book-slot`, {
             ...bookingPayload,
             scheduleId,
             slotId: selectedSlotId,

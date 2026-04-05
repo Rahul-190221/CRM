@@ -31,7 +31,7 @@ const Table = ({ userId }: { userId: string }) => {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/user/bookings/${userId}`);
+        const response = await axios.get(`https://crm-eta-blush.vercel.app/api/v1/user/bookings/${userId}`);
         setBookings(response.data.bookings);
       } catch (error) {
         console.error("Error fetching bookings:", error);
@@ -124,7 +124,7 @@ const Table = ({ userId }: { userId: string }) => {
 
   const handleViewResult = async (bookingId: string, bookingName: string) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/v1/user/bookings/result/${bookingId}`);
+      const response = await axios.get(`https://crm-eta-blush.vercel.app/api/v1/user/bookings/result/${bookingId}`);
       const result = response.data?.result;
 
       if (result && Object.keys(result).length > 0) {

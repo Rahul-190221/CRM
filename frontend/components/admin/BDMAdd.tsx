@@ -78,7 +78,7 @@ export default function BDMAdd() {
   const fetchRecentBDMs = async () => {
     try {
       const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '')
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'https://crm-eta-blush.vercel.app' : '')
       const response = await fetch(`${apiUrl}/api/auth/users?role=bdm,senior-bdm,junior-bdm&limit=6`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -98,7 +98,7 @@ export default function BDMAdd() {
   const fetchManagers = async () => {
     try {
       const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '')
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'https://crm-eta-blush.vercel.app' : '')
       const response = await fetch(`${apiUrl}/api/auth/users?role=admin,senior-bdm`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -150,7 +150,7 @@ export default function BDMAdd() {
         password: formData.password
       }
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '')
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'https://crm-eta-blush.vercel.app' : '')
       const response = await fetch(`${apiUrl}/api/auth/register`, {
         method: 'POST',
         headers: {

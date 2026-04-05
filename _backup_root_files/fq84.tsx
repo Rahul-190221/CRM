@@ -21,7 +21,7 @@ const DashboardPage = () => {
           setUserId(userId);
 
           const response = await axios.get(
-            `http://localhost:5000/api/v1/user/${userId}`
+            `https://crm-eta-blush.vercel.app/api/v1/user/${userId}`
           );
 
           if (response.data && response.data.user) {
@@ -46,7 +46,7 @@ const DashboardPage = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/v1/user/attendance/bulk`,
+        `https://crm-eta-blush.vercel.app/api/v1/user/attendance/bulk`,
         { userIds: [userId] }
       );
 

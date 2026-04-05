@@ -63,7 +63,7 @@ cd ../backend && npm install
 
    Create `frontend/.env.local` file:
    ```env
-   NEXT_PUBLIC_API_URL=http://localhost:5000/api
+   NEXT_PUBLIC_API_URL=https://crm-eta-blush.vercel.app/api
    ```
 
 3. **Start MongoDB** (if running locally):
@@ -97,7 +97,7 @@ cd frontend && npm run dev
 ```
 
 - Frontend will run on: http://localhost:3000
-- Backend API will run on: http://localhost:5000
+- Backend API will run on: https://crm-eta-blush.vercel.app
 
 ## API Endpoints
 

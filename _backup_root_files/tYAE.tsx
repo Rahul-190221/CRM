@@ -31,7 +31,7 @@ const CoursesPage = ({ params }: { params: { contact: string } }) => {
 
   //     // Delete the current booking
   //     await axios.delete(
-  //       `http://localhost:5000/api/v1/bookings/${params.contact}`
+  //       `https://crm-eta-blush.vercel.app/api/v1/bookings/${params.contact}`
   //     );
 
   //     toast((t) => {
@@ -57,7 +57,7 @@ const CoursesPage = ({ params }: { params: { contact: string } }) => {
  const deletePreviousBooking = async () => {
   try {
     await axios.delete(
-      `http://localhost:5000/api/v1/bookings/${params.contact}`
+      `https://crm-eta-blush.vercel.app/api/v1/bookings/${params.contact}`
     );
   } catch (error) {
     console.error("Error deleting previous booking:", error);
@@ -74,7 +74,7 @@ const proceedWithNewBooking = async (newBookingDetails: any) => {
   try {
     // Assume `newBookingDetails` contains the details of the new slot selected by the user.
     await axios.post(
-      "http://localhost:5000/api/v1/bookings",
+      "https://crm-eta-blush.vercel.app/api/v1/bookings",
       newBookingDetails
     );
 

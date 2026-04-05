@@ -57,7 +57,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/signup`,
+      `${process.env.NEXT_PUBLIC_API_URL || 'https://crm-eta-blush.vercel.app'}/api/auth/signup`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

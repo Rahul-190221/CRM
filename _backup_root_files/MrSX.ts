@@ -1,7 +1,7 @@
 
 export const forgetPassword = async (email: string) => {
   const response = await fetch(
-    `http://localhost:5000/api/v1/auth/forget-password`,
+    `https://crm-eta-blush.vercel.app/api/v1/auth/forget-password`,
     {
     
       method: "POST",

@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://crm-eta-blush.vercel.app';
 
 export const createSchedule = async (scheduleData: any) => {
   const response = await fetch(`${API_URL}/api/v1/admin/create-schedule`, {

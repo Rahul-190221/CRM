@@ -28,7 +28,7 @@ import { MdOutlineCastForEducation } from "react-icons/md";
 const handleLinkClick = () => {};
 
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") || "http://localhost:5000";
+  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") || "https://crm-eta-blush.vercel.app";
 
 const SidebarAdmin = () => {
   const [isOpen, setIsOpen] = useState(false);
