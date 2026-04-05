@@ -205,20 +205,20 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Activity & Top Performers */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-3">
         {/* Recent Activity */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm card-lift">
-          <h3 className="text-lg font-bold text-[#00000F] mb-5">Recent Activity</h3>
-          <div className="space-y-5">
+        <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-5 shadow-sm card-lift">
+          <h3 className="text-sm sm:text-base font-bold text-[#00000F] mb-3">Recent Activity</h3>
+          <div className="space-y-3">
             {recentActivity.map((item) => (
-              <div key={item.id} className="flex gap-4 items-start">
-                <div className={`w-2 h-2 rounded-full mt-2 shrink-0 ${getActivityColor(item.type)}`} />
+              <div key={item.id} className="flex gap-3 items-start">
+                <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${getActivityColor(item.type)}`} />
                 <div>
-                  <p className="text-sm">
+                  <p className="text-xs sm:text-sm">
                     <span className="font-bold text-[#00000F]">{item.user}</span>
                     <span className="text-[#00000F]/60 ml-1">{item.action}</span>
                   </p>
-                  <p className="text-xs text-[#00000F]/40 mt-1">{formatTimeAgo(item.timestamp)}</p>
+                  <p className="text-[10px] sm:text-xs text-[#00000F]/40 mt-0.5">{formatTimeAgo(item.timestamp)}</p>
                 </div>
               </div>
             ))}
@@ -226,20 +226,20 @@ export default function AdminDashboard() {
         </div>
 
         {/* Top Performers */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm card-lift">
-          <h3 className="text-lg font-bold text-[#00000F] mb-5">Top Performers (This Month)</h3>
-          <div className="space-y-3">
+        <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-5 shadow-sm card-lift">
+          <h3 className="text-sm sm:text-base font-bold text-[#00000F] mb-3">Top Performers</h3>
+          <div className="space-y-2">
             {topPerformers.map((performer) => (
-              <div key={performer.rank} className="flex items-center justify-between p-3 rounded-lg hover:bg-white transition-colors">
-                <div className="flex items-center gap-4">
-                  <div className="w-8 h-8 rounded-full bg-[#FACE39]/20 flex items-center justify-center text-[#FACE39] font-bold text-sm border border-[#FACE39]/30">
+              <div key={performer.rank} className="flex items-center justify-between p-2 sm:p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#FACE39]/20 flex items-center justify-center text-[#FACE39] font-bold text-xs sm:text-sm border border-[#FACE39]/30 flex-shrink-0">
                     {performer.rank}
                   </div>
-                  <span className="text-sm font-semibold text-[#00000F]">{performer.name}</span>
+                  <span className="text-xs sm:text-sm font-semibold text-[#00000F]">{performer.name}</span>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-[#00000F]/50">{performer.convertedLeads}/{performer.totalLeads} converted</p>
-                  <p className="text-sm font-bold text-green-600">{performer.conversionRate}% <span className="text-[10px] uppercase text-[#00000F]/40">rate</span></p>
+                  <p className="text-[10px] sm:text-xs text-[#00000F]/50">{performer.convertedLeads}/{performer.totalLeads}</p>
+                  <p className="text-xs sm:text-sm font-bold text-green-600">{performer.conversionRate}%</p>
                 </div>
               </div>
             ))}
@@ -248,13 +248,13 @@ export default function AdminDashboard() {
       </div>
 
       {/* Lead Stage Distribution */}
-      <div className="mb-4">
-        <h2 className="text-lg font-bold text-[#00000F] mb-2">Lead Stage Distribution</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
+      <div className="mb-3">
+        <h2 className="text-sm sm:text-base font-bold text-[#00000F] mb-2">Lead Stage Distribution</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
           {stageDistribution.map((item) => (
-            <div key={item.stage} className={`p-4 rounded-xl border text-center ${stageColors[item.stage]}`}>
-              <h4 className="text-2xl font-bold">{item.count}</h4>
-              <p className="text-xs font-medium mt-1 opacity-80">
+            <div key={item.stage} className={`p-2 sm:p-3 rounded-xl border text-center ${stageColors[item.stage]}`}>
+              <h4 className="text-xl sm:text-2xl font-bold">{item.count}</h4>
+              <p className="text-[10px] sm:text-xs font-medium mt-0.5 opacity-80">
                 {item.stage === 'Hot' ? 'Hot Leads' : item.stage === 'Dead' ? 'Dead Leads' : item.stage}
               </p>
             </div>
@@ -263,45 +263,45 @@ export default function AdminDashboard() {
       </div>
 
       {/* Charts Row 1 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-3">
         {/* Lead Stage Trend */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm card-lift">
+        <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-5 shadow-sm card-lift">
           <div className="flex items-center gap-2 mb-2">
-            <BarChart3 className="w-5 h-5 text-[#00000F]/40" />
-            <h3 className="text-lg font-bold text-[#00000F]">Lead Stage Trend</h3>
+            <BarChart3 className="w-4 h-4 text-[#00000F]/40" />
+            <h3 className="text-sm sm:text-base font-bold text-[#00000F]">Lead Stage Trend</h3>
           </div>
-          <div className="h-[280px]">
+          <div className="h-[190px] sm:h-[240px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={stageTrend}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#9CA3AF' }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#9CA3AF' }} />
+                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} width={28} />
                 <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="Converted" stroke="#22C55E" strokeWidth={2} dot={{ r: 4 }} />
-                <Line type="monotone" dataKey="Hot" stroke="#F97316" strokeWidth={2} dot={{ r: 4 }} />
-                <Line type="monotone" dataKey="Intake" stroke="#3B82F6" strokeWidth={2} dot={{ r: 4 }} />
-                <Line type="monotone" dataKey="Processing" stroke="#A855F7" strokeWidth={2} dot={{ r: 4 }} />
+                <Legend iconSize={10} wrapperStyle={{ fontSize: '10px' }} />
+                <Line type="monotone" dataKey="Converted" stroke="#22C55E" strokeWidth={2} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="Hot" stroke="#F97316" strokeWidth={2} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="Intake" stroke="#3B82F6" strokeWidth={2} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="Processing" stroke="#A855F7" strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Lead Source Distribution */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm card-lift">
+        <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-5 shadow-sm card-lift">
           <div className="flex items-center gap-2 mb-2">
-            <PieChartIcon className="w-5 h-5 text-[#00000F]/40" />
-            <h3 className="text-lg font-bold text-[#00000F]">Lead Source Distribution</h3>
+            <PieChartIcon className="w-4 h-4 text-[#00000F]/40" />
+            <h3 className="text-sm sm:text-base font-bold text-[#00000F]">Lead Source Distribution</h3>
           </div>
-          <div className="h-[280px]">
+          <div className="h-[190px] sm:h-[240px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={sourceDistribution}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
+                  innerRadius={45}
+                  outerRadius={75}
                   paddingAngle={3}
                   dataKey="percentage"
                   nameKey="source"
@@ -312,10 +312,11 @@ export default function AdminDashboard() {
                 </Pie>
                 <Tooltip formatter={(value) => `${value}%`} />
                 <Legend
-                  layout="vertical"
-                  align="right"
-                  verticalAlign="middle"
-                  formatter={(value) => <span className="text-xs text-[#00000F]/60">{value}</span>}
+                  layout="horizontal"
+                  align="center"
+                  verticalAlign="bottom"
+                  iconSize={8}
+                  formatter={(value) => <span style={{ fontSize: '10px' }} className="text-[#00000F]/60">{value}</span>}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -326,43 +327,43 @@ export default function AdminDashboard() {
       {/* Charts Row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
         {/* Conversion Rate Trend */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm card-lift">
+        <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-5 shadow-sm card-lift">
           <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="w-5 h-5 text-[#00000F]/40" />
-            <h3 className="text-lg font-bold text-[#00000F]">Conversion Rate Trend</h3>
+            <TrendingUp className="w-4 h-4 text-[#00000F]/40" />
+            <h3 className="text-sm sm:text-base font-bold text-[#00000F]">Conversion Rate Trend</h3>
           </div>
-          <div className="h-[280px]">
+          <div className="h-[190px] sm:h-[240px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={conversionTrend}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#9CA3AF' }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#9CA3AF' }} tickFormatter={(val) => `${val}%`} />
+                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} tickFormatter={(val) => `${val}%`} width={32} />
                 <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} formatter={(value) => [`${value}%`, 'Rate']} />
-                <Bar dataKey="rate" fill="#FACE39" radius={[4, 4, 0, 0]} barSize={35} />
+                <Bar dataKey="rate" fill="#FACE39" radius={[4, 4, 0, 0]} barSize={25} />
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <div className="mt-4 flex items-center justify-center gap-2">
-            <div className="w-3 h-3 bg-[#FACE39] rounded-sm" />
-            <span className="text-xs text-[#00000F]/50 font-medium">Conversion Rate (%)</span>
+          <div className="mt-2 flex items-center justify-center gap-2">
+            <div className="w-2.5 h-2.5 bg-[#FACE39] rounded-sm" />
+            <span className="text-[10px] sm:text-xs text-[#00000F]/50 font-medium">Conversion Rate (%)</span>
           </div>
         </div>
 
         {/* Status Distribution */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm card-lift">
+        <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-5 shadow-sm card-lift">
           <style>{statusBarStyles}</style>
           <div className="flex items-center gap-2 mb-2">
-            <Activity className="w-5 h-5 text-[#00000F]/40" />
-            <h3 className="text-lg font-bold text-[#00000F]">Status Distribution</h3>
+            <Activity className="w-4 h-4 text-[#00000F]/40" />
+            <h3 className="text-sm sm:text-base font-bold text-[#00000F]">Status Distribution</h3>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-2.5">
             {statusDistribution.map((item, i) => (
-              <div key={item.label} className="space-y-1.5">
-                <div className="flex justify-between text-sm">
+              <div key={item.label} className="space-y-1">
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-[#00000F]/70 font-medium">{item.label}</span>
                   <span className="text-[#00000F] font-bold">{item.count}</span>
                 </div>
-                <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                   <div className={`progress-bar sd-bar-${i}`} />
                 </div>
               </div>

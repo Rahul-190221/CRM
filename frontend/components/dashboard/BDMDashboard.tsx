@@ -230,10 +230,10 @@ export default function BDMDashboard({ activePage, setActivePage }: BDMDashboard
       </div>
 
       {/* Recent Leads & Upcoming Tasks */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 mb-3">
         {/* Recent Leads */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-gray-100 p-6 shadow-sm card-lift">
-          <h2 className="text-lg font-bold text-[#00000F] mb-5">Recent Leads</h2>
+        <div className="lg:col-span-2 bg-white rounded-xl border border-gray-100 p-3 sm:p-5 shadow-sm card-lift">
+          <h2 className="text-sm sm:text-base font-bold text-[#00000F] mb-3">Recent Leads</h2>
           <div className="space-y-4">
             {recentLeads.length === 0 ? (
               <p className="text-sm text-[#00000F]/40 text-center py-6">No recent leads found.</p>
@@ -262,8 +262,8 @@ export default function BDMDashboard({ activePage, setActivePage }: BDMDashboard
         </div>
 
         {/* Upcoming Tasks */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm card-lift">
-          <h2 className="text-lg font-bold text-[#00000F] mb-5">Upcoming Tasks</h2>
+        <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-5 shadow-sm card-lift">
+          <h2 className="text-sm sm:text-base font-bold text-[#00000F] mb-3">Upcoming Tasks</h2>
           <div className="space-y-4">
             {upcomingTasks.length === 0 ? (
               <p className="text-sm text-[#00000F]/40 text-center py-6">No upcoming tasks.</p>
@@ -288,13 +288,13 @@ export default function BDMDashboard({ activePage, setActivePage }: BDMDashboard
       </div>
 
       {/* Lead Stage Distribution */}
-      <div className="mb-6">
-        <h2 className="text-lg font-bold text-[#00000F] mb-4">Lead Stage Distribution</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div className="mb-3">
+        <h2 className="text-sm sm:text-base font-bold text-[#00000F] mb-2">Lead Stage Distribution</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
           {stageDistribution.map((item) => (
-            <div key={item.stage} className={`p-4 rounded-xl border text-center ${stageColors[item.stage]}`}>
-              <h4 className="text-2xl font-bold">{item.count}</h4>
-              <p className="text-xs font-medium mt-1 opacity-80">
+            <div key={item.stage} className={`p-2 sm:p-3 rounded-xl border text-center ${stageColors[item.stage]}`}>
+              <h4 className="text-xl sm:text-2xl font-bold">{item.count}</h4>
+              <p className="text-[10px] sm:text-xs font-medium mt-0.5 opacity-80">
                 {item.stage === 'Hot' ? 'Hot Leads' : item.stage === 'Dead' ? 'Dead Leads' : item.stage}
               </p>
             </div>
@@ -303,45 +303,45 @@ export default function BDMDashboard({ activePage, setActivePage }: BDMDashboard
       </div>
 
       {/* Charts Row 1 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-3">
         {/* Lead Stage Trend */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm card-lift">
-          <div className="flex items-center gap-2 mb-6">
-            <BarChart3 className="w-5 h-5 text-[#00000F]/40" />
-            <h3 className="text-lg font-bold text-[#00000F]">Lead Stage Trend</h3>
+        <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-5 shadow-sm card-lift">
+          <div className="flex items-center gap-2 mb-2">
+            <BarChart3 className="w-4 h-4 text-[#00000F]/40" />
+            <h3 className="text-sm sm:text-base font-bold text-[#00000F]">Lead Stage Trend</h3>
           </div>
-          <div className="h-[280px]">
+          <div className="h-[190px] sm:h-[240px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={stageTrend}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#9CA3AF' }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#9CA3AF' }} />
+                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} width={28} />
                 <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="Converted" stroke="#22C55E" strokeWidth={2} dot={{ r: 4 }} />
-                <Line type="monotone" dataKey="Hot" stroke="#F97316" strokeWidth={2} dot={{ r: 4 }} />
-                <Line type="monotone" dataKey="Intake" stroke="#3B82F6" strokeWidth={2} dot={{ r: 4 }} />
-                <Line type="monotone" dataKey="Processing" stroke="#A855F7" strokeWidth={2} dot={{ r: 4 }} />
+                <Legend iconSize={10} wrapperStyle={{ fontSize: '10px' }} />
+                <Line type="monotone" dataKey="Converted" stroke="#22C55E" strokeWidth={2} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="Hot" stroke="#F97316" strokeWidth={2} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="Intake" stroke="#3B82F6" strokeWidth={2} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="Processing" stroke="#A855F7" strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Lead Source Distribution */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm card-lift">
-          <div className="flex items-center gap-2 mb-6">
-            <PieChartIcon className="w-5 h-5 text-[#00000F]/40" />
-            <h3 className="text-lg font-bold text-[#00000F]">Lead Source Distribution</h3>
+        <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-5 shadow-sm card-lift">
+          <div className="flex items-center gap-2 mb-2">
+            <PieChartIcon className="w-4 h-4 text-[#00000F]/40" />
+            <h3 className="text-sm sm:text-base font-bold text-[#00000F]">Lead Source Distribution</h3>
           </div>
-          <div className="h-[280px]">
+          <div className="h-[190px] sm:h-[240px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={sourceDistribution}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
+                  innerRadius={45}
+                  outerRadius={75}
                   paddingAngle={3}
                   dataKey="percentage"
                   nameKey="source"
@@ -352,10 +352,11 @@ export default function BDMDashboard({ activePage, setActivePage }: BDMDashboard
                 </Pie>
                 <Tooltip formatter={(value) => `${value}%`} />
                 <Legend
-                  layout="vertical"
-                  align="right"
-                  verticalAlign="middle"
-                  formatter={(value) => <span className="text-xs text-[#00000F]/60">{value}</span>}
+                  layout="horizontal"
+                  align="center"
+                  verticalAlign="bottom"
+                  iconSize={8}
+                  formatter={(value) => <span style={{ fontSize: '10px' }} className="text-[#00000F]/60">{value}</span>}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -364,44 +365,44 @@ export default function BDMDashboard({ activePage, setActivePage }: BDMDashboard
       </div>
 
       {/* Charts Row 2 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
         {/* Conversion Rate Trend */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm card-lift">
-          <div className="flex items-center gap-2 mb-6">
-            <TrendingUp className="w-5 h-5 text-[#00000F]/40" />
-            <h3 className="text-lg font-bold text-[#00000F]">Conversion Rate Trend</h3>
+        <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-5 shadow-sm card-lift">
+          <div className="flex items-center gap-2 mb-2">
+            <TrendingUp className="w-4 h-4 text-[#00000F]/40" />
+            <h3 className="text-sm sm:text-base font-bold text-[#00000F]">Conversion Rate Trend</h3>
           </div>
-          <div className="h-[280px]">
+          <div className="h-[190px] sm:h-[240px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={conversionTrend}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#9CA3AF' }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#9CA3AF' }} tickFormatter={(val) => `${val}%`} />
+                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} tickFormatter={(val) => `${val}%`} width={32} />
                 <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} formatter={(value) => [`${value}%`, 'Rate']} />
-                <Bar dataKey="rate" fill="#FACE39" radius={[4, 4, 0, 0]} barSize={35} />
+                <Bar dataKey="rate" fill="#FACE39" radius={[4, 4, 0, 0]} barSize={25} />
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <div className="mt-4 flex items-center justify-center gap-2">
-            <div className="w-3 h-3 bg-[#FACE39] rounded-sm" />
-            <span className="text-xs text-[#00000F]/50 font-medium">Conversion Rate (%)</span>
+          <div className="mt-2 flex items-center justify-center gap-2">
+            <div className="w-2.5 h-2.5 bg-[#FACE39] rounded-sm" />
+            <span className="text-[10px] sm:text-xs text-[#00000F]/50 font-medium">Conversion Rate (%)</span>
           </div>
         </div>
 
         {/* Status Distribution */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm card-lift">
-          <div className="flex items-center gap-2 mb-6">
-            <Activity className="w-5 h-5 text-[#00000F]/40" />
-            <h3 className="text-lg font-bold text-[#00000F]">Status Distribution</h3>
+        <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-5 shadow-sm card-lift">
+          <div className="flex items-center gap-2 mb-2">
+            <Activity className="w-4 h-4 text-[#00000F]/40" />
+            <h3 className="text-sm sm:text-base font-bold text-[#00000F]">Status Distribution</h3>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-2.5">
             {statusDistribution.map((item) => (
-              <div key={item.label} className="space-y-1.5">
-                <div className="flex justify-between text-sm">
+              <div key={item.label} className="space-y-1">
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-[#00000F]/70 font-medium">{item.label}</span>
                   <span className="text-[#00000F] font-bold">{item.count}</span>
                 </div>
-                <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                   <div
                     className="bdm-status-bar h-full rounded-full transition-all duration-500"
                     style={{'--bar-width': `${(item.count / maxStatusCount) * 100}%`, '--bar-color': item.color} as React.CSSProperties}
