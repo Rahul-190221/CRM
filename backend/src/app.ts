@@ -19,6 +19,8 @@ import leadsRoutes from './routes/leads.routes';
 import schedulesRoutes from './routes/schedules.routes';
 import mockTestPackagesRoutes from './routes/mockTestPackages.routes';
 import notificationRoutes from './routes/notification.routes';
+import activitiesRoutes from './routes/activities.routes';
+import reportsRoutes from './routes/reports.routes';
 import { createAndEmitNotification } from './services/notification.service';
 
 const app = express();
@@ -38,7 +40,7 @@ app.use(cors({
   origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
   exposedHeaders: ['Content-Range', 'X-Content-Range'],
   maxAge: 86400
 }));
@@ -54,10 +56,11 @@ const authLimiter = rateLimit({
 
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
+  max: 2000,
   message: { message: 'Too many requests, please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => req.path.startsWith('/dashboard'),
 });
 
 app.use('/api/auth/login', authLimiter);
@@ -93,6 +96,8 @@ app.use('/api/leads', leadsRoutes);
 app.use('/api/schedules', schedulesRoutes);
 app.use('/api/mock-test-packages', mockTestPackagesRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/activities', activitiesRoutes);
+app.use('/api/reports', reportsRoutes);
 
 // Test Socket.io trigger (Temp for Verification)
 app.post('/api/test-notification', async (req, res) => {

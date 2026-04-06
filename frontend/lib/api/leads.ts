@@ -11,18 +11,34 @@ const getAuthHeader = (): HeadersInit => {
   };
 };
 
+// Assign leads to a BDM
+export const assignLeads = async (leadIds: string[], bdmId: string): Promise<{ message: string }> => {
+  const response = await fetch(`${API_BASE_URL}/leads/assign`, {
+    method: 'POST',
+    headers: getAuthHeader(),
+    body: JSON.stringify({ leadIds, bdmId })
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Failed to assign leads');
+  }
+  return response.json();
+};
+
 // Get all leads with optional filters
 export const getLeads = async (filters?: {
   stage?: string;
   source?: string;
   assignedTo?: string;
   search?: string;
+  unassigned?: boolean;
 }): Promise<Lead[]> => {
   const params = new URLSearchParams();
   if (filters?.stage) params.append('stage', filters.stage);
   if (filters?.source) params.append('source', filters.source);
   if (filters?.assignedTo) params.append('assignedTo', filters.assignedTo);
   if (filters?.search) params.append('search', filters.search);
+  if (filters?.unassigned) params.append('unassigned', 'true');
 
   const queryString = params.toString();
   const url = `${API_BASE_URL}/leads${queryString ? `?${queryString}` : ''}`;
@@ -107,8 +123,8 @@ export const deleteLead = async (id: string): Promise<void> => {
 };
 
 // Get all BDMs for assignment
-export const getBDMs = async (): Promise<BDM[]> => {
-  const response = await fetch(`${API_BASE_URL}/leads/bdms`, {
+export const getBDMsForAssignment = async (): Promise<BDM[]> => {
+  const response = await fetch(`${API_BASE_URL}/auth/users?role=bdm,senior-bdm,junior-bdm`, {
     headers: getAuthHeader()
   });
   if (!response.ok) throw new Error('Failed to fetch BDMs');

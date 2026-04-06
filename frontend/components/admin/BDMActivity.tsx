@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Search, Activity, Clock, Phone, Mail, FileText, UserPlus, CheckCircle, XCircle, Calendar } from 'lucide-react'
+import { getActivities } from '@/lib/api/activities'
 
 interface ActivityLog {
   _id: string
@@ -16,7 +17,7 @@ interface ActivityLog {
 }
 
 // Avatar color generator based on name
-const getAvatarColor = (name: string): string => {
+const getAvatarColor = (name?: string): string => {
   const colors = [
     'bg-[#FACE39]',
     'bg-blue-500',
@@ -27,11 +28,13 @@ const getAvatarColor = (name: string): string => {
     'bg-red-500',
     'bg-orange-500'
   ]
+  if (!name) return colors[0]
   const index = name.charCodeAt(0) % colors.length
   return colors[index]
 }
 
-const getInitials = (name: string): string => {
+const getInitials = (name?: string): string => {
+  if (!name) return '?'
   const parts = name.split(' ')
   return parts.length > 1
     ? `${parts[0].charAt(0)}${parts[1].charAt(0)}`.toUpperCase()
@@ -97,27 +100,20 @@ export default function BDMActivity() {
   }, [searchTerm, filterType, filterDate, activities])
 
   const fetchActivities = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'https://crm-eta-blush.vercel.app' : '')
-      const response = await fetch(`${apiUrl}/api/activities`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setActivities(data)
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        const data = await getActivities(token);
+        setActivities(Array.isArray(data) ? data : (data.activities ?? []));
       }
     } catch (error) {
-      console.error('Error fetching activities:', error)
-      setActivities([])
+      console.error('Error fetching activities:', error);
+      setActivities([]);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const filterActivitiesData = () => {
     let filtered = [...activities]

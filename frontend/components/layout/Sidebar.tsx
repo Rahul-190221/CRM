@@ -26,41 +26,13 @@ interface SidebarProps {
   onLogout: () => void
   isOpen: boolean
   onClose: () => void
+  unreadCount: number
 }
 
-export default function Sidebar({ activePage, setActivePage, onLogout, isOpen, onClose }: SidebarProps) {
+export default function Sidebar({ activePage, setActivePage, onLogout, isOpen, onClose, unreadCount }: SidebarProps) {
   const [isServicesOpen, setIsServicesOpen] = useState(true)
-  const [unreadCount, setUnreadCount] = useState(0)
 
   const socketService = useSocket()
-
-  useEffect(() => {
-    const fetchUnreadCount = async () => {
-      const token = Cookies.get('token') || localStorage.getItem('token')
-      if (token) {
-        try {
-          const res = await getNotifications(token)
-          const count = res.data?.filter((n: any) => !n.isRead).length || 0
-          setUnreadCount(count)
-        } catch (error) {
-          console.error("Failed to fetch notification count", error)
-        }
-      }
-    }
-    fetchUnreadCount()
-  }, [])
-
-  useEffect(() => {
-    if (socketService?.socket) {
-      const handleNewNotification = () => {
-        setUnreadCount(prev => prev + 1)
-      }
-      socketService.socket.on('new-notification', handleNewNotification)
-      return () => {
-        socketService.socket?.off('new-notification', handleNewNotification)
-      }
-    }
-  }, [socketService?.socket])
 
   const handleNavigate = (page: Page) => {
     setActivePage(page)

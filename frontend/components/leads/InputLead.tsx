@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Upload, Trash2, AlertCircle, CheckCircle2, Calendar, ChevronDown } from 'lucide-react'
-import { createLead, getBDMs, importLeadsFromCSV } from '@/lib/api/leads'
+import { Plus, Upload, Trash2, AlertCircle, CheckCircle2, Calendar, ChevronDown, ArrowLeft } from 'lucide-react'
+import { createLead, getBDMsForAssignment as getBDMs, importLeadsFromCSV } from '@/lib/api/leads'
 import type { LeadSource, ServiceInterest, BDM } from '@/types/admin'
 
 interface FollowUpEntry {
@@ -19,6 +19,9 @@ interface InputLeadProps {
   onSuccess?: () => void
   onCancel?: () => void
 }
+
+const fieldClass = 'w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-300 font-medium focus:outline-none focus:ring-2 focus:ring-[#FACE39]/50 focus:border-[#FACE39] transition-all'
+const labelClass = 'block text-[11px] font-extrabold text-gray-500 uppercase tracking-widest mb-2'
 
 export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
   const [formData, setFormData] = useState({
@@ -54,22 +57,15 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
   }, [])
 
   const handleAddFollowUp = () => {
-    setFollowUps([
-      ...followUps,
-      { id: Date.now(), date: '', note: '', nextFollowUpDate: '' }
-    ])
+    setFollowUps([...followUps, { id: Date.now(), date: '', note: '', nextFollowUpDate: '' }])
   }
 
   const handleRemoveFollowUp = (id: number) => {
-    if (followUps.length > 1) {
-      setFollowUps(followUps.filter(f => f.id !== id))
-    }
+    if (followUps.length > 1) setFollowUps(followUps.filter(f => f.id !== id))
   }
 
   const handleFollowUpChange = (id: number, field: keyof FollowUpEntry, value: string) => {
-    setFollowUps(followUps.map(f =>
-      f.id === id ? { ...f, [field]: value } : f
-    ))
+    setFollowUps(followUps.map(f => f.id === id ? { ...f, [field]: value } : f))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -85,19 +81,12 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
         serviceInterest: formData.serviceInterest as ServiceInterest,
         followUps: followUps
           .filter(f => f.date || f.note || f.nextFollowUpDate)
-          .map(f => ({
-            date: f.date,
-            note: f.note,
-            nextFollowUpDate: f.nextFollowUpDate
-          })),
+          .map(f => ({ date: f.date, note: f.note, nextFollowUpDate: f.nextFollowUpDate })),
         lifecycleStage: 'Intake' as const
       }
-
       await createLead(leadData)
       setSuccess('Lead created successfully!')
-      setTimeout(() => {
-        onSuccess?.()
-      }, 1000)
+      setTimeout(() => { onSuccess?.() }, 1000)
     } catch (err: any) {
       setError(err.message || 'Failed to create lead')
     } finally {
@@ -115,15 +104,10 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
         setIsImporting(true)
         setError(null)
         setSuccess(null)
-
         try {
           const result = await importLeadsFromCSV(file)
           setSuccess(`Successfully imported ${result.imported} leads${result.failed > 0 ? `. ${result.failed} failed.` : '.'}`)
-          if (result.imported > 0) {
-            setTimeout(() => {
-              onSuccess?.()
-            }, 2000)
-          }
+          if (result.imported > 0) setTimeout(() => { onSuccess?.() }, 2000)
         } catch (err: any) {
           setError(err.message || 'Failed to import CSV')
         } finally {
@@ -136,177 +120,197 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
 
   return (
     <div className="w-full">
+
       {/* Header */}
-      <div className="flex justify-between items-start mb-6 p-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Input Lead</h1>
-          <p className="text-sm text-gray-500 mt-1">Add a new lead to the system manually or import from Excel</p>
+      <div className="flex justify-between items-center mb-5">
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="flex items-center justify-center w-9 h-9 rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-800 transition-all bg-white shadow-sm"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Input Lead</h1>
+            <p className="text-sm text-gray-400 mt-0.5">Add a new lead manually or import from CSV</p>
+          </div>
         </div>
         <button
           onClick={handleImportCSV}
           disabled={isImporting}
-          className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors bg-white disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all bg-white shadow-sm disabled:opacity-50"
         >
           <Upload className="w-4 h-4" />
-          <span>{isImporting ? 'Importing...' : 'Import from CSV'}</span>
+          {isImporting ? 'Importing…' : 'Import from CSV'}
         </button>
       </div>
 
-      {/* Manual Input Section */}
-      <div className="bg-white rounded-lg border border-gray-100 p-8 mb-6">
-        <div className="mb-8">
-          <h2 className="text-lg font-bold text-gray-900">Manual Input</h2>
-          <p className="text-sm text-gray-400 mt-1">Fill in the form below to add a lead manually</p>
-        </div>
+      <form onSubmit={handleSubmit} className="space-y-3">
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-700 uppercase tracking-tight">Full Name <span className="text-red-500">*</span></label>
+        {/* Contact Information */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="px-4 sm:px-8 py-4 border-b border-gray-50 bg-gray-50/60">
+            <h2 className="text-sm font-extrabold text-gray-800">Contact Information</h2>
+            <p className="text-xs text-gray-400 mt-0.5">Basic details about the lead</p>
+          </div>
+          <div className="px-4 sm:px-8 py-4 sm:py-5 grid grid-cols-1 md:grid-cols-2 gap-x-6 sm:gap-x-10 gap-y-4">
+            <div>
+              <label className={labelClass}>Full Name <span className="text-red-400 normal-case">*</span></label>
               <input
                 type="text"
                 placeholder="Enter lead name"
                 value={formData.fullName}
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FACE39]/40 placeholder-gray-300 transition-all font-medium"
+                className={fieldClass}
                 required
               />
             </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-700 uppercase tracking-tight">Email <span className="text-red-500">*</span></label>
+            <div>
+              <label className={labelClass}>Email <span className="text-red-400 normal-case">*</span></label>
               <input
                 type="email"
                 placeholder="Enter email address"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FACE39]/40 placeholder-gray-300 transition-all font-medium"
+                className={fieldClass}
                 required
               />
             </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-700 uppercase tracking-tight">Phone Number <span className="text-red-500">*</span></label>
+            <div>
+              <label className={labelClass}>Phone Number <span className="text-red-400 normal-case">*</span></label>
               <input
                 type="tel"
                 placeholder="Enter phone number"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FACE39]/40 placeholder-gray-300 transition-all font-medium"
+                className={fieldClass}
                 required
               />
             </div>
-            <div className="space-y-1.5">
-              <label htmlFor="source" className="text-xs font-bold text-gray-700 uppercase tracking-tight">Lead Source</label>
+            <div>
+              <label className={labelClass}>Lead Source</label>
               <div className="relative">
                 <select
-                  id="source"
                   value={formData.source}
                   onChange={(e) => setFormData({ ...formData, source: e.target.value as LeadSource })}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FACE39]/40 transition-all appearance-none text-gray-500 font-medium"
+                  className={fieldClass + ' appearance-none pr-10 cursor-pointer'}
                 >
                   <option value="">Select source</option>
-                  {leadSources.map(source => (
-                    <option key={source} value={source}>{source}</option>
-                  ))}
+                  {leadSources.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               </div>
             </div>
-            <div className="space-y-1.5">
-              <label htmlFor="serviceInterest" className="text-xs font-bold text-gray-700 uppercase tracking-tight">Service Interest</label>
+          </div>
+        </div>
+
+        {/* Service & Assignment */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="px-4 sm:px-8 py-4 border-b border-gray-50 bg-gray-50/60">
+            <h2 className="text-sm font-extrabold text-gray-800">Service & Assignment</h2>
+            <p className="text-xs text-gray-400 mt-0.5">Service interest and BDM assignment</p>
+          </div>
+          <div className="px-4 sm:px-8 py-4 sm:py-5 grid grid-cols-1 md:grid-cols-2 gap-x-6 sm:gap-x-10 gap-y-4">
+            <div>
+              <label className={labelClass}>Service Interest</label>
               <div className="relative">
                 <select
-                  id="serviceInterest"
                   value={formData.serviceInterest}
                   onChange={(e) => setFormData({ ...formData, serviceInterest: e.target.value as ServiceInterest })}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FACE39]/40 transition-all appearance-none text-gray-500 font-medium"
+                  className={fieldClass + ' appearance-none pr-10 cursor-pointer'}
                 >
                   <option value="">Select service</option>
-                  {serviceInterests.map(service => (
-                    <option key={service} value={service}>{service}</option>
-                  ))}
+                  {serviceInterests.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               </div>
             </div>
-            <div className="space-y-1.5">
-              <label htmlFor="assignedTo" className="text-xs font-bold text-gray-700 uppercase tracking-tight">Assign to BDM</label>
+            <div>
+              <label className={labelClass}>Assign to BDM</label>
               <div className="relative">
                 <select
-                  id="assignedTo"
                   value={formData.assignedTo}
                   onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FACE39]/40 transition-all appearance-none text-gray-500 font-medium"
+                  className={fieldClass + ' appearance-none pr-10 cursor-pointer'}
                 >
                   <option value="">Select BDM</option>
-                  {bdms.map(bdm => (
-                    <option key={bdm._id} value={bdm._id}>{bdm.name}</option>
-                  ))}
+                  {bdms.map(bdm => <option key={bdm._id} value={bdm._id}>{bdm.name}</option>)}
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               </div>
             </div>
+            <div className="md:col-span-2">
+              <label className={labelClass}>Notes</label>
+              <textarea
+                placeholder="Add any additional notes about this lead…"
+                value={formData.notes}
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                rows={4}
+                className={fieldClass + ' resize-none'}
+              />
+            </div>
           </div>
+        </div>
 
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-gray-700 uppercase tracking-tight">Notes</label>
-            <textarea
-              placeholder="Add any additional notes about this lead"
-              value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              rows={4}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FACE39]/40 placeholder-gray-300 transition-all font-medium resize-none"
-            />
+        {/* Follow-Up Details */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="px-4 sm:px-8 py-4 border-b border-gray-50 bg-gray-50/60">
+            <h2 className="text-sm font-extrabold text-gray-800">Follow-Up Details</h2>
+            <p className="text-xs text-gray-400 mt-0.5">Schedule follow-up appointments</p>
           </div>
-
-          {/* Follow-Up Details */}
-          <div className="pt-8 border-t border-gray-100">
-            <h3 className="text-lg font-bold text-gray-900 mb-6">Follow-Up Details</h3>
-
+          <div className="px-4 sm:px-8 py-4 sm:py-5 space-y-5">
             {followUps.map((followUp, index) => (
-              <div key={followUp.id} className="mb-8">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="px-4 py-1.5 border border-gray-200 rounded-lg text-xs font-bold text-gray-600 bg-white">
+              <div key={followUp.id}>
+                <div className="flex items-center justify-between mb-5">
+                  <span className="inline-flex items-center gap-2 px-3 py-1 bg-[#FACE39]/10 border border-[#FACE39]/30 rounded-lg text-xs font-bold text-yellow-700">
                     Follow Up {index + 1}
                   </span>
                   {followUps.length > 1 && (
-                    <button type="button" aria-label="Remove follow-up" onClick={() => handleRemoveFollowUp(followUp.id)} className="p-1 text-gray-400 hover:text-red-500 transition-colors">
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveFollowUp(followUp.id)}
+                      className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium text-red-500 hover:bg-red-50 transition-colors"
+                    >
                       <Trash2 className="w-3.5 h-3.5" />
+                      Remove
                     </button>
                   )}
                 </div>
-
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="space-y-1.5 relative">
-                    <label htmlFor={`date-${followUp.id}`} className="text-xs font-bold text-gray-700 uppercase tracking-tight">Date</label>
-                    <input
-                      id={`date-${followUp.id}`}
-                      type="date"
-                      value={followUp.date}
-                      onChange={(e) => handleFollowUpChange(followUp.id, 'date', e.target.value)}
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none font-medium appearance-none"
-                    />
-                    <Calendar className="absolute right-4 bottom-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
+                  <div>
+                    <label className={labelClass}>Date</label>
+                    <div className="relative">
+                      <input
+                        type="date"
+                        value={followUp.date}
+                        onChange={(e) => handleFollowUpChange(followUp.id, 'date', e.target.value)}
+                        className={fieldClass + ' pr-10'}
+                      />
+                      <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    </div>
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-tight">Note</label>
+                  <div>
+                    <label className={labelClass}>Note</label>
                     <input
                       type="text"
                       placeholder="Add follow-up note"
                       value={followUp.note}
                       onChange={(e) => handleFollowUpChange(followUp.id, 'note', e.target.value)}
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none placeholder-gray-300 font-medium"
+                      className={fieldClass}
                     />
                   </div>
-                  <div className="space-y-1.5 relative">
-                    <label htmlFor={`nextDate-${followUp.id}`} className="text-xs font-bold text-gray-700 uppercase tracking-tight">Next F.Up Date</label>
-                    <input
-                      id={`nextDate-${followUp.id}`}
-                      type="date"
-                      value={followUp.nextFollowUpDate}
-                      onChange={(e) => handleFollowUpChange(followUp.id, 'nextFollowUpDate', e.target.value)}
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm focus:outline-none font-medium appearance-none"
-                    />
-                    <Calendar className="absolute right-4 bottom-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
+                  <div>
+                    <label className={labelClass}>Next Follow-Up Date</label>
+                    <div className="relative">
+                      <input
+                        type="date"
+                        value={followUp.nextFollowUpDate}
+                        onChange={(e) => handleFollowUpChange(followUp.id, 'nextFollowUpDate', e.target.value)}
+                        className={fieldClass + ' pr-10'}
+                      />
+                      <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -315,46 +319,47 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
             <button
               type="button"
               onClick={handleAddFollowUp}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-xs font-bold text-gray-700 hover:bg-gray-50 transition-all bg-white"
+              className="flex items-center gap-2 px-4 py-2.5 border border-dashed border-gray-300 rounded-xl text-xs font-bold text-gray-500 hover:border-gray-400 hover:text-gray-700 hover:bg-gray-50 transition-all"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>Add More</span>
+              Add Follow-Up
             </button>
           </div>
+        </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-4 pt-8">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-8 py-3 bg-[#111827] rounded-lg text-sm font-bold text-white hover:bg-black transition-all disabled:opacity-50"
-            >
-              {isSubmitting ? 'Saving...' : 'Save Lead'}
-            </button>
-            <button
-              type="button"
-              onClick={onCancel}
-              className="px-8 py-3 border border-gray-200 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-50 transition-all"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
+        {/* Action Buttons */}
+        <div className="flex items-center gap-3 pb-4">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="px-8 py-3 bg-gray-900 rounded-xl text-sm font-bold text-white hover:bg-black transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? 'Saving…' : 'Save Lead'}
+          </button>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-8 py-3 border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all"
+          >
+            Cancel
+          </button>
+        </div>
 
-      {/* Status Messages */}
+      </form>
+
+      {/* Toast Messages */}
       {(error || success) && (
-        <div className="fixed bottom-8 right-8 max-w-sm animate-in fade-in slide-in-from-bottom-4">
+        <div className="fixed bottom-8 right-8 max-w-sm z-50 animate-in fade-in slide-in-from-bottom-4">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg shadow-lg flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <p className="text-sm font-medium">{error}</p>
+            <div className="bg-white border border-red-100 text-red-700 px-5 py-4 rounded-2xl shadow-2xl flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-500" />
+              <p className="text-sm font-semibold">{error}</p>
             </div>
           )}
           {success && (
-            <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-lg flex items-center gap-3">
-              <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
-              <p className="text-sm font-medium">{success}</p>
+            <div className="bg-white border border-green-100 text-green-700 px-5 py-4 rounded-2xl shadow-2xl flex items-start gap-3">
+              <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5 text-green-500" />
+              <p className="text-sm font-semibold">{success}</p>
             </div>
           )}
         </div>

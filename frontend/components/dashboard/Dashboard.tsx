@@ -8,7 +8,8 @@ import {
   TrendingUp,
   BarChart3,
   PieChart as PieChartIcon,
-  Activity
+  Activity,
+  RefreshCw
 } from 'lucide-react'
 import {
   LineChart,
@@ -25,16 +26,7 @@ import {
   Bar,
   Legend
 } from 'recharts'
-import {
-  getAdminStats,
-  getRecentActivity,
-  getTopPerformers,
-  getLeadStageDistribution,
-  getLeadStageTrend,
-  getLeadSourceDistribution,
-  getConversionRateTrend,
-  getStatusDistribution
-} from '@/lib/api/dashboard'
+import { getAdminDashboardAll } from '@/lib/api/dashboard'
 
 
 export default function AdminDashboard() {
@@ -51,61 +43,36 @@ export default function AdminDashboard() {
   const [sourceDistribution, setSourceDistribution] = useState<any[]>([])
   const [conversionTrend, setConversionTrend] = useState<any[]>([])
   const [statusDistribution, setStatusDistribution] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [fetchTick, setFetchTick] = useState(0)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
     const fetchDashboardData = async () => {
+      setLoading(true)
       try {
-        const [
-          statsRes,
-          activityRes,
-          performersRes,
-          stageDistRes,
-          stageTrendRes,
-          sourceDistRes,
-          conversionRes,
-          statusRes
-        ] = await Promise.allSettled([
-          getAdminStats(),
-          getRecentActivity(5),
-          getTopPerformers(4),
-          getLeadStageDistribution(),
-          getLeadStageTrend(),
-          getLeadSourceDistribution(),
-          getConversionRateTrend(),
-          getStatusDistribution()
-        ])
-
-        if (statsRes.status === 'fulfilled' && statsRes.value.success) {
-          setStats(statsRes.value.data)
+        const res = await getAdminDashboardAll()
+        if (res?.success) {
+          const d = res.data
+          if (d.stats)             setStats(d.stats)
+          if (d.recentActivity)    setRecentActivity(d.recentActivity)
+          if (d.topPerformers)     setTopPerformers(d.topPerformers)
+          if (d.stageDistribution) setStageDistribution(d.stageDistribution)
+          if (d.stageTrend)        setStageTrend(d.stageTrend)
+          if (d.sourceDistribution)setSourceDistribution(d.sourceDistribution)
+          if (d.conversionTrend)   setConversionTrend(d.conversionTrend)
+          if (d.statusDistribution)setStatusDistribution(d.statusDistribution)
         }
-        if (activityRes.status === 'fulfilled' && activityRes.value.success) {
-          setRecentActivity(activityRes.value.data)
-        }
-        if (performersRes.status === 'fulfilled' && performersRes.value.success) {
-          setTopPerformers(performersRes.value.data)
-        }
-        if (stageDistRes.status === 'fulfilled' && stageDistRes.value.success) {
-          setStageDistribution(stageDistRes.value.data)
-        }
-        if (stageTrendRes.status === 'fulfilled' && stageTrendRes.value.success) {
-          setStageTrend(stageTrendRes.value.data)
-        }
-        if (sourceDistRes.status === 'fulfilled' && sourceDistRes.value.success) {
-          setSourceDistribution(sourceDistRes.value.data)
-        }
-        if (conversionRes.status === 'fulfilled' && conversionRes.value.success) {
-          setConversionTrend(conversionRes.value.data)
-        }
-        if (statusRes.status === 'fulfilled' && statusRes.value.success) {
-          setStatusDistribution(statusRes.value.data)
-        }
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error)
+      } catch (error: any) {
+        console.error('Admin dashboard fetch error:', error?.message || error)
+      } finally {
+        setLoading(false)
       }
     }
-
     fetchDashboardData()
-  }, [])
+  }, [fetchTick])
 
   const formatTimeAgo = (date: Date | string) => {
     const now = new Date()
@@ -139,18 +106,39 @@ export default function AdminDashboard() {
     'Dead': 'bg-red-100 text-red-600 border-red-200'
   }
 
-  const maxStatusCount = Math.max(...statusDistribution.map(s => s.count))
+  const maxStatusCount = statusDistribution.length > 0 ? Math.max(...statusDistribution.map(s => s.count)) : 1
 
   const statusBarStyles = statusDistribution.map((item, i) =>
     `.sd-bar-${i}{width:${maxStatusCount > 0 ? ((item.count / maxStatusCount) * 100).toFixed(2) : 0}%;background-color:${item.color}}`
   ).join('')
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-4 border-[#FACE39] border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm text-[#00000F]/50">Loading dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
       {/* Header */}
-      <div className="mb-3">
-        <h1 className="text-xl sm:text-2xl font-bold text-[#00000F]">Admin Dashboard</h1>
-        <p className="text-[#00000F]/50 text-xs sm:text-sm mt-1">Welcome back! Here's what's happening with your CRM today.</p>
+      <div className="flex items-center justify-between mb-3">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#00000F]">Admin Dashboard</h1>
+          <p className="text-[#00000F]/50 text-xs sm:text-sm mt-1">Welcome back! Here's what's happening with your CRM today.</p>
+        </div>
+        <button
+          onClick={() => setFetchTick(t => t + 1)}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+          title="Refresh data"
+        >
+          <RefreshCw className="w-3.5 h-3.5" />
+          Refresh
+        </button>
       </div>
 
       {/* Stats Cards — 2 cols on mobile, 4 on desktop */}
@@ -205,7 +193,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Activity & Top Performers */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
         {/* Recent Activity */}
         <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-5 shadow-sm card-lift">
           <h3 className="text-sm sm:text-base font-bold text-[#00000F] mb-3">Recent Activity</h3>
@@ -263,16 +251,15 @@ export default function AdminDashboard() {
       </div>
 
       {/* Charts Row 1 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
         {/* Lead Stage Trend */}
         <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-5 shadow-sm card-lift">
           <div className="flex items-center gap-2 mb-2">
             <BarChart3 className="w-4 h-4 text-[#00000F]/40" />
             <h3 className="text-sm sm:text-base font-bold text-[#00000F]">Lead Stage Trend</h3>
           </div>
-          <div className="h-[190px] sm:h-[240px] relative">
-            <div className="absolute inset-0">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="w-full" style={{ height: 200 }}>
+            {mounted && <ResponsiveContainer width="100%" height={200}>
               <LineChart data={stageTrend}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                 <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
@@ -284,8 +271,7 @@ export default function AdminDashboard() {
                 <Line type="monotone" dataKey="Intake" stroke="#3B82F6" strokeWidth={2} dot={{ r: 3 }} />
                 <Line type="monotone" dataKey="Processing" stroke="#A855F7" strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
-            </ResponsiveContainer>
-            </div>
+            </ResponsiveContainer>}
           </div>
         </div>
 
@@ -295,9 +281,8 @@ export default function AdminDashboard() {
             <PieChartIcon className="w-4 h-4 text-[#00000F]/40" />
             <h3 className="text-sm sm:text-base font-bold text-[#00000F]">Lead Source Distribution</h3>
           </div>
-          <div className="h-[190px] sm:h-[240px] relative">
-            <div className="absolute inset-0">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="w-full" style={{ height: 200 }}>
+            {mounted && <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie
                   data={sourceDistribution}
@@ -322,23 +307,21 @@ export default function AdminDashboard() {
                   formatter={(value) => <span style={{ fontSize: '10px' }} className="text-[#00000F]/60">{value}</span>}
                 />
               </PieChart>
-            </ResponsiveContainer>
-            </div>
+            </ResponsiveContainer>}
           </div>
         </div>
       </div>
 
       {/* Charts Row 2 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         {/* Conversion Rate Trend */}
         <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-5 shadow-sm card-lift">
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="w-4 h-4 text-[#00000F]/40" />
             <h3 className="text-sm sm:text-base font-bold text-[#00000F]">Conversion Rate Trend</h3>
           </div>
-          <div className="h-[190px] sm:h-[240px] relative">
-            <div className="absolute inset-0">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="w-full" style={{ height: 200 }}>
+            {mounted && <ResponsiveContainer width="100%" height={200}>
               <BarChart data={conversionTrend}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                 <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
@@ -346,8 +329,7 @@ export default function AdminDashboard() {
                 <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} formatter={(value) => [`${value}%`, 'Rate']} />
                 <Bar dataKey="rate" fill="#FACE39" radius={[4, 4, 0, 0]} barSize={25} />
               </BarChart>
-            </ResponsiveContainer>
-            </div>
+            </ResponsiveContainer>}
           </div>
           <div className="mt-2 flex items-center justify-center gap-2">
             <div className="w-2.5 h-2.5 bg-[#FACE39] rounded-sm" />

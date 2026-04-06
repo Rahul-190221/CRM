@@ -25,7 +25,7 @@ export default function Notifications() {
   useEffect(() => {
     // 1. Fetch historical from API
     const fetchNotifs = async () => {
-      const token = Cookies.get('token') || localStorage.getItem('token')
+      const token = Cookies.get('accessToken') || localStorage.getItem('accessToken')
       if (token) {
         try {
           const res = await getNotifications(token)
@@ -77,7 +77,7 @@ export default function Notifications() {
 
   const handleMarkAllAsRead = async () => {
     try {
-      const token = Cookies.get('token') || localStorage.getItem('token')
+      const token = Cookies.get('accessToken') || localStorage.getItem('accessToken')
       if (token) {
         await markAllNotificationsAsRead(token)
         setNotifications(notifications.map(n => ({ ...n, isRead: true })))
@@ -90,7 +90,7 @@ export default function Notifications() {
   const handleMarkAsRead = async (id: string, isRead: boolean) => {
     if (isRead) return; // Don't call API if already read
     try {
-      const token = Cookies.get('token') || localStorage.getItem('token')
+      const token = Cookies.get('accessToken') || localStorage.getItem('accessToken')
       if (token) {
         await markNotificationAsRead(token, id)
         setNotifications(notifications.map(n =>

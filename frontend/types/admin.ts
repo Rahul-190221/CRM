@@ -149,7 +149,7 @@ export interface Lead {
   phone: string;
   source: LeadSource;
   serviceInterest: ServiceInterest;
-  assignedTo?: string;
+  assignedTo?: string | { _id: string; name: string; email: string };
   notes?: string;
   followUps: FollowUp[];
   lifecycleStage: LeadStage;
@@ -160,7 +160,18 @@ export interface Lead {
 export interface BDM {
   _id: string;
   name: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
+  role: 'bdm' | 'senior-bdm' | 'junior-bdm' | string;
+  status: 'active' | 'inactive' | string;
+  activeLeads?: number;
+  convertedLeads?: number;
+  joinDate?: string;
+  reportingTo?: string;
+  reportingToName?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export const leadStageBadgeColors: Record<LeadStage, string> = {

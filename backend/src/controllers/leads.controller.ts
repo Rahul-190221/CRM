@@ -1,13 +1,18 @@
 import { Request, Response } from 'express';
 import Lead from '../models/Lead';
 import User from '../models/User';
+import { createAndEmitNotification, createAndEmitToAdmins, createAndEmitToRoles } from '../services/notification.service';
 
 // Get all leads
 export const getLeads = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { stage, source, assignedTo, search } = req.query;
+    const { stage, source, assignedTo, search, unassigned } = req.query;
 
     const filter: any = {};
+
+    if (unassigned === 'true') {
+      filter.$or = [{ assignedTo: { $exists: false } }, { assignedTo: null }];
+    }
 
     if (stage && stage !== 'All') {
       filter.lifecycleStage = stage;
@@ -17,7 +22,7 @@ export const getLeads = async (req: Request, res: Response): Promise<void> => {
       filter.source = source;
     }
 
-    if (assignedTo) {
+    if (assignedTo && unassigned !== 'true') {
       filter.assignedTo = assignedTo;
     }
 
@@ -85,6 +90,29 @@ export const createLead = async (req: Request, res: Response): Promise<void> => 
 
     // Populate assignedTo before sending response
     await lead.populate('assignedTo', 'name email');
+
+    // Notify admins in background (don't block response)
+    const reqUser = (req as any).user;
+    try {
+      const creator = await User.findById(reqUser?.userId).select('name role');
+      const creatorName = creator?.name || 'A BDM';
+      await createAndEmitToAdmins(
+        'New Lead Added',
+        `${creatorName} added a new lead: ${fullName}`,
+        'info'
+      );
+      // If assigned to someone other than creator, notify them too
+      if (assignedTo && assignedTo !== reqUser?.userId) {
+        await createAndEmitNotification(
+          assignedTo,
+          'Lead Assigned to You',
+          `New lead assigned: ${fullName}`,
+          'info'
+        );
+      }
+    } catch (notifErr) {
+      console.error('Notification error on createLead:', notifErr);
+    }
 
     res.status(201).json(lead);
   } catch (error: any) {
@@ -186,6 +214,7 @@ export const addFollowUp = async (req: Request, res: Response): Promise<void> =>
 export const updateLeadStage = async (req: Request, res: Response): Promise<void> => {
   try {
     const { lifecycleStage } = req.body;
+    const reqUser = (req as any).user;
 
     if (!['Intake', 'Processing', 'Hot', 'Converted', 'Dead'].includes(lifecycleStage)) {
       res.status(400).json({ error: 'Invalid lifecycle stage' });
@@ -201,6 +230,30 @@ export const updateLeadStage = async (req: Request, res: Response): Promise<void
     if (!lead) {
       res.status(404).json({ error: 'Lead not found' });
       return;
+    }
+
+    // Notify Admins and Other BDMs about the change
+    try {
+      const user = await User.findById(reqUser?.userId).select('name role');
+      const actorName = user?.name || 'A BDM';
+
+      // 1. Notify Admins
+      await createAndEmitToAdmins(
+        'Lead Stage Updated',
+        `${actorName} updated lead "${lead.fullName}" to ${lifecycleStage}`,
+        lifecycleStage === 'Converted' ? 'success' : 'info'
+      );
+
+      // 2. Notify other BDMs
+      await createAndEmitToRoles(
+        ['bdm', 'senior-bdm', 'junior-bdm'],
+        'Lead Stage Updated',
+        `${actorName} updated lead "${lead.fullName}" to ${lifecycleStage}`,
+        'info',
+        reqUser?.userId
+      );
+    } catch (notifErr) {
+      console.error('Notification error on updateLeadStage:', notifErr);
     }
 
     res.json(lead);
@@ -333,6 +386,18 @@ export const assignLeads = async (req: Request, res: Response): Promise<void> =>
         }
       }
     );
+
+    // Notify the BDM
+    try {
+      await createAndEmitNotification(
+        bdmId,
+        'Leads Assigned to You',
+        `${result.modifiedCount} lead(s) have been assigned to you`,
+        'info'
+      );
+    } catch (notifErr) {
+      console.error('Notification error on assignLeads:', notifErr);
+    }
 
     res.json({
       message: `Successfully assigned ${result.modifiedCount} lead(s) to ${bdm.name}`,

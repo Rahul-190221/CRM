@@ -20,14 +20,21 @@ import LeadAssignments from '@/components/admin/LeadAssignments'
 import NotificationsPage from '@/components/shared/NotificationsPage'
 import ProfilePage from '@/components/shared/ProfilePage'
 import { getUserIdFromToken } from '@/lib/helpers/jwt'
+import { useNotifications } from '@/components/providers/NotificationProvider'
 import type { Page } from '@/types/navigation'
 
 export default function AdminDashboardPage() {
+  return <AdminDashboardContent />
+}
+
+function AdminDashboardContent() {
   const router = useRouter()
   const [activePage, setActivePage] = useState<Page>('dashboard')
   const [user, setUser] = useState<any>(null)
   const [isInitialized, setIsInitialized] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  
+  const { unreadCount } = useNotifications()
 
   useEffect(() => {
     const decoded = getUserIdFromToken()
@@ -55,6 +62,10 @@ export default function AdminDashboardPage() {
     Cookies.remove('accessToken')
     localStorage.removeItem('accessToken')
     router.push('/')
+  }
+
+  const handleNotificationClick = () => {
+    setActivePage('notification')
   }
 
   const renderContent = () => {
@@ -111,9 +122,16 @@ export default function AdminDashboardPage() {
         onLogout={handleLogout}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        unreadCount={unreadCount}
       />
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        <Header user={user} onLogout={handleLogout} onMenuToggle={() => setSidebarOpen(prev => !prev)} />
+        <Header 
+          user={user} 
+          onLogout={handleLogout} 
+          onMenuToggle={() => setSidebarOpen(prev => !prev)}
+          unreadCount={unreadCount}
+          onNotificationClick={handleNotificationClick}
+        />
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 scrollbar-hide">
           {renderContent()}
         </main>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { UserPlus, Upload } from 'lucide-react'
+import { UserPlus, Upload, Eye, EyeOff } from 'lucide-react'
 
 interface BDMUser {
   _id: string
@@ -69,6 +69,7 @@ export default function BDMAdd() {
   const [recentBDMs, setRecentBDMs] = useState<BDMUser[]>([])
   const [managers, setManagers] = useState<BDMUser[]>([])
   const [previewImage, setPreviewImage] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
     fetchRecentBDMs()
@@ -78,8 +79,8 @@ export default function BDMAdd() {
   const fetchRecentBDMs = async () => {
     try {
       const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'https://crm-eta-blush.vercel.app' : '')
-      const response = await fetch(`${apiUrl}/api/auth/users?role=bdm,senior-bdm,junior-bdm&limit=6`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://crm-eta-blush.vercel.app/api'
+      const response = await fetch(`${apiUrl}/auth/users?role=bdm,senior-bdm,junior-bdm&limit=6`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -98,8 +99,8 @@ export default function BDMAdd() {
   const fetchManagers = async () => {
     try {
       const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'https://crm-eta-blush.vercel.app' : '')
-      const response = await fetch(`${apiUrl}/api/auth/users?role=admin,senior-bdm`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://crm-eta-blush.vercel.app/api'
+      const response = await fetch(`${apiUrl}/auth/users?role=admin,senior-bdm`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -150,8 +151,8 @@ export default function BDMAdd() {
         password: formData.password
       }
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'https://crm-eta-blush.vercel.app' : '')
-      const response = await fetch(`${apiUrl}/api/auth/register`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://crm-eta-blush.vercel.app/api'
+      const response = await fetch(`${apiUrl}/auth/register`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -204,9 +205,9 @@ export default function BDMAdd() {
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col sm:flex-row gap-6">
             {/* Profile Image Upload */}
-            <div className="flex-shrink-0 flex sm:block justify-center">
+            <div className="flex-shrink-0">
               <label className="block text-sm font-medium text-gray-700 mb-2">Profile Image</label>
-              <div className="w-48 h-40 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-[#FACE39] transition-colors relative">
+              <div className="w-full sm:w-44 h-36 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-[#FACE39] transition-colors relative">
                 <input
                   type="file"
                   title="Upload profile image"
@@ -364,16 +365,25 @@ export default function BDMAdd() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Temporary Password <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  placeholder="Set a temporary password (min. 8 characters)"
-                  required
-                  minLength={8}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    placeholder="Set a temporary password (min. 8 characters)"
+                    required
+                    minLength={8}
+                    className="w-full px-4 py-2.5 pr-11 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(v => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
                 <p className="text-xs text-gray-400 mt-1">The BDM will be prompted to change this on first login.</p>
               </div>
             </div>

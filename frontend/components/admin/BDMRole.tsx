@@ -2,22 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { Search, Shield, Users, ChevronRight, Edit2, Check, X } from 'lucide-react'
-
-interface BDMUser {
-  _id: string
-  firstName: string
-  lastName: string
-  name: string
-  email: string
-  role: string
-  reportingTo?: string
-  reportingToName?: string
-  activeLeads?: number
-  status?: string
-}
+import { getUsers, updateUserRole } from '@/lib/api/auth'
+import { BDM } from '@/types/admin'
 
 // Avatar color generator based on name
-const getAvatarColor = (name: string): string => {
+const getAvatarColor = (name?: string): string => {
   const colors = [
     'bg-[#FACE39]',
     'bg-blue-500',
@@ -28,11 +17,13 @@ const getAvatarColor = (name: string): string => {
     'bg-red-500',
     'bg-orange-500'
   ]
+  if (!name) return colors[0]
   const index = name.charCodeAt(0) % colors.length
   return colors[index]
 }
 
-const getInitials = (name: string): string => {
+const getInitials = (name?: string): string => {
+  if (!name) return '?'
   const parts = name.split(' ')
   return parts.length > 1
     ? `${parts[0].charAt(0)}${parts[1].charAt(0)}`.toUpperCase()
@@ -40,8 +31,8 @@ const getInitials = (name: string): string => {
 }
 
 export default function BDMRole() {
-  const [bdmUsers, setBdmUsers] = useState<BDMUser[]>([])
-  const [filteredUsers, setFilteredUsers] = useState<BDMUser[]>([])
+  const [bdmUsers, setBdmUsers] = useState<BDM[]>([])
+  const [filteredUsers, setFilteredUsers] = useState<BDM[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [filterRole, setFilterRole] = useState('all')
   const [isLoading, setIsLoading] = useState(true)
@@ -58,27 +49,20 @@ export default function BDMRole() {
   }, [searchTerm, filterRole, bdmUsers])
 
   const fetchBDMUsers = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://crm-eta-blush.vercel.app'
-      const response = await fetch(`${apiUrl}/api/auth/users?role=bdm,senior-bdm,junior-bdm`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setBdmUsers(data)
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        const data = await getUsers(token, 'bdm,senior-bdm,junior-bdm');
+        setBdmUsers(data);
       }
     } catch (error) {
-      console.error('Error fetching BDM users:', error)
-      setBdmUsers([])
+      console.error('Error fetching BDM users:', error);
+      setBdmUsers([]);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const filterUsers = () => {
     let filtered = [...bdmUsers]
@@ -97,7 +81,7 @@ export default function BDMRole() {
     setFilteredUsers(filtered)
   }
 
-  const handleEditClick = (bdm: BDMUser) => {
+  const handleEditClick = (bdm: BDM) => {
     setEditingUserId(bdm._id)
     setEditRole(bdm.role)
   }
@@ -111,28 +95,16 @@ export default function BDMRole() {
     setIsSaving(true)
     try {
       const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://crm-eta-blush.vercel.app'
-      const response = await fetch(`${apiUrl}/api/auth/users/${bdmId}/role`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ role: editRole })
-      })
-
-      if (response.ok) {
+      if (token) {
+        await updateUserRole(token, bdmId, editRole);
         setBdmUsers(prev => prev.map(u =>
           u._id === bdmId ? { ...u, role: editRole } : u
         ))
         alert('Role updated successfully!')
-      } else {
-        const error = await response.json()
-        alert(error.message || 'Failed to update role')
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating role:', error)
-      alert('Failed to update role. Please try again.')
+      alert(error.message || 'Failed to update role. Please try again.')
     } finally {
       setIsSaving(false)
       setEditingUserId(null)
@@ -272,10 +244,10 @@ export default function BDMRole() {
                   <tr key={bdm._id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-semibold ${getAvatarColor(bdm.name || bdm.firstName)}`}>
-                          {getInitials(bdm.name || `${bdm.firstName} ${bdm.lastName}`)}
+                        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-semibold ${getAvatarColor(bdm.name || bdm.firstName || '')}`}>
+                          {getInitials(bdm.name || `${bdm.firstName || ''} ${bdm.lastName || ''}`)}
                         </div>
-                        <span className="text-sm font-medium text-gray-900">{bdm.name || `${bdm.firstName} ${bdm.lastName}`}</span>
+                        <span className="text-sm font-medium text-gray-900">{bdm.name || `${bdm.firstName || ''} ${bdm.lastName || ''}`}</span>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600">{bdm.email}</td>

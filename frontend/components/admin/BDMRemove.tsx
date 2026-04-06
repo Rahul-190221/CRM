@@ -2,22 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { Search, UserX, Users, UserCheck, UserMinus, AlertCircle } from 'lucide-react'
-
-interface BDMUser {
-  _id: string
-  firstName: string
-  lastName: string
-  name: string
-  email: string
-  phone?: string
-  role: string
-  employeeId?: string
-  status?: string
-  activeLeads?: number
-  convertedLeads?: number
-  joinDate?: string
-  createdAt?: string
-}
+import { getUsers, deleteUser } from '@/lib/api/auth'
+import { BDM } from '@/types/admin'
 
 // Avatar color generator based on name
 const getAvatarColor = (name: string): string => {
@@ -43,13 +29,13 @@ const getInitials = (name: string): string => {
 }
 
 export default function BDMRemove() {
-  const [bdmUsers, setBdmUsers] = useState<BDMUser[]>([])
-  const [filteredUsers, setFilteredUsers] = useState<BDMUser[]>([])
+  const [bdmUsers, setBdmUsers] = useState<BDM[]>([])
+  const [filteredUsers, setFilteredUsers] = useState<BDM[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [filterRole, setFilterRole] = useState('all')
   const [isLoading, setIsLoading] = useState(true)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
-  const [selectedBDM, setSelectedBDM] = useState<BDMUser | null>(null)
+  const [selectedBDM, setSelectedBDM] = useState<BDM | null>(null)
   const [isRemoving, setIsRemoving] = useState(false)
 
   useEffect(() => {
@@ -61,27 +47,20 @@ export default function BDMRemove() {
   }, [searchTerm, filterRole, bdmUsers])
 
   const fetchBDMUsers = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://crm-eta-blush.vercel.app'
-      const response = await fetch(`${apiUrl}/api/auth/users?role=bdm,senior-bdm,junior-bdm`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setBdmUsers(data)
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        const data = await getUsers(token, 'bdm,senior-bdm,junior-bdm');
+        setBdmUsers(data);
       }
     } catch (error) {
-      console.error('Error fetching BDM users:', error)
-      setBdmUsers([])
+      console.error('Error fetching BDM users:', error);
+      setBdmUsers([]);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const filterUsers = () => {
     let filtered = [...bdmUsers]
@@ -100,7 +79,7 @@ export default function BDMRemove() {
     setFilteredUsers(filtered)
   }
 
-  const handleRemoveClick = (bdm: BDMUser) => {
+  const handleRemoveClick = (bdm: BDM) => {
     setSelectedBDM(bdm)
     setShowConfirmModal(true)
   }
@@ -111,25 +90,14 @@ export default function BDMRemove() {
     setIsRemoving(true)
     try {
       const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://crm-eta-blush.vercel.app'
-      const response = await fetch(`${apiUrl}/api/auth/users/${selectedBDM._id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-
-      if (response.ok) {
-        setBdmUsers(prev => prev.filter(u => u._id !== selectedBDM._id))
-        alert('BDM removed successfully!')
-      } else {
-        const error = await response.json()
-        alert(error.message || 'Failed to remove BDM')
+      if (token) {
+        await deleteUser(token, selectedBDM._id);
+        setBdmUsers(prev => prev.filter(u => u._id !== selectedBDM._id));
+        alert('BDM removed successfully!');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error removing BDM:', error)
-      alert('Failed to remove BDM. Please try again.')
+      alert(error.message || 'Failed to remove BDM. Please try again.')
     } finally {
       setIsRemoving(false)
       setShowConfirmModal(false)
@@ -235,10 +203,10 @@ export default function BDMRemove() {
                   <tr key={bdm._id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-semibold ${getAvatarColor(bdm.name || bdm.firstName)}`}>
-                          {getInitials(bdm.name || `${bdm.firstName} ${bdm.lastName}`)}
+                        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-semibold ${getAvatarColor(bdm.name || bdm.firstName || '')}`}>
+                          {getInitials(bdm.name || `${bdm.firstName || ''} ${bdm.lastName || ''}`)}
                         </div>
-                        <span className="text-sm font-medium text-gray-900">{bdm.name || `${bdm.firstName} ${bdm.lastName}`}</span>
+                        <span className="text-sm font-medium text-gray-900">{bdm.name || `${bdm.firstName || ''} ${bdm.lastName || ''}`}</span>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600">{bdm.email}</td>
@@ -337,7 +305,7 @@ export default function BDMRemove() {
               </div>
             </div>
             <p className="text-sm text-gray-600 mb-6">
-              Are you sure you want to remove <strong>{selectedBDM.name || `${selectedBDM.firstName} ${selectedBDM.lastName}`}</strong> from the system?
+              Are you sure you want to remove <strong>{selectedBDM.name || `${selectedBDM.firstName || ''} ${selectedBDM.lastName || ''}`}</strong> from the system?
               {(selectedBDM.activeLeads || 0) > 0 && (
                 <span className="text-red-600"> This user has {selectedBDM.activeLeads} active leads that will need to be reassigned.</span>
               )}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Cookies from 'js-cookie'
 // Layout Components
 import Sidebar from '@/components/layout/Sidebar'
 import AdminSidebar from '@/components/layout/AdminSidebar'
@@ -15,9 +16,10 @@ import LeadStage from '@/components/leads/LeadStage'
 import CourseDetails from '@/components/admin/CourseDetails'
 import MockTest from '@/components/admin/MockTest'
 import ExamRegistration from '@/components/admin/ExamRegistration'
+import NotificationsPage from '@/components/shared/NotificationsPage'
+import { getUserIdFromToken } from '@/lib/helpers/jwt'
+import { useNotifications } from '@/components/providers/NotificationProvider'
 import type { Page } from '@/types/navigation'
-
-
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -25,26 +27,34 @@ export default function DashboardPage() {
   const [user, setUser] = useState<any>(null)
   const [isInitialized, setIsInitialized] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { unreadCount } = useNotifications()
 
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('user')
-    const savedToken = localStorage.getItem('accessToken')
+    const decoded = getUserIdFromToken()
 
-    if (savedUser && savedToken) {
-      setUser(JSON.parse(savedUser))
-    } else {
-      // Redirect to login if not authenticated
+    if (!decoded) {
       router.push('/')
+      return
     }
+
+    setUser({
+      name: decoded.email?.split('@')[0] || 'User',
+      email: decoded.email,
+      role: decoded.role
+    })
     setIsInitialized(true)
   }, [router])
 
   const handleLogout = () => {
     setUser(null)
-    localStorage.removeItem('user')
+    Cookies.remove('accessToken')
     localStorage.removeItem('accessToken')
     router.push('/')
+  }
+
+  const handleNotificationClick = () => {
+    setActivePage('notification')
   }
 
   const renderContent = () => {
@@ -64,12 +74,7 @@ export default function DashboardPage() {
       case 'exam-reg':
         return <ExamRegistration user={user} />
       case 'notification':
-        return (
-          <div className="p-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Notifications</h1>
-            <p className="text-gray-500">No new notifications</p>
-          </div>
-        )
+        return <NotificationsPage />
       case 'profile':
         return (
           <div className="p-6">
@@ -96,12 +101,12 @@ export default function DashboardPage() {
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       {user?.role === 'admin' ? (
-        <AdminSidebar activePage={activePage} setActivePage={setActivePage} onLogout={handleLogout} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <AdminSidebar activePage={activePage} setActivePage={setActivePage} onLogout={handleLogout} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} unreadCount={unreadCount} />
       ) : (
-        <Sidebar activePage={activePage} setActivePage={setActivePage} onLogout={handleLogout} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <Sidebar activePage={activePage} setActivePage={setActivePage} onLogout={handleLogout} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} unreadCount={unreadCount} />
       )}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        <Header user={user} onLogout={handleLogout} onMenuToggle={() => setSidebarOpen(prev => !prev)} />
+        <Header user={user} onLogout={handleLogout} onMenuToggle={() => setSidebarOpen(prev => !prev)} unreadCount={unreadCount} onNotificationClick={handleNotificationClick} />
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 scrollbar-hide">
           {renderContent()}
         </main>

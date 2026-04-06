@@ -1,65 +1,16 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { Bell, CheckCircle, AlertCircle, Info, Clock } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { getNotifications, markNotificationAsRead, markAllNotificationsAsRead } from '@/lib/api/notifications'
-
-interface Notification {
-    _id: string
-    title: string
-    message: string
-    type: 'success' | 'warning' | 'info' | 'error'
-    isRead: boolean
-    createdAt: string
-}
+import { useNotifications } from '@/components/providers/NotificationProvider'
 
 export default function NotificationsPage() {
-    const [notifications, setNotifications] = useState<Notification[]>([])
-    const [loading, setLoading] = useState(true)
-
-    const fetchNotifications = async () => {
-        try {
-            const token = localStorage.getItem('accessToken')
-            if (!token) return
-
-            const response = await getNotifications(token)
-            if (response.success) {
-                setNotifications(response.data)
-            }
-        } catch (error) {
-            console.error('Error fetching notifications:', error)
-            toast.error('Failed to load notifications')
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    useEffect(() => {
-        fetchNotifications()
-    }, [])
-
-    const handleMarkAsRead = async (id: string) => {
-        try {
-            const token = localStorage.getItem('accessToken')
-            if (!token) return
-
-            await markNotificationAsRead(token, id)
-            setNotifications(prev => prev.map(n =>
-                n._id === id ? { ...n, isRead: true } : n
-            ))
-        } catch (error) {
-            console.error('Error marking as read:', error)
-        }
-    }
+    const { notifications, isLoading, markAsRead, markAllAsRead } = useNotifications()
 
     const handleMarkAllAsRead = async () => {
         try {
-            const token = localStorage.getItem('accessToken')
-            if (!token) return
-
-            await markAllNotificationsAsRead(token)
-            setNotifications(prev => prev.map(n => ({ ...n, isRead: true })))
+            await markAllAsRead()
             toast.success('All marked as read')
         } catch (error) {
             console.error('Error marking all as read:', error)
@@ -78,26 +29,41 @@ export default function NotificationsPage() {
         return `${Math.floor(diffInSeconds / 86400)}d ago`
     }
 
-    if (loading) {
+    const getTypeColor = (type: string) => {
+        switch (type) {
+            case 'success': return 'bg-green-50 border-green-100'
+            case 'warning': return 'bg-amber-50 border-amber-100'
+            case 'error': return 'bg-red-50 border-red-100'
+            default: return 'bg-blue-50/30 border-blue-100'
+        }
+    }
+
+    if (isLoading) {
         return (
             <div className="flex items-center justify-center h-96">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-400"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FACE39]"></div>
             </div>
         )
     }
 
+    const unreadCount = notifications.filter(n => !n.isRead).length
+
     return (
-        <div className="p-6 md:p-8 max-w-7xl mx-auto">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-3">
-                    <Bell className="w-6 h-6 text-orange-500" />
-                    <h1 className="text-2xl font-bold text-slate-800">Notifications</h1>
+        <div className="max-w-3xl mx-auto">
+            {/* Page Header */}
+            <div className="flex items-center justify-between mb-6">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
+                    <p className="text-sm text-gray-500 mt-1">
+                        {unreadCount > 0 ? (
+                            <span className="text-red-500 font-medium">{unreadCount} unread</span>
+                        ) : 'All caught up!'}
+                    </p>
                 </div>
-                {notifications.some(n => !n.isRead) && (
+                {unreadCount > 0 && (
                     <button
                         onClick={handleMarkAllAsRead}
-                        className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-slate-600 hover:bg-gray-50 transition-colors shadow-sm"
+                        className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
                     >
                         Mark all as read
                     </button>
@@ -106,42 +72,66 @@ export default function NotificationsPage() {
 
             {/* List */}
             {notifications.length === 0 ? (
-                <div className="text-center py-20 bg-white rounded-xl border border-dashed border-gray-200">
-                    <Bell className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500">No notifications yet</p>
+                <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-gray-200">
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Bell className="w-8 h-8 text-gray-400" />
+                    </div>
+                    <p className="text-gray-500 font-medium">No notifications yet</p>
+                    <p className="text-gray-400 text-sm mt-1">You&apos;re all caught up!</p>
                 </div>
             ) : (
-                <div className="space-y-4">
+                <div className="space-y-3">
                     {notifications.map((notification) => (
                         <div
                             key={notification._id}
-                            className={`relative bg-white border rounded-xl p-5 hover:shadow-md transition-shadow cursor-pointer ${notification.isRead ? 'border-gray-100' : 'border-orange-100 bg-orange-50/10'}`}
-                            onClick={() => !notification.isRead && handleMarkAsRead(notification._id)}
+                            onClick={() => !notification.isRead && markAsRead(notification._id)}
+                            className={`relative bg-white border rounded-xl p-5 cursor-pointer group transition-all hover:shadow-md ${
+                                notification.isRead
+                                    ? 'border-gray-100 opacity-70'
+                                    : `border-l-4 ${
+                                        notification.type === 'success' ? 'border-l-green-500' :
+                                        notification.type === 'warning' ? 'border-l-amber-500' :
+                                        notification.type === 'error' ? 'border-l-red-500' :
+                                        'border-l-blue-500'
+                                    } border-gray-100`
+                            }`}
                         >
-                            <div className="flex gap-4">
-                                {/* Icon based on type */}
-                                <div className="flex-shrink-0 mt-1">
-                                    {notification.type === 'success' && <CheckCircle className="w-5 h-5 text-green-500" />}
-                                    {notification.type === 'warning' && <AlertCircle className="w-5 h-5 text-orange-500" />}
-                                    {notification.type === 'info' && <Info className="w-5 h-5 text-blue-500" />}
-                                    {notification.type === 'error' && <Clock className="w-5 h-5 text-red-500" />}
+                            <div className="flex gap-4 items-start">
+                                {/* Icon */}
+                                <div className={`flex-shrink-0 p-2 rounded-lg ${
+                                    notification.type === 'success' ? 'bg-green-100' :
+                                    notification.type === 'warning' ? 'bg-amber-100' :
+                                    notification.type === 'error' ? 'bg-red-100' :
+                                    'bg-blue-100'
+                                }`}>
+                                    {notification.type === 'success' && <CheckCircle className="w-4 h-4 text-green-600" />}
+                                    {notification.type === 'warning' && <AlertCircle className="w-4 h-4 text-amber-600" />}
+                                    {notification.type === 'info' && <Info className="w-4 h-4 text-blue-600" />}
+                                    {notification.type === 'error' && <AlertCircle className="w-4 h-4 text-red-600" />}
                                 </div>
 
-                                <div className="flex-1">
-                                    <h3 className={`font-semibold text-slate-800 mb-1 ${!notification.isRead ? 'text-slate-900 group-hover:text-orange-600' : ''}`}>
-                                        {notification.title}
-                                    </h3>
-                                    <p className="text-slate-500 text-sm mb-2">
-                                        {notification.message}
-                                    </p>
-                                    <span className="text-xs text-slate-400">
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <h3 className={`font-semibold text-sm ${
+                                            notification.isRead ? 'text-gray-600' : 'text-gray-900'
+                                        }`}>
+                                            {notification.title}
+                                        </h3>
+                                        {!notification.isRead && (
+                                            <span className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0 animate-pulse" />
+                                        )}
+                                    </div>
+                                    <p className="text-sm text-gray-500 mb-2">{notification.message}</p>
+                                    <span className="text-xs text-gray-400 flex items-center gap-1">
+                                        <Clock className="w-3 h-3" />
                                         {getTimeAgo(notification.createdAt)}
                                     </span>
                                 </div>
 
-                                {/* Unread Indicator */}
                                 {!notification.isRead && (
-                                    <div className="absolute top-5 right-5 w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                                    <span className="text-xs text-blue-600 font-medium group-hover:underline flex-shrink-0">
+                                        Mark read
+                                    </span>
                                 )}
                             </div>
                         </div>

@@ -87,7 +87,7 @@ export default function AddCourseModal({ isOpen, onClose, onSubmit, editingCours
 
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           {/* Course Name & Type */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Course Name</label>
               <input
@@ -129,7 +129,7 @@ export default function AddCourseModal({ isOpen, onClose, onSubmit, editingCours
           </div>
 
           {/* Duration & Price */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
               <input
@@ -161,7 +161,7 @@ export default function AddCourseModal({ isOpen, onClose, onSubmit, editingCours
           </div>
 
           {/* Instructor & Capacity */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Instructor</label>
               <input
@@ -185,7 +185,7 @@ export default function AddCourseModal({ isOpen, onClose, onSubmit, editingCours
           </div>
 
           {/* Start Date & Schedule */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
               <input

@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Search, Plus, RefreshCw, Users, Mail, Phone, Trash2 } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Search, Plus, RefreshCw, Users, Mail, Phone, Trash2, Eye } from 'lucide-react';
 import { getLeads, deleteLead } from '@/lib/api/leads';
-import type { Lead } from '@/types/admin';
+import type { Lead, LeadStage as LeadStageType } from '@/types/admin';
 import InputLead from './InputLead';
+import LeadProfileModal from './LeadProfileModal';
 
 
 const LeadCenter: React.FC<{ user?: any }> = ({ user }) => {
@@ -13,6 +14,31 @@ const LeadCenter: React.FC<{ user?: any }> = ({ user }) => {
     const [leads, setLeads] = useState<Lead[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+    const [stageFilter, setStageFilter] = useState<'all' | LeadStageType>('all');
+
+    const stats = useMemo(() => ({
+        total:      leads.length,
+        intake:     leads.filter(l => l.lifecycleStage === 'Intake').length,
+        processing: leads.filter(l => l.lifecycleStage === 'Processing').length,
+        hot:        leads.filter(l => l.lifecycleStage === 'Hot').length,
+        converted:  leads.filter(l => l.lifecycleStage === 'Converted').length,
+        dead:       leads.filter(l => l.lifecycleStage === 'Dead').length,
+    }), [leads]);
+
+    const filterCards = [
+        { key: 'all' as const,        label: 'Total Leads', count: stats.total,      accent: 'border-gray-900  bg-gray-900',   activeText: 'text-white',        activeSub: 'text-white/70',   idle: 'border-gray-200 hover:border-gray-400' },
+        { key: 'Intake' as const,     label: 'Intake',      count: stats.intake,     accent: 'border-blue-500  bg-blue-50',    activeText: 'text-blue-700',     activeSub: 'text-blue-500',   idle: 'border-gray-200 hover:border-blue-300' },
+        { key: 'Processing' as const, label: 'Processing',  count: stats.processing, accent: 'border-yellow-500 bg-yellow-50', activeText: 'text-yellow-700',   activeSub: 'text-yellow-600', idle: 'border-gray-200 hover:border-yellow-300' },
+        { key: 'Hot' as const,        label: 'Hot Leads',   count: stats.hot,        accent: 'border-orange-500 bg-orange-50', activeText: 'text-orange-700',   activeSub: 'text-orange-500', idle: 'border-gray-200 hover:border-orange-300' },
+        { key: 'Converted' as const,  label: 'Converted',   count: stats.converted,  accent: 'border-green-500  bg-green-50',  activeText: 'text-green-700',    activeSub: 'text-green-500',  idle: 'border-gray-200 hover:border-green-300' },
+        { key: 'Dead' as const,       label: 'Dead Leads',  count: stats.dead,       accent: 'border-red-500    bg-red-50',    activeText: 'text-red-700',      activeSub: 'text-red-500',    idle: 'border-gray-200 hover:border-red-300' },
+    ];
+
+    const displayedLeads = useMemo(() =>
+        stageFilter === 'all' ? leads : leads.filter(l => l.lifecycleStage === stageFilter),
+        [leads, stageFilter]
+    );
 
     const fetchLeads = async () => {
         setIsLoading(true);
@@ -71,7 +97,7 @@ const LeadCenter: React.FC<{ user?: any }> = ({ user }) => {
             </div>
 
             {/* Search and Filters */}
-            <div className="bg-white rounded-xl p-4 mb-6 shadow-sm border border-gray-100">
+            <div className="bg-white rounded-xl p-4 mb-4 shadow-sm border border-gray-100">
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input
@@ -84,62 +110,86 @@ const LeadCenter: React.FC<{ user?: any }> = ({ user }) => {
                 </div>
             </div>
 
+            {/* Stat Filter Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-5">
+                {filterCards.map(card => {
+                    const isActive = stageFilter === card.key;
+                    return (
+                        <button
+                            key={card.key}
+                            onClick={() => setStageFilter(card.key)}
+                            className={`text-left rounded-xl border-2 p-4 transition-all cursor-pointer ${
+                                isActive ? card.accent + ' shadow-sm' : 'bg-white ' + card.idle
+                            }`}
+                        >
+                            <p className={`text-[10px] uppercase tracking-wider mb-1 transition-all ${
+                                isActive ? 'font-extrabold ' + card.activeSub : 'font-semibold text-gray-400'
+                            }`}>{card.label}</p>
+                            <p className={`text-2xl transition-all ${
+                                isActive ? 'font-extrabold ' + card.activeText : 'font-bold text-gray-800'
+                            }`}>{card.count}</p>
+                        </button>
+                    );
+                })}
+            </div>
+
             {/* Leads Table */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full text-left border-collapse min-w-[640px]">
                         <thead>
                             <tr className="bg-gray-50 border-b border-gray-100">
-                                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Lead Info</th>
-                                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Contact</th>
-                                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Source & Service</th>
-                                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Stage</th>
-                                {isAdmin && <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Actions</th>}
+                                <th className="px-3 sm:px-5 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Lead Info</th>
+                                <th className="px-3 sm:px-5 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Contact</th>
+                                <th className="px-3 sm:px-5 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Source & Service</th>
+                                <th className="px-3 sm:px-5 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Stage</th>
+                                <th className="px-3 sm:px-5 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Profile</th>
+                                {isAdmin && <th className="px-3 sm:px-5 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Del</th>}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
                             {isLoading ? (
                                 <tr>
-                                    <td colSpan={isAdmin ? 5 : 4} className="px-6 py-12 text-center">
+                                    <td colSpan={isAdmin ? 6 : 5} className="px-4 py-12 text-center">
                                         <RefreshCw className="w-8 h-8 animate-spin text-yellow-400 mx-auto" />
                                         <p className="text-gray-500 mt-2 text-sm">Loading leads...</p>
                                     </td>
                                 </tr>
-                            ) : leads.length === 0 ? (
+                            ) : displayedLeads.length === 0 ? (
                                 <tr>
-                                    <td colSpan={isAdmin ? 5 : 4} className="px-6 py-12 text-center">
+                                    <td colSpan={isAdmin ? 6 : 5} className="px-4 py-12 text-center">
                                         <Users className="w-12 h-12 text-gray-200 mx-auto mb-3" />
                                         <p className="text-gray-500">No leads found</p>
                                     </td>
                                 </tr>
                             ) : (
-                                leads.map((lead) => (
+                                displayedLeads.map((lead) => (
                                     <tr key={lead._id} className="hover:bg-gray-50 transition-colors group">
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-700 font-bold text-sm">
+                                        <td className="px-3 sm:px-5 py-3">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-700 font-bold text-sm flex-shrink-0">
                                                     {lead.fullName.charAt(0).toUpperCase()}
                                                 </div>
-                                                <div>
-                                                    <div className="text-sm font-bold text-gray-900">{lead.fullName}</div>
-                                                    <div className="text-xs text-gray-500">Added on {new Date(lead.createdAt).toLocaleDateString()}</div>
+                                                <div className="min-w-0">
+                                                    <div className="text-sm font-bold text-gray-900 truncate max-w-[120px] sm:max-w-none">{lead.fullName}</div>
+                                                    <div className="text-xs text-gray-500">{new Date(lead.createdAt).toLocaleDateString()}</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-3 sm:px-5 py-3">
                                             <div className="space-y-1">
-                                                <div className="flex items-center gap-2 text-xs text-gray-600">
-                                                    <Mail className="w-3.5 h-3.5" />
-                                                    {lead.email}
+                                                <div className="flex items-center gap-1.5 text-xs text-gray-600">
+                                                    <Mail className="w-3 h-3 flex-shrink-0" />
+                                                    <span className="truncate max-w-[110px]">{lead.email}</span>
                                                 </div>
-                                                <div className="flex items-center gap-2 text-xs text-gray-600">
-                                                    <Phone className="w-3.5 h-3.5" />
+                                                <div className="flex items-center gap-1.5 text-xs text-gray-600">
+                                                    <Phone className="w-3 h-3 flex-shrink-0" />
                                                     {lead.phone}
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex flex-col gap-1.5">
+                                        <td className="px-3 sm:px-5 py-3 hidden sm:table-cell">
+                                            <div className="flex flex-col gap-1">
                                                 <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-600 w-fit uppercase">
                                                     {lead.source}
                                                 </span>
@@ -148,8 +198,8 @@ const LeadCenter: React.FC<{ user?: any }> = ({ user }) => {
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${lead.lifecycleStage === 'Converted' ? 'bg-green-50 text-green-700 border-green-100' :
+                                        <td className="px-3 sm:px-5 py-3">
+                                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border ${lead.lifecycleStage === 'Converted' ? 'bg-green-50 text-green-700 border-green-100' :
                                                 lead.lifecycleStage === 'Dead' ? 'bg-red-50 text-red-700 border-red-100' :
                                                     lead.lifecycleStage === 'Hot' ? 'bg-orange-50 text-orange-700 border-orange-100' :
                                                         'bg-blue-50 text-blue-700 border-blue-100'
@@ -157,8 +207,17 @@ const LeadCenter: React.FC<{ user?: any }> = ({ user }) => {
                                                 {lead.lifecycleStage}
                                             </span>
                                         </td>
+                                        <td className="px-3 sm:px-5 py-3 text-center">
+                                            <button
+                                                onClick={() => setSelectedLead(lead)}
+                                                className="inline-flex items-center gap-1 px-2 py-1.5 bg-[#FACE39]/10 hover:bg-[#FACE39]/25 text-yellow-700 rounded-lg text-xs font-semibold transition-all border border-[#FACE39]/30"
+                                            >
+                                                <Eye className="w-3.5 h-3.5" />
+                                                <span className="hidden sm:inline">View</span>
+                                            </button>
+                                        </td>
                                         {isAdmin && (
-                                            <td className="px-6 py-4 text-right">
+                                            <td className="px-3 sm:px-5 py-3 text-right">
                                                 <button
                                                     onClick={() => handleDelete(lead._id)}
                                                     className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
@@ -174,7 +233,12 @@ const LeadCenter: React.FC<{ user?: any }> = ({ user }) => {
                     </table>
                 </div>
             </div>
+
+            {selectedLead && (
+                <LeadProfileModal lead={selectedLead} onClose={() => setSelectedLead(null)} />
+            )}
         </div>
     );
+
 };
 export default LeadCenter;

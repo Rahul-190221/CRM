@@ -229,3 +229,69 @@ export const getGoogleUserInfo = async (accessToken: string) => {
 
   return data; // Returns { email, name, picture, etc }
 };
+
+// --- User Management API Calls ---
+
+export const getUsers = async (token: string, role?: string, limit?: number) => {
+  let url = `${API_URL}/auth/users`;
+  const params = new URLSearchParams();
+  if (role) params.append('role', role);
+  if (limit) params.append('limit', limit.toString());
+  
+  if (params.toString()) {
+    url += `?${params.toString()}`;
+  }
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to fetch users');
+  }
+
+  return data;
+};
+
+export const updateUserRole = async (token: string, id: string, role: string) => {
+  const response = await fetch(`${API_URL}/auth/users/${id}/role`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ role }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to update user role');
+  }
+
+  return data;
+};
+
+export const deleteUser = async (token: string, id: string) => {
+  const response = await fetch(`${API_URL}/auth/users/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to delete user');
+  }
+
+  return data;
+};

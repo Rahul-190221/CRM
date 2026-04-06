@@ -2,28 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { Search, Send, Users, UserPlus, Clock, CheckCircle } from 'lucide-react'
+import { getLeads, getBDMsForAssignment, assignLeads } from '@/lib/api/leads'
 
-interface Lead {
-  _id: string
-  name: string
-  email: string
-  phone?: string
-  course: string
-  source: string
-  status: string
-  createdAt: string
-  assignedTo?: string
-}
-
-interface BDMUser {
-  _id: string
-  firstName: string
-  lastName: string
-  name: string
-  email: string
-  role: string
-  activeLeads?: number
-}
+import { Lead, BDM } from '@/types/admin'
 
 // Avatar color generator based on name
 const getAvatarColor = (name?: string): string => {
@@ -53,7 +34,7 @@ const getInitials = (name?: string): string => {
 export default function LeadAssignments() {
   const [unassignedLeads, setUnassignedLeads] = useState<Lead[]>([])
   const [filteredLeads, setFilteredLeads] = useState<Lead[]>([])
-  const [bdmUsers, setBdmUsers] = useState<BDMUser[]>([])
+  const [bdmUsers, setBdmUsers] = useState<BDM[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [filterCourse, setFilterCourse] = useState('all')
   const [isLoading, setIsLoading] = useState(true)
@@ -72,42 +53,22 @@ export default function LeadAssignments() {
   }, [searchTerm, filterCourse, unassignedLeads])
 
   const fetchUnassignedLeads = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://crm-eta-blush.vercel.app'
-      const response = await fetch(`${apiUrl}/api/leads?unassigned=true`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setUnassignedLeads(data)
-      }
+      const data = await getLeads({ unassigned: true });
+      setUnassignedLeads(data);
     } catch (error) {
-      console.error('Error fetching unassigned leads:', error)
-      setUnassignedLeads([])
+      console.error('Error fetching unassigned leads:', error);
+      setUnassignedLeads([]);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const fetchBDMUsers = async () => {
     try {
-      const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://crm-eta-blush.vercel.app'
-      const response = await fetch(`${apiUrl}/api/auth/users?role=bdm,senior-bdm,junior-bdm`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setBdmUsers(data)
-      }
+      const data = await getBDMsForAssignment();
+      setBdmUsers(data as any);
     } catch (error) {
       console.error('Error fetching BDM users:', error)
       setBdmUsers([])
@@ -119,14 +80,14 @@ export default function LeadAssignments() {
 
     if (searchTerm) {
       filtered = filtered.filter(l =>
-        l.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        l.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         l.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         l.phone?.includes(searchTerm)
       )
     }
 
     if (filterCourse !== 'all') {
-      filtered = filtered.filter(l => l.course === filterCourse)
+      filtered = filtered.filter(l => l.serviceInterest === filterCourse)
     }
 
     setFilteredLeads(filtered)
@@ -156,33 +117,15 @@ export default function LeadAssignments() {
 
     setIsAssigning(true)
     try {
-      const token = localStorage.getItem('accessToken')
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://crm-eta-blush.vercel.app'
-      const response = await fetch(`${apiUrl}/api/leads/assign`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          leadIds: selectedLeads,
-          bdmId: selectedBDM
-        })
-      })
-
-      if (response.ok) {
-        alert(`Successfully assigned ${selectedLeads.length} lead(s)!`)
-        setUnassignedLeads(prev => prev.filter(l => !selectedLeads.includes(l._id)))
-        setSelectedLeads([])
-        setSelectedBDM('')
-        setShowAssignModal(false)
-      } else {
-        const error = await response.json()
-        alert(error.message || 'Failed to assign leads')
-      }
-    } catch (error) {
+      await assignLeads(selectedLeads, selectedBDM);
+      alert(`Successfully assigned ${selectedLeads.length} lead(s)!`);
+      setUnassignedLeads(prev => prev.filter(l => !selectedLeads.includes(l._id)));
+      setSelectedLeads([]);
+      setSelectedBDM('');
+      setShowAssignModal(false);
+    } catch (error: any) {
       console.error('Error assigning leads:', error)
-      alert('Failed to assign leads. Please try again.')
+      alert(error.message || 'Failed to assign leads. Please try again.')
     } finally {
       setIsAssigning(false)
     }
@@ -373,17 +316,17 @@ export default function LeadAssignments() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-semibold ${getAvatarColor(lead.name)}`}>
-                          {getInitials(lead.name)}
+                        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-semibold ${getAvatarColor(lead.fullName)}`}>
+                          {getInitials(lead.fullName)}
                         </div>
-                        <span className="text-sm font-medium text-gray-900">{lead.name}</span>
+                        <span className="text-sm font-medium text-gray-900">{lead.fullName}</span>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600">{lead.email}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{lead.phone || '-'}</td>
                     <td className="px-4 py-3">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getCourseColor(lead.course)}`}>
-                        {lead.course}
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getCourseColor(lead.serviceInterest)}`}>
+                        {lead.serviceInterest}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600">{lead.source}</td>
@@ -433,7 +376,7 @@ export default function LeadAssignments() {
                 <option value="">Choose a BDM...</option>
                 {bdmUsers.map(bdm => (
                   <option key={bdm._id} value={bdm._id}>
-                    {bdm.name || `${bdm.firstName} ${bdm.lastName}`} - {getRoleLabel(bdm.role)} ({bdm.activeLeads || 0} active)
+                    {bdm.name || `${bdm.firstName || ''} ${bdm.lastName || ''}`} - {getRoleLabel(bdm.role)} ({bdm.activeLeads || 0} active)
                   </option>
                 ))}
               </select>
@@ -454,11 +397,11 @@ export default function LeadAssignments() {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold ${getAvatarColor(bdm.name || bdm.firstName)}`}>
-                          {getInitials(bdm.name || `${bdm.firstName} ${bdm.lastName}`)}
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold ${getAvatarColor(bdm.name || bdm.firstName || '')}`}>
+                          {getInitials(bdm.name || `${bdm.firstName || ''} ${bdm.lastName || ''}`)}
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900">{bdm.name || `${bdm.firstName} ${bdm.lastName}`}</p>
+                          <p className="text-sm font-medium text-gray-900">{bdm.name || `${bdm.firstName || ''} ${bdm.lastName || ''}`}</p>
                           <p className="text-xs text-gray-500">{getRoleLabel(bdm.role)}</p>
                         </div>
                       </div>

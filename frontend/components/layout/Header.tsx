@@ -9,9 +9,11 @@ interface HeaderProps {
   searchTerm?: string
   onLogout: () => void
   onMenuToggle: () => void
+  unreadCount: number
+  onNotificationClick: () => void
 }
 
-export default function Header({ user, onSearch, searchTerm, onLogout, onMenuToggle }: HeaderProps) {
+export default function Header({ user, onSearch, searchTerm, onLogout, onMenuToggle, unreadCount, onNotificationClick }: HeaderProps) {
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase()
   }
@@ -46,9 +48,16 @@ export default function Header({ user, onSearch, searchTerm, onLogout, onMenuTog
         {/* Right Side */}
         <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
           {/* Notifications */}
-          <button className="relative p-2 text-gray-500 hover:text-gray-700 transition-all rounded-xl hover:bg-gray-100 border border-transparent hover:border-gray-200">
+          <button 
+            onClick={onNotificationClick}
+            className="relative p-2 text-gray-500 hover:text-gray-700 transition-all rounded-xl hover:bg-gray-100 border border-transparent hover:border-gray-200"
+          >
             <Bell className="w-5 h-5" />
-            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-white">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )}
           </button>
 
           {/* Vertical Divider - hidden on very small screens */}

@@ -92,7 +92,7 @@ export default function AddExamModal({ isOpen, onClose, onSubmit, onDelete, edit
 
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           {/* Exam Name + Exam Type */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Exam Name <span className="text-red-500">*</span></label>
               <input
@@ -121,7 +121,7 @@ export default function AddExamModal({ isOpen, onClose, onSubmit, onDelete, edit
           </div>
 
           {/* Exam Date + Exam Time */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Exam Date <span className="text-red-500">*</span></label>
               <input
@@ -158,7 +158,7 @@ export default function AddExamModal({ isOpen, onClose, onSubmit, onDelete, edit
           </div>
 
           {/* Registration Deadline + Registration Fee */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Registration Deadline</label>
               <input
@@ -184,7 +184,7 @@ export default function AddExamModal({ isOpen, onClose, onSubmit, onDelete, edit
           </div>
 
           {/* Total Slots + Available Slots */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Total Slots</label>
               <input

@@ -5,8 +5,11 @@ import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import { OAuth2Client } from 'google-auth-library';
 import User from '../models/User';
+import Lead from '../models/Lead';
+import { createAndEmitNotification, createAndEmitToAdmins } from '../services/notification.service';
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const BDM_ROLES = ['bdm', 'senior-bdm', 'junior-bdm'];
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
@@ -26,6 +29,21 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const passwordHash = await bcrypt.hash(password, 10);
     const user = new User({ name, email, passwordHash, role });
     await user.save();
+
+    // Notify admins and welcome new BDM users
+    if (BDM_ROLES.includes(role)) {
+      createAndEmitToAdmins(
+        'New BDM Added',
+        `${name} has been added as ${role}`,
+        'info'
+      ).catch(console.error);
+      createAndEmitNotification(
+        user._id.toString(),
+        'Welcome to Luminedge CRM',
+        `Your account has been created. Welcome aboard, ${name}!`,
+        'success'
+      ).catch(console.error);
+    }
 
     const token = jwt.sign(
       { userId: user._id, role: user.role },
@@ -129,6 +147,20 @@ export const googleRegister = async (req: Request, res: Response): Promise<void>
       isActive: true
     });
     await user.save();
+
+    if (BDM_ROLES.includes(role)) {
+      createAndEmitToAdmins(
+        'New BDM Added',
+        `${user.name} has been added as ${role}`,
+        'info'
+      ).catch(console.error);
+      createAndEmitNotification(
+        user._id.toString(),
+        'Welcome to Luminedge CRM',
+        `Your account has been created. Welcome aboard, ${user.name}!`,
+        'success'
+      ).catch(console.error);
+    }
 
     const jwtToken = jwt.sign(
       { userId: user._id, role: user.role },
@@ -319,7 +351,7 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-// Get all users (with optional role filter)
+// Get all users (with optional role filter) — includes activeLeads + convertedLeads counts
 export const getUsers = async (req: Request, res: Response): Promise<void> => {
   try {
     const { role, limit } = req.query;
@@ -338,6 +370,41 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
     }
 
     const users = await query.sort({ createdAt: -1 });
+
+    // Enrich with lead counts when fetching BDM-type users
+    const isBDMQuery = role && ['bdm', 'senior-bdm', 'junior-bdm'].some(r => (role as string).includes(r));
+    if (isBDMQuery && users.length > 0) {
+      const userIds = users.map(u => u._id);
+
+      const leadCounts = await Lead.aggregate([
+        { $match: { assignedTo: { $in: userIds } } },
+        {
+          $group: {
+            _id: '$assignedTo',
+            activeLeads: {
+              $sum: { $cond: [{ $in: ['$lifecycleStage', ['Converted', 'Dead']] }, 0, 1] }
+            },
+            convertedLeads: {
+              $sum: { $cond: [{ $eq: ['$lifecycleStage', 'Converted'] }, 1, 0] }
+            }
+          }
+        }
+      ]);
+
+      const countMap = new Map(leadCounts.map(c => [c._id.toString(), c]));
+
+      const enriched = users.map(u => {
+        const counts = countMap.get(u._id.toString());
+        return {
+          ...(u as any).toObject(),
+          activeLeads: counts?.activeLeads ?? 0,
+          convertedLeads: counts?.convertedLeads ?? 0,
+        };
+      });
+
+      res.json(enriched);
+      return;
+    }
 
     res.json(users);
   } catch (error) {
@@ -368,6 +435,13 @@ export const updateUserRole = async (req: Request, res: Response): Promise<void>
       res.status(404).json({ message: 'User not found' });
       return;
     }
+
+    createAndEmitNotification(
+      user._id.toString(),
+      'Role Updated',
+      `Your role has been updated to ${role}.`,
+      'info'
+    ).catch(console.error);
 
     res.json(user);
   } catch (error) {
