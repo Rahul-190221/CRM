@@ -167,6 +167,28 @@ The application uses:
 - **Frontend**: Client-side state management with API integration
 - **Backend**: RESTful API with MongoDB for data persistence
 
+## Realtime Push Setup
+
+To keep live push notifications working, deploy the backend to an always-on Node host. Vercel and Netlify are fine for the frontend and API calls, but Socket.IO needs a process that stays alive.
+
+The backend now includes a Dockerfile at `backend/Dockerfile`, so you can deploy it as a Docker web service.
+
+Recommended setup:
+1. Deploy `backend/` as a web service on your Node host.
+2. Set backend env vars:
+   - `MONGODB_URI`
+   - `JWT_SECRET`
+   - `GOOGLE_CLIENT_ID`
+   - `ALLOWED_ORIGINS=https://luminedgecrm.netlify.app`
+   - `FRONTEND_URL=https://luminedgecrm.netlify.app`
+   - SMTP vars if you use password reset emails
+3. Set frontend env vars on Netlify:
+   - `NEXT_PUBLIC_API_URL=https://your-backend-host/api`
+   - `NEXT_PUBLIC_SOCKET_URL=https://your-backend-host`
+4. Redeploy the frontend.
+
+If you keep the API and socket server on the same always-on host, you do not need `SOCKET_SERVER_URL` or `SOCKET_SERVER_SECRET`. Those are only for a split API/socket deployment.
+
 ## License
 
 MIT
