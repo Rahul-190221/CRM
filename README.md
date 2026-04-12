@@ -59,11 +59,15 @@ cd ../backend && npm install
    MONGODB_URI=mongodb://localhost:27017/crm_luminedge
    JWT_SECRET=your-secret-key-change-this-in-production
    NODE_ENV=development
+   # Optional when the API and socket server are split across hosts
+   SOCKET_SERVER_URL=https://your-socket-host.example.com
+   SOCKET_SERVER_SECRET=your-shared-bridge-secret
    ```
 
    Create `frontend/.env.local` file:
    ```env
    NEXT_PUBLIC_API_URL=https://crm-eta-blush.vercel.app/api
+   NEXT_PUBLIC_SOCKET_URL=https://your-socket-host.example.com
    ```
 
 3. **Start MongoDB** (if running locally):
@@ -98,6 +102,18 @@ cd frontend && npm run dev
 
 - Frontend will run on: http://localhost:3000
 - Backend API will run on: https://crm-eta-blush.vercel.app
+
+## Realtime Notifications
+
+Socket.IO works only on an always-on Node server. If you keep the API on Vercel or another serverless host and want live push notifications, deploy a separate socket host and set:
+
+```env
+SOCKET_SERVER_URL=https://your-socket-host.example.com
+SOCKET_SERVER_SECRET=shared-secret
+NEXT_PUBLIC_SOCKET_URL=https://your-socket-host.example.com
+```
+
+The backend will save notifications to MongoDB as usual, then forward them to the socket host through an internal bridge endpoint. The socket host will emit the `new-notification` event to the correct user room.
 
 ## API Endpoints
 

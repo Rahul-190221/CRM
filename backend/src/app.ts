@@ -22,6 +22,7 @@ import notificationRoutes from './routes/notification.routes';
 import activitiesRoutes from './routes/activities.routes';
 import reportsRoutes from './routes/reports.routes';
 import { createAndEmitNotification } from './services/notification.service';
+import { socketService } from './services/socket.service';
 
 const app = express();
 
@@ -121,6 +122,34 @@ app.use('/api/mock-test-packages', mockTestPackagesRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/activities', activitiesRoutes);
 app.use('/api/reports', reportsRoutes);
+
+// Internal socket bridge endpoint.
+// When the API and Socket.IO server are deployed separately, the API can
+// forward notifications here and the dedicated socket host will emit them.
+app.post('/api/internal/socket/notifications', (req: Request, res: Response) => {
+  const sharedSecret = process.env.SOCKET_SERVER_SECRET;
+  const incomingSecret = req.header('x-socket-server-secret');
+
+  if (!sharedSecret) {
+    res.status(503).json({ success: false, message: 'Socket bridge is not configured' });
+    return;
+  }
+
+  if (!incomingSecret || incomingSecret !== sharedSecret) {
+    res.status(403).json({ success: false, message: 'Forbidden' });
+    return;
+  }
+
+  const { recipientId, notification } = req.body ?? {};
+
+  if (!recipientId || !notification) {
+    res.status(400).json({ success: false, message: 'recipientId and notification are required' });
+    return;
+  }
+
+  socketService.emitToUser(recipientId, 'new-notification', notification);
+  res.json({ success: true });
+});
 
 // Test Socket.io trigger (Temp for Verification)
 app.post('/api/test-notification', async (req, res) => {

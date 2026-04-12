@@ -1,6 +1,7 @@
 import Notification from '../models/Notification';
 import User from '../models/User';
 import { socketService } from './socket.service';
+import { forwardNotificationToSocketServer } from './socket-bridge.service';
 
 export const createAndEmitNotification = async (
     recipientId: string,
@@ -22,6 +23,22 @@ export const createAndEmitNotification = async (
 
         // 2. Emit via WebSockets directly to the user
         socketService.emitToUser(recipientId, 'new-notification', newNotification);
+
+        // 3. Forward to a dedicated socket host when the API runs separately
+        //    from the websocket server. This keeps live push working on serverless
+        //    API deployments such as Vercel.
+        const notificationForBridge: any = typeof newNotification.toObject === 'function'
+            ? newNotification.toObject()
+            : newNotification;
+
+        void forwardNotificationToSocketServer({
+            recipientId,
+            notification: {
+                ...notificationForBridge,
+                _id: notificationForBridge._id?.toString?.() ?? String(notificationForBridge._id),
+                recipient: notificationForBridge.recipient?.toString?.() ?? String(notificationForBridge.recipient),
+            },
+        });
 
         return newNotification;
     } catch (error) {
