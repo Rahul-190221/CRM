@@ -47,3 +47,6 @@ next-env.d.ts
 *.swp
 *.swo
 *~
+
+# Local Netlify folder
+.netlify
