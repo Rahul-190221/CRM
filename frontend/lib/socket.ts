@@ -17,6 +17,7 @@ const SOCKET_URL = (() => {
 class ClientSocketService {
     public socket: Socket | null = null;
     private connectedToken: string | null = null;
+    private authFailed = false;
 
     public connect(token: string) {
         if (!token) {
@@ -24,8 +25,6 @@ class ClientSocketService {
         }
 
         if (!SOCKET_URL) {
-            // Production deployments without a dedicated Socket.IO host should
-            // fall back to HTTP polling for notifications instead of erroring.
             if (process.env.NODE_ENV === 'production') {
                 console.warn('NEXT_PUBLIC_SOCKET_URL is not set; realtime notifications are disabled.');
             }
@@ -33,8 +32,15 @@ class ClientSocketService {
             return;
         }
 
+        // Don't keep retrying with a token that already failed auth
+        if (this.authFailed && this.connectedToken === token) {
+            return;
+        }
+
         if (this.socket && this.connectedToken === token) {
             if (!this.socket.connected) {
+                this.authFailed = false;
+                this.socket.io.opts.reconnection = true;
                 this.socket.connect();
             }
             return;
@@ -43,18 +49,20 @@ class ClientSocketService {
         this.disconnect();
 
         this.connectedToken = token;
+        this.authFailed = false;
         this.socket = io(SOCKET_URL, {
             auth: { token },
             withCredentials: true,
             transports: ['polling'],
             reconnection: true,
-            reconnectionAttempts: 10,
-            reconnectionDelay: 2000,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 3000,
             reconnectionDelayMax: 10000,
             timeout: 20000,
         });
 
         this.socket.on('connect', () => {
+            this.authFailed = false;
             console.log('Connected to socket server', this.socket?.id);
         });
 
@@ -63,7 +71,13 @@ class ClientSocketService {
         });
 
         this.socket.on('connect_error', (err) => {
-            console.warn('Socket connect error:', err.message);
+            if (err.message === 'Authentication error') {
+                // Stop retrying immediately — same token won't suddenly become valid
+                this.authFailed = true;
+                if (this.socket?.io) {
+                    this.socket.io.opts.reconnection = false;
+                }
+            }
         });
     }
 
@@ -73,6 +87,7 @@ class ClientSocketService {
             this.socket = null;
         }
         this.connectedToken = null;
+        this.authFailed = false;
     }
 }
 
