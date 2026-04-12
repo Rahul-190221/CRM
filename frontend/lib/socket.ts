@@ -45,15 +45,25 @@ class ClientSocketService {
         this.connectedToken = token;
         this.socket = io(SOCKET_URL, {
             auth: { token },
-            withCredentials: true
+            withCredentials: true,
+            transports: ['polling'],
+            reconnection: true,
+            reconnectionAttempts: 10,
+            reconnectionDelay: 2000,
+            reconnectionDelayMax: 10000,
+            timeout: 20000,
         });
 
         this.socket.on('connect', () => {
-            console.log('Connected to WebSocket server', this.socket?.id);
+            console.log('Connected to socket server', this.socket?.id);
         });
 
         this.socket.on('disconnect', () => {
-            console.log('Disconnected from WebSocket server');
+            console.log('Disconnected from socket server');
+        });
+
+        this.socket.on('connect_error', (err) => {
+            console.warn('Socket connect error:', err.message);
         });
     }
 

@@ -30,6 +30,15 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     useEffect(() => {
+        const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
+        if (!SOCKET_URL) return;
+        const interval = setInterval(() => {
+            fetch(`${SOCKET_URL}/api/health`).catch(() => undefined);
+        }, 4 * 60 * 1000);
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
         if (typeof window === 'undefined' || !('Notification' in window)) return;
 
         if (Notification.permission === 'default') {
