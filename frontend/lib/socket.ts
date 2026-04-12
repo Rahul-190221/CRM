@@ -1,6 +1,10 @@
 import { io, Socket } from 'socket.io-client';
 
-const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL
+    || (API_URL && API_URL.includes('localhost')
+        ? API_URL.replace('/api', '')
+        : null);
 
 class ClientSocketService {
     public socket: Socket | null = null;
@@ -8,6 +12,13 @@ class ClientSocketService {
 
     public connect(token: string) {
         if (!token) {
+            return;
+        }
+
+        if (!SOCKET_URL) {
+            // Production deployments without a dedicated Socket.IO host should
+            // fall back to HTTP polling for notifications instead of erroring.
+            this.disconnect();
             return;
         }
 

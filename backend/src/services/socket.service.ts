@@ -8,17 +8,36 @@ if (!JWT_SECRET) {
 }
 const JWT_SECRET_SAFE: string = JWT_SECRET;
 
+const allowedOrigins = new Set(
+    (process.env.ALLOWED_ORIGINS
+        ? process.env.ALLOWED_ORIGINS.split(',')
+        : ['http://localhost:3000', 'http://localhost:3001']
+    ).map(o => o.trim())
+);
+
+const isLocalOrigin = (origin: string): boolean => {
+    try {
+        const parsed = new URL(origin);
+        return ['localhost', '127.0.0.1', '[::1]'].includes(parsed.hostname);
+    } catch {
+        return false;
+    }
+};
+
 class SocketService {
     private io: SocketIOServer | null = null;
 
     public init(server: HttpServer): void {
-        const allowedOrigins = process.env.ALLOWED_ORIGINS
-            ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
-            : ['http://localhost:3000', 'http://localhost:3001'];
-
         this.io = new SocketIOServer(server, {
             cors: {
-                origin: allowedOrigins,
+                origin: (origin, callback) => {
+                    if (!origin || allowedOrigins.has(origin) || isLocalOrigin(origin)) {
+                        callback(null, true);
+                        return;
+                    }
+
+                    callback(new Error('Not allowed by CORS'));
+                },
                 methods: ['GET', 'POST'],
                 credentials: true
             },
