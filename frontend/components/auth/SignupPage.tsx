@@ -32,22 +32,10 @@ export default function SignupPage({ onSignup }: SignupProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [errors, setErrors] = useState<Errors>({})
-  const [pendingGoogleToken, setPendingGoogleToken] = useState<string | null>(null)
-  const [googleRole, setGoogleRole] = useState<'bdm' | 'admin'>('bdm')
-
-  const handleGoogleLogin = useGoogleLogin({
-    onSuccess: (tokenResponse) => {
-      setPendingGoogleToken(tokenResponse.access_token)
-      toast('Select your role to continue with Google.', { icon: '👤' })
-    },
-    onError: () => toast.error('Google sign up failed'),
-  })
-
-  const handleGoogleRegisterConfirm = async () => {
-    if (!pendingGoogleToken) return
+  const handleGoogleSuccess = async (accessToken: string) => {
     setLoading(true)
     try {
-      const response = await googleRegister(pendingGoogleToken, googleRole)
+      const response = await googleRegister(accessToken, 'bdm')
       if (!response.accessToken) throw new Error('Google sign up failed')
       onSignup?.(response.user, response.accessToken)
       toast.success('Account created! Please sign in.')
@@ -56,9 +44,13 @@ export default function SignupPage({ onSignup }: SignupProps) {
       toast.error(err.message || 'Signup failed')
     } finally {
       setLoading(false)
-      setPendingGoogleToken(null)
     }
   }
+
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: (tokenResponse) => handleGoogleSuccess(tokenResponse.access_token),
+    onError: () => toast.error('Google sign up failed'),
+  })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -221,28 +213,6 @@ export default function SignupPage({ onSignup }: SignupProps) {
                   </AnimatePresence>
                 </motion.div>
 
-                {/* Role toggle */}
-                <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.45 }}>
-                  <label className="block text-xs font-extrabold mb-2 text-[#00000F]/80 uppercase tracking-widest">Role</label>
-                  <div className="inline-flex rounded-xl bg-gray-100 border border-gray-200 p-1.5 gap-1.5">
-                    {['bdm', 'admin'].map(r => (
-                      <motion.button
-                        key={r}
-                        type="button"
-                        onClick={() => setFormData(prev => ({ ...prev, role: r }))}
-                        whileTap={{ scale: 0.95 }}
-                        className={`px-5 py-2 rounded-lg text-sm font-medium transition ${
-                          formData.role === r
-                            ? 'bg-[#FACE39] text-[#00000F] shadow-md'
-                            : 'text-[#00000F]/40 hover:text-[#00000F]/70'
-                        }`}
-                      >
-                        {r === 'bdm' ? 'BDM' : 'Admin'}
-                      </motion.button>
-                    ))}
-                  </div>
-                </motion.div>
-
                 {/* Password */}
                 <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.52 }}>
                   <label className="block text-xs font-extrabold mb-2 text-[#00000F]/80 uppercase tracking-widest">
@@ -351,108 +321,6 @@ export default function SignupPage({ onSignup }: SignupProps) {
         </div>
       </motion.div>
 
-      {/* Google role picker modal */}
-      <AnimatePresence>
-        {pendingGoogleToken && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center px-4"
-            style={{ backdropFilter: 'blur(6px)', backgroundColor: 'rgba(0,0,0,0.35)' }}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.88, y: 32 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.88, y: 32 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-              className="w-full max-w-sm bg-white rounded-3xl shadow-2xl overflow-hidden"
-            >
-              <div className="h-0.5 bg-gradient-to-r from-transparent via-[#FACE39] to-transparent" />
-
-              <div className="p-8">
-                <div className="flex flex-col items-center mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-[#FACE39]/10 border border-[#FACE39]/20 flex items-center justify-center mb-3">
-                    <FaGoogle className="text-red-400 text-xl" />
-                  </div>
-                  <h2 className="text-lg font-extrabold text-[#00000F] tracking-tight">Choose your role</h2>
-                  <p className="text-xs text-[#00000F]/40 font-semibold mt-1 text-center">
-                    Select how you'll use Luminedge CRM
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-3 mb-6">
-                  {[
-                    { value: 'bdm', label: 'BDM', desc: 'Manage leads, clients & sales pipeline' },
-                    { value: 'admin', label: 'Admin', desc: 'Full access to all settings & users' },
-                  ].map(({ value, label, desc }) => (
-                    <motion.button
-                      key={value}
-                      type="button"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={() => setGoogleRole(value as 'bdm' | 'admin')}
-                      className={`w-full text-left px-5 py-4 rounded-2xl border-2 transition ${
-                        googleRole === value
-                          ? 'border-[#FACE39] bg-[#FACE39]/8 shadow-md'
-                          : 'border-gray-200 bg-gray-50 hover:border-[#FACE39]/40'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className={`text-sm font-bold ${googleRole === value ? 'text-[#00000F]' : 'text-[#00000F]/60'}`}>
-                            {label}
-                          </p>
-                          <p className="text-xs text-[#00000F]/40 mt-0.5">{desc}</p>
-                        </div>
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition ${
-                          googleRole === value ? 'border-[#FACE39] bg-[#FACE39]' : 'border-gray-300'
-                        }`}>
-                          {googleRole === value && (
-                            <motion.div
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              className="w-2 h-2 rounded-full bg-white"
-                            />
-                          )}
-                        </div>
-                      </div>
-                    </motion.button>
-                  ))}
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setPendingGoogleToken(null)}
-                    className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-[#00000F]/40 hover:text-[#00000F]/70 transition"
-                  >
-                    Cancel
-                  </button>
-                  <motion.button
-                    type="button"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={handleGoogleRegisterConfirm}
-                    disabled={loading}
-                    className="flex-1 py-2.5 rounded-xl bg-[#FACE39] text-[#00000F] text-sm font-bold disabled:opacity-60 flex items-center justify-center gap-2"
-                  >
-                    {loading ? (
-                      <>
-                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                        </svg>
-                        Creating…
-                      </>
-                    ) : `Continue as ${googleRole === 'bdm' ? 'BDM' : 'Admin'}`}
-                  </motion.button>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   )
 }

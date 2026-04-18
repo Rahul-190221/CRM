@@ -18,7 +18,7 @@ if (!JWT_SECRET) {
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role = 'bdm' } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -123,13 +123,7 @@ export const googleRegister = async (req: Request, res: Response): Promise<void>
     }
 
     const { email, name, picture } = payload;
-    const { role } = req.body;
-
-    const validRoles = ['admin', 'bdm', 'senior-bdm', 'junior-bdm'];
-    if (!role || !validRoles.includes(role)) {
-      res.status(400).json({ message: 'A valid role is required to register.' });
-      return;
-    }
+    const role = req.body.role || 'bdm';
 
     // Check if user already exists
     let user = await User.findOne({ email });
