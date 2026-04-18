@@ -2,6 +2,7 @@ import http from 'http';
 import app from './app';
 import connectDB from './config/db';
 import { socketService } from './services/socket.service';
+import { initScheduler } from './services/scheduler.service';
 
 const PORT = process.env.PORT || 5000;
 
@@ -12,6 +13,9 @@ connectDB().then(() => {
 
   // Initialize Socket.io
   socketService.init(server);
+
+  // Start daily follow-up reminder cron job
+  initScheduler();
 
   // Start server
   server.listen(PORT, () => {

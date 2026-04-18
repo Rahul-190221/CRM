@@ -51,6 +51,8 @@ interface BDMTask {
     name?: string;
   };
   dueDate?: string;
+  completedAt?: string;
+  completedBy?: { _id: string; name: string };
 }
 
 // Avatar color generator based on name
@@ -337,6 +339,14 @@ export default function BDMReport() {
     if (num >= 40) return 'text-yellow-600'
     return 'text-red-600'
   }
+
+  const formatCompletedAt = (d?: string): string => {
+    if (!d) return 'N/A';
+    return new Date(d).toLocaleString('en-US', {
+      month: 'short', day: 'numeric', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', hour12: true,
+    });
+  };
 
   const getPriorityColor = (priority: string): string => {
     switch (priority) {
@@ -729,7 +739,7 @@ export default function BDMReport() {
         </>
       ) : (
         /* Task Status View */
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Pending Column */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 px-1">
@@ -798,6 +808,57 @@ export default function BDMReport() {
                   <div className="flex items-center gap-2 mt-auto pt-3 border-t border-gray-50 text-[11px] text-gray-500">
                     <Users className="w-3 h-3" />
                     <span>Lead: {task.entityId?.fullName || task.entityId?.name || 'N/A'}</span>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Completed Column */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 px-1">
+              <div className="w-3 h-3 rounded-full bg-green-400"></div>
+              <h3 className="font-semibold text-gray-900">Completed</h3>
+              <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full text-gray-500 font-medium">
+                {tasks.filter(t => t.status === 'completed').length}
+              </span>
+            </div>
+            {isLoading ? (
+              <div className="bg-white rounded-xl p-8 border border-gray-100 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FACE39]"></div>
+              </div>
+            ) : tasks.filter(t => t.status === 'completed').length === 0 ? (
+              <div className="bg-white rounded-xl p-8 border border-gray-100 text-center text-gray-500 text-sm italic">
+                No completed tasks for this date
+              </div>
+            ) : (
+              tasks.filter(t => t.status === 'completed').map(task => (
+                <div key={task._id} className="bg-white rounded-xl p-4 border border-green-50 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex justify-between items-start gap-2 mb-2">
+                    <h4 className="font-medium text-gray-900 text-sm leading-tight flex items-center gap-1.5">
+                      <CheckCircle className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
+                      {task.title}
+                    </h4>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${getPriorityColor(task.priority)}`}>
+                      {task.priority}
+                    </span>
+                  </div>
+                  {task.description && <p className="text-xs text-gray-500 mb-3 line-clamp-2">{task.description}</p>}
+                  <div className="mt-auto pt-3 border-t border-gray-50 space-y-1.5">
+                    <div className="flex items-center gap-2 text-[11px] text-gray-500">
+                      <Users className="w-3 h-3" />
+                      <span>Lead: {task.entityId?.fullName || task.entityId?.name || 'N/A'}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[11px] text-green-600">
+                      <Clock className="w-3 h-3" />
+                      <span>{formatCompletedAt(task.completedAt)}</span>
+                    </div>
+                    {task.completedBy?.name && (
+                      <div className="flex items-center gap-2 text-[11px] text-gray-500">
+                        <CheckCircle className="w-3 h-3 text-gray-400" />
+                        <span>By: {task.completedBy.name}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))

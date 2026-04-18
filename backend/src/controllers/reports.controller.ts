@@ -213,12 +213,15 @@ export const getBDMTaskStatus = async (req: Request, res: Response): Promise<voi
 
     const tasks = await Task.find({
       assignedTo: bdmId,
-      status: { $in: ['pending', 'in-progress'] },
+      status: { $in: ['pending', 'in-progress', 'completed'] },
       $or: [
         { dueDate: { $gte: start, $lte: end } },
-        { createdAt: { $gte: start, $lte: end } }
-      ]
-    }).populate('entityId');
+        { createdAt: { $gte: start, $lte: end } },
+        { completedAt: { $gte: start, $lte: end } },
+      ],
+    })
+      .populate('entityId')
+      .populate('completedBy', 'name');
 
     res.json(tasks);
   } catch (error) {
