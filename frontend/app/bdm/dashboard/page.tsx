@@ -94,23 +94,23 @@ function BDMDashboardContent() {
       case 'dashboard':
         return <BDMDashboard onViewLead={(id) => { setSelectedLeadId(id); setActivePage('lead-detail'); }} />
       case 'lead-center':
-        return <LeadCenter user={user} refreshKey={leadCenterRefreshKey} onViewLead={(id) => { setSelectedLeadId(id); setActivePage('lead-detail'); }} />
+        return <LeadCenter refreshKey={leadCenterRefreshKey} onViewLead={(id) => { setSelectedLeadId(id); setActivePage('lead-detail'); }} />
       case 'lead-detail':
         return selectedLeadId
           ? <LeadDetail id={selectedLeadId} onBack={() => { setLeadCenterRefreshKey(k => k + 1); setActivePage('lead-center'); }} />
-          : <LeadCenter user={user} refreshKey={leadCenterRefreshKey} onViewLead={(id) => { setSelectedLeadId(id); setActivePage('lead-detail'); }} />
+          : <LeadCenter refreshKey={leadCenterRefreshKey} onViewLead={(id) => { setSelectedLeadId(id); setActivePage('lead-detail'); }} />
       case 'lead-stage':
-        return <LeadStage user={user} />
+        return <LeadStage />
       case 'course-details':
-        return <CourseDetails user={user} />
+        return <CourseDetails />
       case 'mock-test':
-        return <MockTest user={user} />
+        return <MockTest />
       case 'exam-reg':
-        return <ExamRegistration user={user} />
+        return <ExamRegistration />
       case 'notification':
         return <NotificationsPage />
       case 'profile':
-        return <ProfilePage user={user} />
+        return <ProfilePage />
       default:
         return <BDMDashboard onViewLead={(id) => { setSelectedLeadId(id); setActivePage('lead-detail'); }} />
     }
