@@ -362,7 +362,7 @@ export default function BDMReport() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4 sm:mb-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">BDM Reports</h1>
+          <h1 className="text-lg sm:text-xl font-bold text-[#00000F]/85">BDM Reports</h1>
           <p className="text-sm text-gray-500 mt-1">View performance metrics and task status</p>
         </div>
         <div className="flex items-center gap-3">
@@ -392,8 +392,8 @@ export default function BDMReport() {
       </div>
 
       {/* Report Configuration */}
-      <div className="bg-white rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Report Configuration</h2>
+      <div className="bg-white rounded-2xl border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)] p-4 sm:p-6 mb-4 sm:mb-6">
+        <h2 className="text-[14px] font-semibold text-[#00000F]/80 mb-4">Report Configuration</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           {/* Report Category / Date Range */}
           {reportMode === 'performance' && (
@@ -522,29 +522,29 @@ export default function BDMReport() {
           {/* Summary Stats */}
           {summary && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
-          <div className="bg-white rounded-xl p-4 border border-gray-100">
+          <div className="bg-white rounded-2xl p-4 border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                 <Users className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{summary.totalBDMs}</p>
+                <p className="text-xl font-bold text-[#00000F]/85">{summary.totalBDMs}</p>
                 <p className="text-xs text-gray-500">Total BDMs</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl p-4 border border-gray-100">
+          <div className="bg-white rounded-2xl p-4 border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                 <Target className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{summary.convertedLeads}</p>
+                <p className="text-xl font-bold text-[#00000F]/85">{summary.convertedLeads}</p>
                 <p className="text-xs text-gray-500">Conversions</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl p-4 border border-gray-100">
+          <div className="bg-white rounded-2xl p-4 border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-purple-600" />
@@ -555,7 +555,7 @@ export default function BDMReport() {
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl p-4 border border-gray-100">
+          <div className="bg-white rounded-2xl p-4 border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
                 <BarChart3 className="w-5 h-5 text-yellow-600" />
@@ -570,9 +570,9 @@ export default function BDMReport() {
       )}
 
       {/* Performance Table */}
-      <div className="bg-white rounded-xl overflow-hidden mb-6">
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h2 className="text-lg font-semibold text-gray-900">Performance Metrics</h2>
+      <div className="bg-white rounded-2xl border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)] overflow-hidden mb-6">
+        <div className="px-6 py-4 border-b border-[#00000F]/[0.06]">
+          <h2 className="text-[14px] font-semibold text-[#00000F]/80">Performance Metrics</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -675,7 +675,7 @@ export default function BDMReport() {
                                     <div className="pb-4">
                                       <div className="flex items-center gap-2 mb-1">
                                         <span className="text-xs font-bold text-gray-900">{act.leadName}</span>
-                                        <span className="text-[10px] text-gray-400">
+                                        <span className="text-[12px] text-gray-400">
                                           {new Date(act.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                         </span>
                                       </div>
@@ -702,35 +702,35 @@ export default function BDMReport() {
 
       {/* Activity Metrics */}
       {summary && (
-        <div className="bg-white rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Activity Metrics</h2>
+        <div className="bg-white rounded-2xl border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)] p-6">
+          <h2 className="text-[14px] font-semibold text-[#00000F]/80 mb-4">Activity Metrics</h2>
           <div className="grid grid-cols-4 gap-6">
             <div className="text-center p-4 bg-gray-50 rounded-xl">
               <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
                 <Phone className="w-6 h-6 text-blue-600" />
               </div>
-              <p className="text-2xl font-bold text-gray-900">{summary.totalCalls}</p>
+              <p className="text-xl font-bold text-[#00000F]/85">{summary.totalCalls}</p>
               <p className="text-sm text-gray-500">Total Calls</p>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-xl">
               <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-3">
                 <Mail className="w-6 h-6 text-purple-600" />
               </div>
-              <p className="text-2xl font-bold text-gray-900">{summary.totalEmails}</p>
+              <p className="text-xl font-bold text-[#00000F]/85">{summary.totalEmails}</p>
               <p className="text-sm text-gray-500">Total Emails</p>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-xl">
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3">
                 <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
-              <p className="text-2xl font-bold text-gray-900">{summary.activeLeads}</p>
+              <p className="text-xl font-bold text-[#00000F]/85">{summary.activeLeads}</p>
               <p className="text-sm text-gray-500">Active Leads</p>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-xl">
               <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-3">
                 <Clock className="w-6 h-6 text-orange-600" />
               </div>
-              <p className="text-2xl font-bold text-gray-900">{summary.avgResponseTime}</p>
+              <p className="text-xl font-bold text-[#00000F]/85">{summary.avgResponseTime}</p>
               <p className="text-sm text-gray-500">Avg Response Time</p>
             </div>
           </div>
@@ -763,12 +763,12 @@ export default function BDMReport() {
                 <div key={task._id} className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start gap-2 mb-2">
                     <h4 className="font-medium text-gray-900 text-sm leading-tight">{task.title}</h4>
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${getPriorityColor(task.priority)}`}>
+                    <span className={`px-2 py-0.5 rounded-full text-[12px] font-bold uppercase ${getPriorityColor(task.priority)}`}>
                       {task.priority}
                     </span>
                   </div>
                   {task.description && <p className="text-xs text-gray-500 mb-3 line-clamp-2">{task.description}</p>}
-                  <div className="flex items-center gap-2 mt-auto pt-3 border-t border-gray-50 text-[11px] text-gray-500">
+                  <div className="flex items-center gap-2 mt-auto pt-3 border-t border-gray-50 text-[12px] text-gray-500">
                     <Users className="w-3 h-3" />
                     <span>Lead: {task.entityId?.fullName || task.entityId?.name || 'N/A'}</span>
                   </div>
@@ -800,12 +800,12 @@ export default function BDMReport() {
                 <div key={task._id} className="bg-white rounded-xl p-4 border border-blue-50 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start gap-2 mb-2">
                     <h4 className="font-medium text-gray-900 text-sm leading-tight">{task.title}</h4>
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${getPriorityColor(task.priority)}`}>
+                    <span className={`px-2 py-0.5 rounded-full text-[12px] font-bold uppercase ${getPriorityColor(task.priority)}`}>
                       {task.priority}
                     </span>
                   </div>
                   {task.description && <p className="text-xs text-gray-500 mb-3 line-clamp-2">{task.description}</p>}
-                  <div className="flex items-center gap-2 mt-auto pt-3 border-t border-gray-50 text-[11px] text-gray-500">
+                  <div className="flex items-center gap-2 mt-auto pt-3 border-t border-gray-50 text-[12px] text-gray-500">
                     <Users className="w-3 h-3" />
                     <span>Lead: {task.entityId?.fullName || task.entityId?.name || 'N/A'}</span>
                   </div>
@@ -839,22 +839,22 @@ export default function BDMReport() {
                       <CheckCircle className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
                       {task.title}
                     </h4>
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${getPriorityColor(task.priority)}`}>
+                    <span className={`px-2 py-0.5 rounded-full text-[12px] font-bold uppercase ${getPriorityColor(task.priority)}`}>
                       {task.priority}
                     </span>
                   </div>
                   {task.description && <p className="text-xs text-gray-500 mb-3 line-clamp-2">{task.description}</p>}
                   <div className="mt-auto pt-3 border-t border-gray-50 space-y-1.5">
-                    <div className="flex items-center gap-2 text-[11px] text-gray-500">
+                    <div className="flex items-center gap-2 text-[12px] text-gray-500">
                       <Users className="w-3 h-3" />
                       <span>Lead: {task.entityId?.fullName || task.entityId?.name || 'N/A'}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-[11px] text-green-600">
+                    <div className="flex items-center gap-2 text-[12px] text-green-600">
                       <Clock className="w-3 h-3" />
                       <span>{formatCompletedAt(task.completedAt)}</span>
                     </div>
                     {task.completedBy?.name && (
-                      <div className="flex items-center gap-2 text-[11px] text-gray-500">
+                      <div className="flex items-center gap-2 text-[12px] text-gray-500">
                         <CheckCircle className="w-3 h-3 text-gray-400" />
                         <span>By: {task.completedBy.name}</span>
                       </div>

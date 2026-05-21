@@ -14,79 +14,80 @@ interface HeaderProps {
 }
 
 export default function Header({ user, onSearch, searchTerm, onLogout, onMenuToggle, unreadCount, onNotificationClick }: HeaderProps) {
-  const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase()
-  }
+  const getInitials = (name: string) =>
+    name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 
   return (
-    <header className="bg-white border-b border-gray-100 px-3 sm:px-6 py-3 shadow-sm sticky top-0 z-30">
-      <div className="flex items-center justify-between gap-2 sm:gap-4">
+    <header className="bg-white/95 backdrop-blur-xl border-b border-[#00000F]/[0.07] px-4 sm:px-6 py-3.5 sticky top-0 z-30 shadow-[0_1px_12px_rgba(0,0,0,0.05)]">
+      <div className="flex items-center gap-3 sm:gap-5">
 
-        {/* Hamburger button - mobile only */}
+        {/* Hamburger — mobile only */}
         <button
           onClick={onMenuToggle}
-          className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors flex-shrink-0"
+          className="lg:hidden p-2 rounded-xl hover:bg-gray-100 transition-colors flex-shrink-0 text-[#00000F]/50 hover:text-[#00000F]/80"
           aria-label="Open menu"
         >
-          <Menu className="w-5 h-5 text-gray-600" />
+          <Menu className="w-5 h-5" />
         </button>
 
         {/* Search */}
-        <div className="flex-1 min-w-0 max-w-xl">
-          <div className="relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-primary-600 transition-colors" />
+        <div className="flex-1 flex justify-center min-w-0">
+          <div className="relative group w-full max-w-lg">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#00000F]/30 w-4 h-4 group-focus-within:text-[#00000F]/60 transition-colors pointer-events-none" />
             <input
               type="text"
-              placeholder="Search..."
+              placeholder="Search anything..."
               value={searchTerm || ''}
-              onChange={(e) => onSearch?.(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 sm:py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FACE39]/30 focus:border-[#FACE39]/50 text-sm text-gray-700 placeholder-gray-400 transition-all"
+              onChange={e => onSearch?.(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 bg-[#00000F]/[0.035] border border-transparent rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#FACE39]/35 focus:border-[#FACE39]/40 focus:bg-white text-[14px] text-[#00000F]/80 placeholder-[#00000F]/30 transition-all duration-200"
             />
           </div>
         </div>
 
-        {/* Right Side */}
-        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-          {/* Notifications */}
-          <button 
+        {/* Right */}
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+
+          {/* Notification bell */}
+          <button
             onClick={onNotificationClick}
-            className="relative p-2 text-gray-500 hover:text-gray-700 transition-all rounded-xl hover:bg-gray-100 border border-transparent hover:border-gray-200"
+            className="relative p-2.5 text-[#00000F]/45 hover:text-[#00000F]/75 transition-all rounded-xl hover:bg-[#00000F]/[0.04] border border-transparent hover:border-[#00000F]/[0.07]"
           >
-            <Bell className="w-5 h-5" />
+            <Bell className="w-[18px] h-[18px]" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-white">
+              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white px-0.5">
                 {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}
           </button>
 
-          {/* Vertical Divider - hidden on very small screens */}
-          <div className="hidden sm:block h-8 w-px bg-gray-200"></div>
+          {/* Divider */}
+          <div className="hidden sm:block h-7 w-px bg-[#00000F]/[0.08]" />
 
-          {/* User Profile */}
+          {/* User profile */}
           <div className="relative group">
-            <div className="flex items-center gap-2 cursor-pointer p-1.5 rounded-xl hover:bg-[#FACE39]/10 transition-all">
+            <div className="flex items-center gap-2.5 cursor-pointer px-2 py-1.5 rounded-2xl hover:bg-[#FACE39]/8 transition-all duration-200 border border-transparent hover:border-[#FACE39]/20">
               <div className="relative flex-shrink-0">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 bg-[#FACE39] rounded-lg flex items-center justify-center text-black font-extrabold text-sm shadow-sm">
+                <div className="w-8 h-8 sm:w-[34px] sm:h-[34px] bg-[#FACE39] rounded-xl flex items-center justify-center text-[#00000F] font-black text-[12px] shadow-[0_2px_8px_rgba(250,206,57,0.40)]">
                   {getInitials(user.name)}
                 </div>
-                <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></div>
+                <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full shadow-sm" />
               </div>
-              <div className="hidden lg:block text-left">
-                <p className="text-sm font-bold text-[#00000F] leading-none mb-1">{user.name}</p>
-                <p className="text-[10px] font-bold text-[#00000F]/40 uppercase tracking-widest">{user.role}</p>
+              <div className="hidden lg:flex flex-col text-left">
+                <p className="text-[14px] font-semibold text-[#00000F]/85 leading-tight">{user.name}</p>
+                <p className="text-[11px] font-medium text-gray-400 uppercase tracking-widest">{user.role}</p>
               </div>
-              <ChevronDown className="hidden sm:block w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+              <ChevronDown className="hidden sm:block w-3.5 h-3.5 text-[#00000F]/30 group-hover:text-[#00000F]/55 transition-colors" />
             </div>
 
-            {/* Logout Dropdown */}
-            <div className="absolute right-0 mt-2 w-44 bg-white rounded-2xl shadow-large border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[60]">
-              <div className="p-2">
+            {/* Dropdown */}
+            <div className="absolute right-0 mt-2 w-44 bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-[#00000F]/[0.07] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[60] overflow-hidden">
+              <div className="p-1.5">
                 <button
                   onClick={onLogout}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 font-bold hover:bg-red-50 rounded-xl transition-all"
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-[14px] text-red-500 font-bold hover:bg-red-50 rounded-xl transition-all"
                 >
-                  <LogOut className="w-4 h-4" /> Sign Out
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
                 </button>
               </div>
             </div>

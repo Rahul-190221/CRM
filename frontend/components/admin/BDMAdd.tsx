@@ -196,12 +196,12 @@ export default function BDMAdd() {
     <div className="min-h-full">
       {/* Page Header */}
       <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Add New BDM</h1>
+        <h1 className="text-lg sm:text-xl font-bold text-[#00000F]/85">Add New BDM</h1>
         <p className="text-sm text-gray-500 mt-1">Add a new Business Development Manager to the system</p>
       </div>
 
       {/* Form Card */}
-      <div className="bg-white rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
+      <div className="bg-white rounded-2xl border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)] p-4 sm:p-6 mb-4 sm:mb-6">
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col sm:flex-row gap-6">
             {/* Profile Image Upload */}
@@ -412,10 +412,10 @@ export default function BDMAdd() {
 
       {/* Recently Added BDMs */}
       <div className="mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Recently Added BDMs</h2>
+        <h2 className="text-[14px] font-semibold text-[#00000F]/80 mb-4">Recently Added BDMs</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {recentBDMs.map((bdm) => (
-            <div key={bdm._id} className="bg-white rounded-xl p-4 border border-gray-100 flex items-center gap-4">
+            <div key={bdm._id} className="bg-white rounded-2xl p-4 border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)] flex items-center gap-4">
               <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold ${getAvatarColor(bdm.firstName || bdm.name)}`}>
                 {getInitials(bdm.firstName || bdm.name.split(' ')[0], bdm.lastName || bdm.name.split(' ')[1] || '')}
               </div>

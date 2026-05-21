@@ -1,8 +1,7 @@
 'use client'
 
-import { X, Clock, Calendar, CreditCard, Users, User, CalendarDays, Pencil, Trash2 } from 'lucide-react'
-import type { Course, TestType } from '@/types/admin'
-import { testTypeBadgeColors } from '@/types/admin'
+import { X, Clock, Users, User, CalendarDays, CreditCard, Pencil, Trash2, BookOpen } from 'lucide-react'
+import type { Course } from '@/types/admin'
 
 interface ViewCourseModalProps {
   isOpen: boolean
@@ -16,157 +15,126 @@ interface ViewCourseModalProps {
 export default function ViewCourseModal({ isOpen, onClose, onEdit, onDelete, course, isAdmin = false }: ViewCourseModalProps) {
   if (!isOpen || !course) return null
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    }).replace(/\//g, '-')
-  }
+  const enrollPct = course.capacity
+    ? Math.min(100, Math.round((course.enrolledCount / course.capacity) * 100))
+    : 0
 
-  const defaultSyllabus = [
-    'Listening Module',
-    'Reading Module',
-    'Writing Module',
-    'Speaking Module',
-    'Mock Tests',
-    'Practice Sessions'
+  const fillColor =
+    enrollPct >= 90 ? 'bg-red-400' :
+    enrollPct >= 60 ? 'bg-amber-400' :
+    'bg-[#FACE39]'
+
+  const stats = [
+    { icon: Clock,        label: 'Duration',   value: `${course.durationMonths} months` },
+    { icon: CreditCard,   label: 'Price',      value: course.price > 0 ? `${course.price.toLocaleString()} ${course.currency}` : 'Free' },
+    { icon: User,         label: 'Instructor', value: course.instructor || 'TBA' },
+    { icon: CalendarDays, label: 'Schedule',   value: course.schedule || '—' },
   ]
 
-  const syllabus = course.syllabus?.length > 0 ? course.syllabus : defaultSyllabus
-
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-100 relative">
-          <div className="text-center w-full">
-            <h2 className="text-xl font-bold text-gray-900">{course.name}</h2>
-            <p className="text-sm text-gray-500 mt-1">Complete course information and enrollment details.</p>
-          </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 absolute right-6 top-6 p-1 hover:bg-gray-100 rounded-full transition-colors">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-gray-100 overflow-hidden">
 
-        <div className="p-6">
+        {/* Header */}
+        <div className="relative px-6 pt-6 pb-4 border-b border-gray-100">
+          <button
+            onClick={onClose}
+            className="absolute right-4 top-4 p-1.5 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+
           {/* Badges */}
-          <div className="flex items-center justify-center gap-2 mb-5">
-            <span className={`px-3 py-1 text-xs font-semibold rounded-md border ${testTypeBadgeColors[course.testType as TestType] || 'bg-gray-100 text-gray-700 border-gray-200'
-              }`}>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="px-2.5 py-1 text-xs font-bold rounded-lg bg-[#FACE39] text-[#00000F]">
               {course.testType}
             </span>
-            <span className={`px-3 py-1 text-xs font-semibold rounded-md ${course.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
-              }`}>
+            <span className={`px-2.5 py-1 text-xs font-semibold rounded-lg ${
+              course.isActive
+                ? 'bg-green-50 text-green-600 border border-green-100'
+                : 'bg-gray-100 text-gray-500'
+            }`}>
               {course.isActive ? 'Active' : 'Inactive'}
             </span>
           </div>
 
-          {/* Description */}
-          <div className="mb-5">
-            <h3 className="text-sm font-semibold text-gray-900 mb-2">Description</h3>
-            <p className="text-sm text-gray-600">{course.description}</p>
-          </div>
+          <h2 className="text-2xl font-bold text-[#00000F] leading-tight">Batch {course.name}</h2>
+          {course.instructor && (
+            <p className="text-sm text-gray-400 mt-0.5">{course.instructor}</p>
+          )}
+        </div>
 
-          {/* Course Info & Enrollment Details */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
-            {/* Course Information */}
-            <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">Course Information</h3>
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <Clock className="w-4 h-4 text-gray-400" />
-                  <div>
-                    <p className="text-xs text-gray-500">Duration</p>
-                    <p className="font-medium text-gray-900">{course.durationMonths} months</p>
-                  </div>
+        <div className="px-6 py-5 space-y-5">
+
+          {/* Enrollment card */}
+          <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-[#FACE39]/20 flex items-center justify-center">
+                  <Users className="w-3.5 h-3.5 text-[#00000F]" />
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="w-4 h-4 text-gray-400" />
-                  <div>
-                    <p className="text-xs text-gray-500">Start Date</p>
-                    <p className="font-medium text-gray-900">{formatDate(course.startDate)}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <CreditCard className="w-4 h-4 text-gray-400" />
-                  <div>
-                    <p className="text-xs text-gray-500">Price</p>
-                    <p className="font-medium text-gray-900">{course.price.toLocaleString()} {course.currency}</p>
-                  </div>
-                </div>
+                <span className="text-sm font-semibold text-[#00000F]">Enrollment</span>
+              </div>
+              <div className="text-right">
+                <span className="text-lg font-bold text-[#00000F]">{course.enrolledCount}</span>
+                <span className="text-sm text-gray-400"> / {course.capacity ?? 50}</span>
               </div>
             </div>
 
-            {/* Enrollment Details */}
-            <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">Enrollment Details</h3>
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <Users className="w-4 h-4 text-gray-400" />
-                  <div>
-                    <p className="text-xs text-gray-500">Enrolled</p>
-                    <p className="font-medium text-gray-900">{course.enrolledCount} / {course.capacity || 50}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <User className="w-4 h-4 text-gray-400" />
-                  <div>
-                    <p className="text-xs text-gray-500">Instructor:</p>
-                    <p className="font-medium text-gray-900">{course.instructor || 'TBA'}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <CalendarDays className="w-4 h-4 text-gray-400" />
-                  <div>
-                    <p className="text-xs text-gray-500">Schedule:</p>
-                    <p className="font-medium text-gray-900">{course.schedule || 'Mon, Wed, Fri - 10:00 AM to 12:00 PM'}</p>
-                  </div>
-                </div>
-              </div>
+            <div className="h-2.5 bg-gray-200 rounded-full overflow-hidden mb-1.5">
+              <div
+                className={`h-full rounded-full transition-all duration-700 ${fillColor}`}
+                style={{ width: `${enrollPct}%` }}
+              />
+            </div>
+            <div className="flex justify-between text-xs text-gray-400">
+              <span>{course.capacity ? course.capacity - course.enrolledCount : 50} seats available</span>
+              <span className="font-semibold text-[#00000F]">{enrollPct}% filled</span>
             </div>
           </div>
 
-          {/* Course Syllabus */}
-          <div className="mb-5">
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">Course Syllabus</h3>
-            <ul className="space-y-2">
-              {syllabus.map((item, index) => (
-                <li key={index} className="flex items-center gap-2 text-sm text-gray-600">
-                  <span className="w-1.5 h-1.5 bg-[#FACE39] rounded-full"></span>
-                  {item}
-                </li>
-              ))}
-            </ul>
+          {/* Stats grid */}
+          <div className="grid grid-cols-2 gap-3">
+            {stats.map(({ icon: Icon, label, value }) => (
+              <div key={label} className="flex items-start gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50">
+                <div className="w-7 h-7 rounded-lg bg-[#FACE39]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Icon className="w-3.5 h-3.5 text-[#00000F]" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-400 mb-0.5">{label}</p>
+                  <p className="text-sm font-semibold text-[#00000F] truncate">{value}</p>
+                </div>
+              </div>
+            ))}
           </div>
+        </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-3 pt-4 border-t border-gray-200">
-            <button
-              onClick={onClose}
-              className={`px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors ${isAdmin ? 'flex-1' : 'w-full'}`}
-            >
-              Close
-            </button>
-            {isAdmin && (
-              <>
-                <button
-                  onClick={() => onEdit(course)}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FACE39] rounded-lg text-sm font-bold text-gray-900 hover:bg-[#FACE39]/90 transition-colors"
-                >
-                  <Pencil className="w-4 h-4" />
-                  Edit
-                </button>
-                <button
-                  onClick={() => onDelete(course)}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500 rounded-lg text-sm font-bold text-white hover:bg-red-600 transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  Delete
-                </button>
-              </>
-            )}
-          </div>
+        {/* Action buttons */}
+        <div className="px-6 pb-6 flex gap-2">
+          <button
+            onClick={onClose}
+            className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
+          >
+            Close
+          </button>
+          {isAdmin && (
+            <>
+              <button
+                onClick={() => onEdit(course)}
+                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#FACE39] text-sm font-bold text-[#00000F] hover:bg-[#FACE39]/85 transition-colors"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+                Edit
+              </button>
+              <button
+                onClick={() => onDelete(course)}
+                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-red-500 text-sm font-bold text-white hover:bg-red-600 transition-colors"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Delete
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

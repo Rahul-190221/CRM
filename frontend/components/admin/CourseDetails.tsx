@@ -1,6 +1,5 @@
 'use client'
-
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Plus, Search } from 'lucide-react'
 import CourseCard from './CourseCard'
 import AddCourseModal from './AddCourseModal'
@@ -86,8 +85,8 @@ const mockCourses: Course[] = [
 
 const testTypes: TestType[] = ['IELTS', 'PTE', 'GRE', 'TOEFL']
 
-export default function CourseDetails({ user }: { user?: any }) {
-  const isAdmin = user?.role === 'admin';
+const CourseDetails: React.FC = () => {
+  const isAdmin = true;
   const [courses, setCourses] = useState<Course[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
@@ -141,6 +140,22 @@ export default function CourseDetails({ user }: { user?: any }) {
     setIsAddModalOpen(true)
   }
 
+  const handleToggleActive = async (course: Course) => {
+    // Optimistic update
+    setCourses(prev =>
+      prev.map(c => c._id === course._id ? { ...c, isActive: !c.isActive } : c)
+    )
+    try {
+      await updateCourse(course._id, { isActive: !course.isActive })
+    } catch (error) {
+      // Revert on failure
+      setCourses(prev =>
+        prev.map(c => c._id === course._id ? { ...c, isActive: course.isActive } : c)
+      )
+      console.error('Error toggling course status:', error)
+    }
+  }
+
   const handleDelete = async (course: Course) => {
     if (confirm('Are you sure you want to delete this course?')) {
       try {
@@ -172,7 +187,7 @@ export default function CourseDetails({ user }: { user?: any }) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Course Details</h1>
+          <h1 className="text-lg sm:text-xl font-bold text-[#00000F]/85">Course Details</h1>
           <p className="text-sm text-gray-500 mt-1">Manage and view all available courses</p>
         </div>
         {isAdmin && (
@@ -184,13 +199,13 @@ export default function CourseDetails({ user }: { user?: any }) {
             className="flex items-center gap-2 bg-[#FACE39] px-4 py-2.5 rounded-lg text-sm font-bold text-gray-900 hover:bg-[#FACE39]/90 transition-colors"
           >
             <Plus className="w-4 h-4" />
-            <span>Add New Course</span>
+            <span>Add Course</span>
           </button>
         )}
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl p-4 mb-6 flex flex-col sm:flex-row gap-4">
+      <div className="bg-white rounded-2xl border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)] p-4 mb-6 flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
@@ -198,13 +213,13 @@ export default function CourseDetails({ user }: { user?: any }) {
             placeholder="Search courses..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent bg-gray-50"
           />
         </div>
         <select
           value={filters.testType}
           onChange={(e) => setFilters({ ...filters, testType: e.target.value as TestType | 'all' })}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
+          className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
         >
           <option value="all">All Test Types</option>
           {testTypes.map(type => (
@@ -214,7 +229,7 @@ export default function CourseDetails({ user }: { user?: any }) {
         <select
           value={filters.sortBy}
           onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
+          className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
         >
           <option value="date">Sort by Date</option>
           <option value="name">Sort by Name</option>
@@ -230,7 +245,7 @@ export default function CourseDetails({ user }: { user?: any }) {
             course={course}
             onEdit={handleEdit}
             onViewDetails={handleViewDetails}
-            user={user}
+            onToggleActive={isAdmin ? handleToggleActive : undefined}
           />
         ))}
       </div>
@@ -267,3 +282,4 @@ export default function CourseDetails({ user }: { user?: any }) {
     </div>
   )
 }
+export default CourseDetails;

@@ -14,7 +14,7 @@ export default function AdminDashboardError({
   }, [error])
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="flex items-center justify-center min-h-screen bg-white">
       <div className="text-center p-8 bg-white rounded-xl shadow-sm border border-gray-100 max-w-md">
         <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
           <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

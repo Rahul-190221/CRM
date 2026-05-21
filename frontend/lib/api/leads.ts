@@ -144,6 +144,80 @@ export const getLeadStats = async (): Promise<{
   return response.json();
 };
 
+// Map a row of values using a headers array to a lead object
+const mapRowToLead = (headers: string[], values: string[]): any => {
+  const leadData: any = { followUps: [], lifecycleStage: 'Intake' };
+  let lastFollowUp = '';
+  let nextFollowUp = '';
+  headers.forEach((header, index) => {
+    const value = (values[index] || '').toString().trim();
+    switch (header.toLowerCase().trim()) {
+      case 'fullname': case 'full name': case 'name':
+        leadData.fullName = value; break;
+      case 'email':
+        leadData.email = value; break;
+      case 'phone': case 'phone number':
+        leadData.phone = value; break;
+      case 'source': case 'lead source':
+        leadData.source = value || 'Other'; break;
+      case 'service': case 'service interest': case 'serviceinterest':
+        leadData.serviceInterest = value; break;
+      case 'notes': case 'note':
+        leadData.notes = value; break;
+      case 'stage': case 'lifecycle stage': case 'lifecyclestage':
+        leadData.lifecycleStage = value || 'Intake'; break;
+      case 'last follow up': case 'lastfollowup': case 'last follow-up':
+        lastFollowUp = value; break;
+      case 'next follow up': case 'nextfollowup': case 'next follow-up': case 'next follow up date': case 'nextfollowupdate':
+        nextFollowUp = value; break;
+    }
+  });
+  if (lastFollowUp || nextFollowUp) {
+    leadData.followUps = [{ date: lastFollowUp || undefined, nextFollowUpDate: nextFollowUp || undefined, note: '' }];
+  }
+  return leadData;
+};
+
+// Import leads from Excel (.xlsx/.xls) or CSV file
+export const importLeadsFromFile = async (file: File): Promise<{ imported: number; failed: number; errors?: string[] }> => {
+  const XLSX = await import('xlsx');
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const data = e.target?.result;
+        const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, dateNF: 'yyyy-mm-dd' });
+        if (rows.length < 2) { reject(new Error('No data rows found in file')); return; }
+        const headers = rows[0].map((h: any) => String(h));
+        const leads = rows.slice(1)
+          .filter(row => row.some(cell => cell !== undefined && cell !== ''))
+          .map(row => mapRowToLead(headers, row.map((c: any) => {
+            if (c instanceof Date) {
+              return c.toISOString().slice(0, 10); // → "2026-05-14"
+            }
+            return String(c ?? '');
+          })))
+          .filter((l: any) => l.fullName && l.email && l.phone);
+        if (leads.length === 0) { reject(new Error('No valid leads found. Ensure Full Name, Email and Phone are filled.')); return; }
+        const response = await fetch(`${API_BASE_URL}/leads/import`, {
+          method: 'POST',
+          headers: getAuthHeader(),
+          body: JSON.stringify({ leads })
+        });
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          throw new Error(err.error || 'Failed to import leads');
+        }
+        resolve(await response.json());
+      } catch (error) { reject(error); }
+    };
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsArrayBuffer(file);
+  });
+};
+
 // Parse CSV file and return leads array
 export const parseCSV = (csvContent: string): Omit<Lead, '_id' | 'createdAt' | 'updatedAt'>[] => {
   const lines = csvContent.split('\n').filter(line => line.trim());

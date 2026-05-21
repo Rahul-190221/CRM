@@ -7,15 +7,26 @@ import Sidebar from '@/components/layout/Sidebar'
 import Header from '@/components/layout/Header'
 import BDMDashboard from '@/components/dashboard/BDMDashboard'
 import LeadCenter from '@/components/leads/LeadCenter'
+import LeadDetail from '@/components/leads/LeadDetail'
 import LeadStage from '@/components/leads/LeadStage'
 import CourseDetails from '@/components/admin/CourseDetails'
 import MockTest from '@/components/admin/MockTest'
 import ExamRegistration from '@/components/admin/ExamRegistration'
 import NotificationsPage from '@/components/shared/NotificationsPage'
 import ProfilePage from '@/components/shared/ProfilePage'
-import { getUserIdFromToken } from '@/lib/helpers/jwt'
+import { getUserIdFromToken, getToken } from '@/lib/helpers/jwt'
+import { getProfile } from '@/lib/api/auth'
 import { useNotifications } from '@/components/providers/NotificationProvider'
 import type { Page } from '@/types/navigation'
+
+function formatRoleLabel(role: string): string {
+  const labels: Record<string, string> = {
+    bdm: 'BDM',
+    'senior-bdm': 'Senior BDM',
+    'junior-bdm': 'Junior BDM',
+  }
+  return labels[role] ?? role
+}
 
 export default function BDMDashboardPage() {
   return <BDMDashboardContent />
@@ -24,6 +35,8 @@ export default function BDMDashboardPage() {
 function BDMDashboardContent() {
   const router = useRouter()
   const [activePage, setActivePage] = useState<Page>('dashboard')
+  const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null)
+  const [leadCenterRefreshKey, setLeadCenterRefreshKey] = useState(0)
   const [user, setUser] = useState<any>(null)
   const [isInitialized, setIsInitialized] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -44,12 +57,26 @@ function BDMDashboardContent() {
       return
     }
 
-    setUser({
+    const baseUser = {
       name: decoded.email?.split('@')[0] || 'User',
       email: decoded.email,
-      role: decoded.role
-    })
+      role: formatRoleLabel(decoded.role || ''),
+    }
+    setUser(baseUser)
     setIsInitialized(true)
+
+    const token = getToken()
+    if (token) {
+      getProfile(token)
+        .then((profile: { name?: string }) => {
+          if (profile?.name) {
+            setUser((u: { name: string; email?: string; role: string } | null) =>
+              u ? { ...u, name: profile.name as string } : u
+            )
+          }
+        })
+        .catch(() => {})
+    }
   }, [router])
 
   const handleLogout = () => {
@@ -65,9 +92,13 @@ function BDMDashboardContent() {
   const renderContent = () => {
     switch (activePage) {
       case 'dashboard':
-        return <BDMDashboard />
+        return <BDMDashboard onViewLead={(id) => { setSelectedLeadId(id); setActivePage('lead-detail'); }} />
       case 'lead-center':
-        return <LeadCenter user={user} />
+        return <LeadCenter user={user} refreshKey={leadCenterRefreshKey} onViewLead={(id) => { setSelectedLeadId(id); setActivePage('lead-detail'); }} />
+      case 'lead-detail':
+        return selectedLeadId
+          ? <LeadDetail id={selectedLeadId} onBack={() => { setLeadCenterRefreshKey(k => k + 1); setActivePage('lead-center'); }} />
+          : <LeadCenter user={user} refreshKey={leadCenterRefreshKey} onViewLead={(id) => { setSelectedLeadId(id); setActivePage('lead-detail'); }} />
       case 'lead-stage':
         return <LeadStage user={user} />
       case 'course-details':
@@ -81,23 +112,23 @@ function BDMDashboardContent() {
       case 'profile':
         return <ProfilePage user={user} />
       default:
-        return <BDMDashboard />
+        return <BDMDashboard onViewLead={(id) => { setSelectedLeadId(id); setActivePage('lead-detail'); }} />
     }
   }
 
   if (!isInitialized || !user) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FACE39] mx-auto mb-4"></div>
-          <p className="text-gray-500">Loading...</p>
+      <div className="flex items-center justify-center h-screen bg-white">
+        <div className="text-center px-4">
+          <div className="animate-spin rounded-full h-11 w-11 border-2 border-[#FACE39] border-t-[#00000F] mx-auto mb-4" />
+          <p className="text-sm font-semibold text-[#00000F]/70">Opening your workspace…</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-screen bg-white overflow-hidden">
       <Sidebar
         activePage={activePage}
         setActivePage={setActivePage}
@@ -107,14 +138,14 @@ function BDMDashboardContent() {
         unreadCount={unreadCount}
       />
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        <Header 
-          user={user} 
-          onLogout={handleLogout} 
+        <Header
+          user={user}
+          onLogout={handleLogout}
           onMenuToggle={() => setSidebarOpen(prev => !prev)}
           unreadCount={unreadCount}
           onNotificationClick={handleNotificationClick}
         />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 scrollbar-hide">
+        <main className="flex-1 overflow-y-auto px-5 py-5 md:px-7 md:py-6 lg:px-8 lg:py-7 scrollbar-hide bg-[#fafafa]">
           {renderContent()}
         </main>
       </div>

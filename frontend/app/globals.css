@@ -60,13 +60,13 @@
 
 /* ── Card hover lift + yellow glow ── */
 .card-lift {
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
 }
 .card-lift:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   box-shadow:
-    0 12px 40px rgba(250, 206, 57, 0.18),
-    0  4px 16px rgba(0, 0, 15, 0.06);
+    0 8px 32px rgba(250, 206, 57, 0.14),
+    0 4px 12px rgba(0, 0, 15, 0.05);
 }
 
 /* ── Yellow glow button ── */
@@ -82,15 +82,44 @@
 
 /* ── Nav item hover glow ── */
 .nav-item-hover {
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
 }
 .nav-item-hover:hover {
-  background: rgba(250, 206, 57, 0.12);
-  box-shadow: inset 3px 0 0 #FACE39;
+  background: rgba(0, 0, 15, 0.04);
 }
 .nav-item-active {
   background: #FACE39 !important;
-  box-shadow: 0 4px 14px rgba(250, 206, 57, 0.40);
+  box-shadow: 0 4px 18px rgba(250, 206, 57, 0.35);
+}
+
+/* ── Premium sidebar section labels ── */
+.sidebar-section-label {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 15, 0.28);
+  padding: 20px 12px 6px;
+  user-select: none;
+  display: block;
+}
+
+/* ── Premium page background ── */
+.app-bg {
+  background-color: #fafafa;
+}
+
+/* ── Premium stat card ── */
+.stat-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid rgba(0, 0, 15, 0.07);
+  box-shadow: 0 2px 16px rgba(0, 0, 15, 0.04);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(250, 206, 57, 0.12), 0 2px 8px rgba(0,0,15,0.04);
 }
 
 /* ── Shimmer sweep on hover ── */

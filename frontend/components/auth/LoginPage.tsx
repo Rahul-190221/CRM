@@ -24,10 +24,11 @@ type DecodedUser = {
   exp?: number;
 };
 
-const roleToPath: Record<string, string> = {
-  admin: "/admin/dashboard",
-  bdm: "/bdm/dashboard",
-};
+function dashboardPathForRole(role: string): string {
+  if (role === "admin") return "/admin/dashboard";
+  if (role === "bdm" || role === "senior-bdm" || role === "junior-bdm") return "/bdm/dashboard";
+  return "/dashboard";
+}
 
 
 export default function LoginPage() {
@@ -83,7 +84,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!user?.role) return;
-    router.replace(roleToPath[user.role] || "/dashboard");
+    router.replace(dashboardPathForRole(user.role));
   }, [user, router]);
 
   async function onSubmit(data: FormValues) {
@@ -196,7 +197,7 @@ export default function LoginPage() {
 
               <div className="flex items-center gap-3 mb-8">
                 <div className="flex-1 h-px bg-gray-200" />
-                <span className="text-xs font-bold text-[#00000F]/55 uppercase tracking-widest">or with email</span>
+                <span className="text-[13px] font-bold text-[#00000F]/55 uppercase tracking-widest">or with email</span>
                 <div className="flex-1 h-px bg-gray-200" />
               </div>
 
@@ -207,7 +208,7 @@ export default function LoginPage() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.35 }}
                 >
-                  <label className="block text-xs font-extrabold mb-2 text-[#00000F]/80 uppercase tracking-widest">
+                  <label className="block text-[13px] font-extrabold mb-2 text-[#00000F]/80 uppercase tracking-widest">
                     Email address
                   </label>
                   <input
@@ -242,7 +243,7 @@ export default function LoginPage() {
                   transition={{ delay: 0.45 }}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <label className="block text-xs font-extrabold text-[#00000F]/80 uppercase tracking-widest">
+                    <label className="block text-[13px] font-extrabold text-[#00000F]/80 uppercase tracking-widest">
                       Password
                     </label>
                     <Link href="/forget-password" className="text-xs text-[#FACE39] hover:text-[#E8B010] font-semibold transition">
@@ -343,7 +344,7 @@ export default function LoginPage() {
                       >
                         {setupLoading ? "Setting password..." : "Set Password & Sign In"}
                       </motion.button>
-                      <p className="text-[10px] text-[#00000F]/40 text-center">We also sent a backup link to your email</p>
+                      <p className="text-[12px] text-[#00000F]/40 text-center">We also sent a backup link to your email</p>
                     </motion.div>
                   )}
                 </AnimatePresence>

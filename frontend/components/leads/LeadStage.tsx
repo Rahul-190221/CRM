@@ -70,7 +70,7 @@ const StageDropdown: React.FC<{ value: LeadStageType; onChange: (s: LeadStageTyp
                         className="fixed z-50 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 min-w-[170px] overflow-hidden"
                         style={{ top: pos.top, left: pos.left }}
                     >
-                        <p className="px-3.5 pt-1 pb-2.5 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest border-b border-gray-50">
+                        <p className="px-3.5 pt-1 pb-2.5 text-[12px] font-extrabold text-gray-400 uppercase tracking-widest border-b border-gray-50">
                             Change Stage
                         </p>
                         {stages.map(stage => {
@@ -99,7 +99,7 @@ const StageDropdown: React.FC<{ value: LeadStageType; onChange: (s: LeadStageTyp
     );
 };
 
-const LeadStage: React.FC<{ user?: any }> = ({ user: _user }) => {
+const LeadStage: React.FC = () => {
     const [leads, setLeads] = useState<Lead[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -264,7 +264,7 @@ const LeadStage: React.FC<{ user?: any }> = ({ user: _user }) => {
                                 isActive ? card.accent + ' shadow-sm' : 'bg-white ' + card.idle
                             }`}
                         >
-                            <p className={`text-[10px] uppercase tracking-wider mb-1 transition-all ${
+                            <p className={`text-[12px] uppercase tracking-wider mb-1 transition-all ${
                                 isActive ? 'font-extrabold ' + card.activeSub : 'font-semibold text-gray-400'
                             }`}>{card.label}</p>
                             <p className={`text-2xl transition-all ${

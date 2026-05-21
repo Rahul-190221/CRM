@@ -17,6 +17,7 @@ import CourseDetails from '@/components/admin/CourseDetails'
 import MockTest from '@/components/admin/MockTest'
 import ExamRegistration from '@/components/admin/ExamRegistration'
 import NotificationsPage from '@/components/shared/NotificationsPage'
+import ProfilePage from '@/components/shared/ProfilePage'
 import { getUserIdFromToken } from '@/lib/helpers/jwt'
 import { useNotifications } from '@/components/providers/NotificationProvider'
 import type { Page } from '@/types/navigation'
@@ -62,26 +63,21 @@ export default function DashboardPage() {
       case 'dashboard':
         return user?.role === 'admin' ? <Dashboard /> : <BDMDashboard />
       case 'lead-center':
-        return <LeadCenter user={user} />
+        return <LeadCenter />
       case 'input-lead':
         return <InputLead onSuccess={() => setActivePage('lead-center')} onCancel={() => setActivePage('lead-center')} />
       case 'lead-stage':
-        return <LeadStage user={user} />
+        return <LeadStage />
       case 'course-details':
-        return <CourseDetails user={user} />
+        return <CourseDetails />
       case 'mock-test':
-        return <MockTest user={user} />
+        return <MockTest />
       case 'exam-reg':
-        return <ExamRegistration user={user} />
+        return <ExamRegistration />
       case 'notification':
         return <NotificationsPage />
       case 'profile':
-        return (
-          <div className="p-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Profile</h1>
-            <p className="text-gray-500">Profile settings coming soon</p>
-          </div>
-        )
+        return <ProfilePage />
       default:
         return user?.role === 'admin' ? <Dashboard /> : <BDMDashboard />
     }
@@ -89,7 +85,7 @@ export default function DashboardPage() {
 
   if (!isInitialized || !user) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
+      <div className="flex items-center justify-center h-screen bg-white">
         <div className="text-center">
           <div className="text-3xl font-bold text-gray-900 mb-2">Loading...</div>
           <p className="text-gray-500">Redirecting to login</p>
@@ -99,7 +95,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-screen bg-white overflow-hidden">
       {user?.role === 'admin' ? (
         <AdminSidebar activePage={activePage} setActivePage={setActivePage} onLogout={handleLogout} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} unreadCount={unreadCount} />
       ) : (
@@ -107,7 +103,7 @@ export default function DashboardPage() {
       )}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         <Header user={user} onLogout={handleLogout} onMenuToggle={() => setSidebarOpen(prev => !prev)} unreadCount={unreadCount} onNotificationClick={handleNotificationClick} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 scrollbar-hide">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 scrollbar-hide bg-[#fafafa]">
           {renderContent()}
         </main>
       </div>

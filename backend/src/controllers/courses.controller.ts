@@ -38,8 +38,8 @@ export const createCourse = async (req: Request, res: Response): Promise<void> =
     const course = new Course(req.body);
     await course.save();
     res.status(201).json(course);
-  } catch (error) {
-    res.status(400).json({ error: 'Failed to create course' });
+  } catch (error: any) {
+    res.status(400).json({ error: 'Failed to create course', details: error?.message });
   }
 };
 

@@ -17,6 +17,7 @@ import BDMRole from '@/components/admin/BDMRole'
 import BDMActivity from '@/components/admin/BDMActivity'
 import BDMReport from '@/components/admin/BDMReport'
 import LeadAssignments from '@/components/admin/LeadAssignments'
+import LeadDetail from '@/components/leads/LeadDetail'
 import NotificationsPage from '@/components/shared/NotificationsPage'
 import ProfilePage from '@/components/shared/ProfilePage'
 import { getUserIdFromToken } from '@/lib/helpers/jwt'
@@ -30,6 +31,8 @@ export default function AdminDashboardPage() {
 function AdminDashboardContent() {
   const router = useRouter()
   const [activePage, setActivePage] = useState<Page>('dashboard')
+  const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null)
+  const [leadCenterRefreshKey, setLeadCenterRefreshKey] = useState(0)
   const [user, setUser] = useState<any>(null)
   const [isInitialized, setIsInitialized] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -73,7 +76,11 @@ function AdminDashboardContent() {
       case 'dashboard':
         return <Dashboard />
       case 'lead-center':
-        return <LeadCenter user={user} />
+        return <LeadCenter user={user} refreshKey={leadCenterRefreshKey} onViewLead={(id) => { setSelectedLeadId(id); setActivePage('lead-detail'); }} />
+      case 'lead-detail':
+        return selectedLeadId
+          ? <LeadDetail id={selectedLeadId} onBack={() => { setLeadCenterRefreshKey(k => k + 1); setActivePage('lead-center'); }} />
+          : <LeadCenter user={user} refreshKey={leadCenterRefreshKey} onViewLead={(id) => { setSelectedLeadId(id); setActivePage('lead-detail'); }} />
       case 'lead-stage':
         return <LeadStage user={user} />
       case 'course-details':
@@ -105,7 +112,7 @@ function AdminDashboardContent() {
 
   if (!isInitialized || !user) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
+      <div className="flex items-center justify-center h-screen bg-white">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FACE39] mx-auto mb-4"></div>
           <p className="text-gray-500">Loading...</p>
@@ -115,7 +122,7 @@ function AdminDashboardContent() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-screen bg-white overflow-hidden">
       <AdminSidebar
         activePage={activePage}
         setActivePage={setActivePage}
@@ -125,14 +132,14 @@ function AdminDashboardContent() {
         unreadCount={unreadCount}
       />
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        <Header 
-          user={user} 
-          onLogout={handleLogout} 
+        <Header
+          user={user}
+          onLogout={handleLogout}
           onMenuToggle={() => setSidebarOpen(prev => !prev)}
           unreadCount={unreadCount}
           onNotificationClick={handleNotificationClick}
         />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 scrollbar-hide">
+        <main className="flex-1 overflow-y-auto px-5 py-5 md:px-7 md:py-6 lg:px-8 lg:py-7 scrollbar-hide bg-[#fafafa]">
           {renderContent()}
         </main>
       </div>

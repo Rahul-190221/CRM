@@ -86,5 +86,9 @@ LeadSchema.index({ email: 1 });
 LeadSchema.index({ lifecycleStage: 1 });
 LeadSchema.index({ assignedTo: 1 });
 LeadSchema.index({ createdAt: -1 });
+LeadSchema.index({ lifecycleStage: 1, createdAt: -1 });
+LeadSchema.index({ lifecycleStage: 1, updatedAt: -1 });
+LeadSchema.index({ source: 1, createdAt: -1 });
+LeadSchema.index({ serviceInterest: 1, createdAt: -1 });
 
 export default mongoose.model<ILead>('Lead', LeadSchema);

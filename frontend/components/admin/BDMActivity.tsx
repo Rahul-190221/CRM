@@ -200,52 +200,52 @@ export default function BDMActivity() {
     <div className="min-h-full">
       {/* Page Header */}
       <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">BDM Activity Log</h1>
+        <h1 className="text-lg sm:text-xl font-bold text-[#00000F]/85">BDM Activity Log</h1>
         <p className="text-sm text-gray-500 mt-1">Track all BDM activities and interactions</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
-        <div className="bg-white rounded-xl p-4 border border-gray-100">
+        <div className="bg-white rounded-2xl p-4 border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
               <Activity className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{todayActivities}</p>
+              <p className="text-xl font-bold text-[#00000F]/85">{todayActivities}</p>
               <p className="text-xs text-gray-500">Today's Activities</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-4 border border-gray-100">
+        <div className="bg-white rounded-2xl p-4 border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
               <Phone className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{callsToday}</p>
+              <p className="text-xl font-bold text-[#00000F]/85">{callsToday}</p>
               <p className="text-xs text-gray-500">Calls Today</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-4 border border-gray-100">
+        <div className="bg-white rounded-2xl p-4 border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
               <Mail className="w-5 h-5 text-purple-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{emailsToday}</p>
+              <p className="text-xl font-bold text-[#00000F]/85">{emailsToday}</p>
               <p className="text-xs text-gray-500">Emails Today</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-4 border border-gray-100">
+        <div className="bg-white rounded-2xl p-4 border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
               <CheckCircle className="w-5 h-5 text-emerald-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{conversionsToday}</p>
+              <p className="text-xl font-bold text-[#00000F]/85">{conversionsToday}</p>
               <p className="text-xs text-gray-500">Conversions Today</p>
             </div>
           </div>
@@ -253,7 +253,7 @@ export default function BDMActivity() {
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="bg-white rounded-xl p-4 mb-4 sm:mb-6">
+      <div className="bg-white rounded-2xl border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)] p-4 mb-4 sm:mb-6">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           {/* Search Input */}
           <div className="flex-1 relative">
@@ -297,7 +297,7 @@ export default function BDMActivity() {
       </div>
 
       {/* Activity Table */}
-      <div className="bg-white rounded-xl overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[560px]">
             <thead>

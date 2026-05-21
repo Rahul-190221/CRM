@@ -294,18 +294,75 @@ export const importLeads = async (req: Request, res: Response): Promise<void> =>
 
     for (const leadData of leads) {
       try {
-        const lead = new Lead({
-          fullName: leadData.fullName,
-          email: leadData.email,
-          phone: leadData.phone,
-          source: leadData.source || 'Other',
-          serviceInterest: leadData.serviceInterest,
-          notes: leadData.notes,
-          lifecycleStage: leadData.lifecycleStage || 'Intake'
-        });
+        const email = leadData.email?.toLowerCase().trim();
+        if (!email) { failed++; errors.push(`Row skipped: missing email`); continue; }
 
-        await lead.save();
-        imported++;
+        const toDate = (v: any): Date | undefined => {
+          if (!v) return undefined;
+          const d = new Date(v);
+          return isNaN(d.getTime()) ? undefined : d;
+        };
+        const processedFollowUps = Array.isArray(leadData.followUps)
+          ? leadData.followUps
+              .map((fu: any) => ({
+                date: toDate(fu.date),
+                note: fu.note || '',
+                nextFollowUpDate: toDate(fu.nextFollowUpDate),
+              }))
+              .filter((fu: any) => fu.date || fu.nextFollowUpDate)
+          : [];
+
+        const existing = await Lead.findOne({ email });
+
+        if (existing) {
+          // Build $set for scalar fields
+          const setFields: any = {
+            fullName:        leadData.fullName        || existing.fullName,
+            phone:           leadData.phone           || existing.phone,
+            source:          leadData.source          || existing.source,
+            serviceInterest: leadData.serviceInterest || existing.serviceInterest,
+            lifecycleStage:  leadData.lifecycleStage  || existing.lifecycleStage,
+          };
+          if (leadData.notes !== undefined && leadData.notes !== null) {
+            setFields.notes = leadData.notes;
+          }
+
+          const updateOp: any = { $set: setFields };
+
+          if (processedFollowUps.length > 0) {
+            if (!existing.followUps || existing.followUps.length === 0) {
+              // No existing follow-ups — replace entirely
+              setFields.followUps = processedFollowUps;
+            } else {
+              // Append only entries with a new date
+              const existingDates = new Set(
+                existing.followUps.map((f: any) => f.date?.toISOString?.() ?? '')
+              );
+              const newOnes = processedFollowUps.filter(
+                (f: any) => !existingDates.has(f.date?.toISOString?.() ?? '')
+              );
+              if (newOnes.length > 0) {
+                updateOp.$push = { followUps: { $each: newOnes } };
+              }
+            }
+          }
+
+          await Lead.updateOne({ email }, updateOp);
+          imported++;
+        } else {
+          const lead = new Lead({
+            fullName: leadData.fullName,
+            email,
+            phone: leadData.phone,
+            source: leadData.source || 'Other',
+            serviceInterest: leadData.serviceInterest,
+            notes: leadData.notes,
+            lifecycleStage: leadData.lifecycleStage || 'Intake',
+            followUps: processedFollowUps
+          });
+          await lead.save();
+          imported++;
+        }
       } catch (error: any) {
         failed++;
         errors.push(`Row ${imported + failed}: ${error.message}`);

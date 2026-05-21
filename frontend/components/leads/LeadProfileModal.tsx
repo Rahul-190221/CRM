@@ -66,7 +66,7 @@ const LeadProfileModal: React.FC<Props> = ({ lead, onClose }) => {
                                 <Calendar className="w-3 h-3" />
                                 Added on {new Date(lead.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '/')}
                             </p>
-                            <span className={`mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${stageClass}`}>
+                            <span className={`mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-[13px] font-bold border ${stageClass}`}>
                                 {lead.lifecycleStage}
                             </span>
                         </div>
@@ -121,7 +121,7 @@ const LeadProfileModal: React.FC<Props> = ({ lead, onClose }) => {
                                 {lead.followUps.map((fu, i) => (
                                     <div key={i} className="bg-gray-50 border border-gray-100 rounded-lg px-3 py-2.5">
                                         <p className="text-sm text-gray-700">{fu.note}</p>
-                                        <div className="flex items-center gap-3 mt-1.5 text-[11px] text-gray-400">
+                                        <div className="flex items-center gap-3 mt-1.5 text-[12px] text-gray-400">
                                             <span className="flex items-center gap-1">
                                                 <Clock className="w-3 h-3" />
                                                 {new Date(fu.date).toLocaleDateString()}
@@ -140,7 +140,7 @@ const LeadProfileModal: React.FC<Props> = ({ lead, onClose }) => {
                     )}
 
                     {/* Last updated */}
-                    <p className="text-[11px] text-gray-400 text-center pt-1">
+                    <p className="text-[12px] text-gray-400 text-center pt-1">
                         Last updated: {new Date(lead.updatedAt).toLocaleString()}
                     </p>
                 </div>

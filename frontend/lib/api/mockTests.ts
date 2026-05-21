@@ -3,6 +3,11 @@ import type { MockTestPackage, MockTestSchedule, FilterState, LuminedgeSchedule 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://crm-eta-blush.vercel.app';
 const API_BASE_URL = API_URL.endsWith('/api') ? API_URL : `${API_URL}/api`;
 
+/** When `/api/schedules` fails (e.g. local Node cannot reach Vercel), same source as `HomePage` schedules. */
+const LUMINEDGE_PUBLIC_SCHEDULES_URL =
+  process.env.NEXT_PUBLIC_LUMINEDGE_SCHEDULES_URL?.trim() ||
+  'https://server-io-psi.vercel.app/api/v1/admin/get-schedules';
+
 const getAuthHeader = (): HeadersInit => {
   const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
   return {
@@ -131,11 +136,23 @@ export const deleteMockTestSchedule = async (id: string): Promise<void> => {
   if (!response.ok) throw new Error('Failed to delete mock test schedule');
 };
 
-// Luminedge Available Schedules (external API via proxy)
+function asScheduleList(payload: unknown): LuminedgeSchedule[] {
+  return Array.isArray(payload) ? (payload as LuminedgeSchedule[]) : [];
+}
+
+// Luminedge Available Schedules (CRM proxy first, then browser-direct public API)
 export const getAvailableSchedulesFromLuminedge = async (): Promise<LuminedgeSchedule[]> => {
-  const response = await fetch(`${API_BASE_URL}/schedules`, {
+  const proxyRes = await fetch(`${API_BASE_URL}/schedules`, {
     headers: getAuthHeader()
   });
-  if (!response.ok) throw new Error('Failed to fetch available schedules');
-  return response.json();
+  if (proxyRes.ok) {
+    return asScheduleList(await proxyRes.json());
+  }
+
+  const directRes = await fetch(LUMINEDGE_PUBLIC_SCHEDULES_URL);
+  if (directRes.ok) {
+    return asScheduleList(await directRes.json());
+  }
+
+  throw new Error('Failed to fetch available schedules');
 };

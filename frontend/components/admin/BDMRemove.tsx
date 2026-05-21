@@ -133,12 +133,12 @@ export default function BDMRemove() {
     <div className="min-h-full">
       {/* Page Header */}
       <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Remove BDM</h1>
+        <h1 className="text-lg sm:text-xl font-bold text-[#00000F]/85">Remove BDM</h1>
         <p className="text-sm text-gray-500 mt-1">Manage and remove Business Development Managers from the system</p>
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="bg-white rounded-xl p-4 mb-4 sm:mb-6">
+      <div className="bg-white rounded-2xl border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)] p-4 mb-4 sm:mb-6">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           {/* Search Input */}
           <div className="flex-1 relative">
@@ -168,7 +168,7 @@ export default function BDMRemove() {
       </div>
 
       {/* BDM Table */}
-      <div className="bg-white rounded-xl overflow-hidden mb-4 sm:mb-6">
+      <div className="bg-white rounded-2xl border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)] overflow-hidden mb-4 sm:mb-6">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px]">
             <thead>
@@ -245,46 +245,46 @@ export default function BDMRemove() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-        <div className="bg-white rounded-xl p-4 border border-gray-100">
+        <div className="bg-white rounded-2xl p-4 border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
               <Users className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{totalBDMs}</p>
+              <p className="text-xl font-bold text-[#00000F]/85">{totalBDMs}</p>
               <p className="text-xs text-gray-500">Total BDMs</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-4 border border-gray-100">
+        <div className="bg-white rounded-2xl p-4 border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
               <UserCheck className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{activeBDMs}</p>
+              <p className="text-xl font-bold text-[#00000F]/85">{activeBDMs}</p>
               <p className="text-xs text-gray-500">Active BDMs</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-4 border border-gray-100">
+        <div className="bg-white rounded-2xl p-4 border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
               <UserMinus className="w-5 h-5 text-gray-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{inactiveBDMs}</p>
+              <p className="text-xl font-bold text-[#00000F]/85">{inactiveBDMs}</p>
               <p className="text-xs text-gray-500">Inactive BDMs</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-4 border border-gray-100">
+        <div className="bg-white rounded-2xl p-4 border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
               <UserX className="w-5 h-5 text-red-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{removableBDMs}</p>
+              <p className="text-xl font-bold text-[#00000F]/85">{removableBDMs}</p>
               <p className="text-xs text-gray-500">Removable</p>
             </div>
           </div>

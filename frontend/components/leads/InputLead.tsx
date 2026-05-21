@@ -21,7 +21,7 @@ interface InputLeadProps {
 }
 
 const fieldClass = 'w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-300 font-medium focus:outline-none focus:ring-2 focus:ring-[#FACE39]/50 focus:border-[#FACE39] transition-all'
-const labelClass = 'block text-[11px] font-extrabold text-gray-500 uppercase tracking-widest mb-2'
+const labelClass = 'block text-[12px] font-bold text-gray-400 uppercase tracking-wider mb-1.5'
 
 export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
   const [formData, setFormData] = useState({
@@ -77,7 +77,7 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
     try {
       const leadData = {
         ...formData,
-        source: (formData.source || 'Website') as LeadSource,
+        source: formData.source as LeadSource,
         serviceInterest: formData.serviceInterest as ServiceInterest,
         followUps: followUps
           .filter(f => f.date || f.note || f.nextFollowUpDate)
@@ -132,7 +132,7 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Input Lead</h1>
+            <h1 className="text-lg sm:text-xl font-bold text-[#00000F]/85">Input Lead</h1>
             <p className="text-sm text-gray-400 mt-0.5">Add a new lead manually or import from CSV</p>
           </div>
         </div>
@@ -149,9 +149,9 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
       <form onSubmit={handleSubmit} className="space-y-3">
 
         {/* Contact Information */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="px-4 sm:px-8 py-4 border-b border-gray-50 bg-gray-50/60">
-            <h2 className="text-sm font-extrabold text-gray-800">Contact Information</h2>
+        <div className="bg-white rounded-2xl border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)] overflow-hidden">
+          <div className="px-4 sm:px-8 py-4 border-b border-[#00000F]/[0.04] bg-[#fafafa]">
+            <h2 className="text-sm font-semibold text-[#00000F]/75">Contact Information</h2>
             <p className="text-xs text-gray-400 mt-0.5">Basic details about the lead</p>
           </div>
           <div className="px-4 sm:px-8 py-4 sm:py-5 grid grid-cols-1 md:grid-cols-2 gap-x-6 sm:gap-x-10 gap-y-4">
@@ -189,12 +189,13 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
               />
             </div>
             <div>
-              <label className={labelClass}>Lead Source</label>
+              <label className={labelClass}>Lead Source <span className="text-red-400 normal-case">*</span></label>
               <div className="relative">
                 <select
                   value={formData.source}
                   onChange={(e) => setFormData({ ...formData, source: e.target.value as LeadSource })}
                   className={fieldClass + ' appearance-none pr-10 cursor-pointer'}
+                  required
                 >
                   <option value="">Select source</option>
                   {leadSources.map(s => <option key={s} value={s}>{s}</option>)}
@@ -206,19 +207,20 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
         </div>
 
         {/* Service & Assignment */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="px-4 sm:px-8 py-4 border-b border-gray-50 bg-gray-50/60">
-            <h2 className="text-sm font-extrabold text-gray-800">Service & Assignment</h2>
+        <div className="bg-white rounded-2xl border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)] overflow-hidden">
+          <div className="px-4 sm:px-8 py-4 border-b border-[#00000F]/[0.04] bg-[#fafafa]">
+            <h2 className="text-sm font-semibold text-[#00000F]/75">Service & Assignment</h2>
             <p className="text-xs text-gray-400 mt-0.5">Service interest and BDM assignment</p>
           </div>
           <div className="px-4 sm:px-8 py-4 sm:py-5 grid grid-cols-1 md:grid-cols-2 gap-x-6 sm:gap-x-10 gap-y-4">
             <div>
-              <label className={labelClass}>Service Interest</label>
+              <label className={labelClass}>Service Interest <span className="text-red-400 normal-case">*</span></label>
               <div className="relative">
                 <select
                   value={formData.serviceInterest}
                   onChange={(e) => setFormData({ ...formData, serviceInterest: e.target.value as ServiceInterest })}
                   className={fieldClass + ' appearance-none pr-10 cursor-pointer'}
+                  required
                 >
                   <option value="">Select service</option>
                   {serviceInterests.map(s => <option key={s} value={s}>{s}</option>)}
@@ -227,12 +229,13 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
               </div>
             </div>
             <div>
-              <label className={labelClass}>Assign to BDM</label>
+              <label className={labelClass}>Assign to BDM <span className="text-red-400 normal-case">*</span></label>
               <div className="relative">
                 <select
                   value={formData.assignedTo}
                   onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
                   className={fieldClass + ' appearance-none pr-10 cursor-pointer'}
+                  required
                 >
                   <option value="">Select BDM</option>
                   {bdms.map(bdm => <option key={bdm._id} value={bdm._id}>{bdm.name}</option>)}
@@ -241,22 +244,23 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
               </div>
             </div>
             <div className="md:col-span-2">
-              <label className={labelClass}>Notes</label>
+              <label className={labelClass}>Notes <span className="text-red-400 normal-case">*</span></label>
               <textarea
                 placeholder="Add any additional notes about this lead…"
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 rows={4}
                 className={fieldClass + ' resize-none'}
+                required
               />
             </div>
           </div>
         </div>
 
         {/* Follow-Up Details */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="px-4 sm:px-8 py-4 border-b border-gray-50 bg-gray-50/60">
-            <h2 className="text-sm font-extrabold text-gray-800">Follow-Up Details</h2>
+        <div className="bg-white rounded-2xl border border-[#00000F]/[0.07] shadow-[0_2px_16px_rgba(0,0,0,0.04)] overflow-hidden">
+          <div className="px-4 sm:px-8 py-4 border-b border-[#00000F]/[0.04] bg-[#fafafa]">
+            <h2 className="text-sm font-semibold text-[#00000F]/75">Follow-Up Details</h2>
             <p className="text-xs text-gray-400 mt-0.5">Schedule follow-up appointments</p>
           </div>
           <div className="px-4 sm:px-8 py-4 sm:py-5 space-y-5">
@@ -279,35 +283,38 @@ export default function InputLead({ onSuccess, onCancel }: InputLeadProps) {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
-                    <label className={labelClass}>Date</label>
+                    <label className={labelClass}>Date <span className="text-red-400 normal-case">*</span></label>
                     <div className="relative">
                       <input
                         type="date"
                         value={followUp.date}
                         onChange={(e) => handleFollowUpChange(followUp.id, 'date', e.target.value)}
                         className={fieldClass + ' pr-10'}
+                        required
                       />
                       <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                     </div>
                   </div>
                   <div>
-                    <label className={labelClass}>Note</label>
+                    <label className={labelClass}>Note <span className="text-red-400 normal-case">*</span></label>
                     <input
                       type="text"
                       placeholder="Add follow-up note"
                       value={followUp.note}
                       onChange={(e) => handleFollowUpChange(followUp.id, 'note', e.target.value)}
                       className={fieldClass}
+                      required
                     />
                   </div>
                   <div>
-                    <label className={labelClass}>Next Follow-Up Date</label>
+                    <label className={labelClass}>Next Follow-Up Date <span className="text-red-400 normal-case">*</span></label>
                     <div className="relative">
                       <input
                         type="date"
                         value={followUp.nextFollowUpDate}
                         onChange={(e) => handleFollowUpChange(followUp.id, 'nextFollowUpDate', e.target.value)}
                         className={fieldClass + ' pr-10'}
+                        required
                       />
                       <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                     </div>
