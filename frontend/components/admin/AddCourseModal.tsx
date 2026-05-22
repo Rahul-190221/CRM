@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { X, Users } from 'lucide-react'
-import type { Course, TestType } from '@/types/admin'
+import type { Course, CourseType } from '@/types/admin'
 
 interface AddCourseModalProps {
   isOpen: boolean
@@ -11,7 +11,10 @@ interface AddCourseModalProps {
   editingCourse?: Course | null
 }
 
-const testTypes: TestType[] = ['IELTS', 'PTE', 'GRE', 'TOEFL']
+const courseTypes: CourseType[] = [
+  'IELTS Premium', 'IELTS Crash', 'IELTS Intense', 'IELTS Elementary', 'IELTS Mock Test',
+  'Basic English', 'GRE Premium', 'TOEFL Premium', 'PTE Premium',
+]
 
 const inputCls = "w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#FACE39]/50 focus:border-[#FACE39] text-sm bg-gray-50 transition-colors"
 const labelCls = "block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5"
@@ -19,7 +22,7 @@ const labelCls = "block text-xs font-semibold text-gray-500 uppercase tracking-w
 export default function AddCourseModal({ isOpen, onClose, onSubmit, editingCourse }: AddCourseModalProps) {
   const [formData, setFormData] = useState({
     name: '',
-    testType: '' as TestType | '',
+    testType: '' as CourseType | '',
     instructor: '',
     capacity: 50,
     enrolledCount: 0,
@@ -120,12 +123,12 @@ export default function AddCourseModal({ isOpen, onClose, onSubmit, editingCours
               <label className={labelCls}>Course</label>
               <select
                 value={formData.testType}
-                onChange={(e) => set('testType', e.target.value as TestType)}
+                onChange={(e) => set('testType', e.target.value as CourseType)}
                 className={inputCls}
                 required
               >
                 <option value="">Select type</option>
-                {testTypes.map(t => <option key={t} value={t}>{t}</option>)}
+                {courseTypes.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
           </div>

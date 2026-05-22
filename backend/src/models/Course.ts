@@ -23,7 +23,13 @@ const CourseSchema = new Schema<ICourse>(
     name: { type: String, required: true },
     testType: {
       type: String,
-      enum: ['IELTS', 'PTE', 'GRE', 'TOEFL'],
+      enum: [
+        // specific course types
+        'IELTS Premium', 'IELTS Crash', 'IELTS Intense', 'IELTS Elementary', 'IELTS Mock Test',
+        'Basic English', 'GRE Premium', 'TOEFL Premium', 'PTE Premium',
+        // legacy broad values — kept so existing documents remain valid
+        'IELTS', 'PTE', 'GRE', 'TOEFL',
+      ],
       required: true,
     },
     description: { type: String, default: '' },

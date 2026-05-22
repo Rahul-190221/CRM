@@ -13,7 +13,11 @@ interface FollowUpEntry {
 }
 
 const leadSources: LeadSource[] = ['Website', 'Referral', 'Social Media', 'Email Campaign', 'Walk-in', 'Phone', 'Other']
-const serviceInterests: ServiceInterest[] = ['IELTS', 'PTE', 'GRE', 'TOEFL', 'Study Abroad', 'Visa Processing']
+const serviceInterests: ServiceInterest[] = [
+  'IELTS Premium', 'IELTS Crash', 'IELTS Intense', 'IELTS Elementary', 'IELTS Mock Test',
+  'Basic English', 'GRE Premium', 'TOEFL Premium', 'PTE Premium',
+  'Study Abroad', 'Visa Processing',
+]
 
 interface InputLeadProps {
   onSuccess?: () => void

@@ -12,7 +12,7 @@ export interface ILead extends Document {
   email: string;
   phone: string;
   source: 'Website' | 'Referral' | 'Social Media' | 'Email Campaign' | 'Walk-in' | 'Phone' | 'Other';
-  serviceInterest: 'IELTS' | 'PTE' | 'GRE' | 'TOEFL' | 'Study Abroad' | 'Visa Processing';
+  serviceInterest: 'IELTS Premium' | 'IELTS Crash' | 'IELTS Intense' | 'IELTS Elementary' | 'IELTS Mock Test' | 'Basic English' | 'GRE Premium' | 'TOEFL Premium' | 'PTE Premium' | 'Study Abroad' | 'Visa Processing';
   assignedTo?: mongoose.Types.ObjectId;
   notes?: string;
   followUps: IFollowUp[];
@@ -56,7 +56,13 @@ const LeadSchema = new Schema<ILead>(
     },
     serviceInterest: {
       type: String,
-      enum: ['IELTS', 'PTE', 'GRE', 'TOEFL', 'Study Abroad', 'Visa Processing']
+      enum: [
+        'IELTS Premium', 'IELTS Crash', 'IELTS Intense', 'IELTS Elementary', 'IELTS Mock Test',
+        'Basic English', 'GRE Premium', 'TOEFL Premium', 'PTE Premium',
+        'Study Abroad', 'Visa Processing',
+        // legacy broad values
+        'IELTS', 'PTE', 'GRE', 'TOEFL',
+      ]
     },
     assignedTo: {
       type: Schema.Types.ObjectId,

@@ -12,6 +12,7 @@ interface FilterBarProps {
   showSort?: boolean
   showDatePicker?: boolean
   statusOptions?: { value: string; label: string }[]
+  testTypeOptions?: string[]
 }
 
 const testTypes: TestType[] = ['IELTS', 'PTE', 'GRE', 'TOEFL']
@@ -25,6 +26,7 @@ export default function FilterBar({
   showStatus = true,
   showSort = true,
   showDatePicker = false,
+  testTypeOptions,
   statusOptions = [
     { value: 'all', label: 'All' },
     { value: 'upcoming', label: 'Upcoming' },
@@ -67,7 +69,7 @@ export default function FilterBar({
             className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
           >
             <option value="all">All Types</option>
-            {testTypes.map(type => (
+            {(testTypeOptions ?? testTypes).map(type => (
               <option key={type} value={type}>{type}</option>
             ))}
           </select>

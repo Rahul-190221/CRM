@@ -5,14 +5,14 @@ import CourseCard from './CourseCard'
 import AddCourseModal from './AddCourseModal'
 import ViewCourseModal from './ViewCourseModal'
 import { getCourses, createCourse, updateCourse, deleteCourse } from '@/lib/api/courses'
-import type { Course, TestType, FilterState } from '@/types/admin'
+import type { Course, CourseType, FilterState } from '@/types/admin'
 
 // Mock data for when API is not available
 const mockCourses: Course[] = [
   {
     _id: '1',
     name: 'IELTS Preparation',
-    testType: 'IELTS',
+    testType: 'IELTS Premium',
     description: 'Comprehensive IELTS preparation covering all four modules: Listening, Reading, Writing, and Speaking.',
     durationMonths: 3,
     enrolledCount: 45,
@@ -30,7 +30,7 @@ const mockCourses: Course[] = [
   {
     _id: '2',
     name: 'PTE Academic',
-    testType: 'PTE',
+    testType: 'PTE Premium',
     description: 'Complete PTE Academic training with AI-powered practice tests and personalized feedback.',
     durationMonths: 2,
     enrolledCount: 32,
@@ -48,7 +48,7 @@ const mockCourses: Course[] = [
   {
     _id: '3',
     name: 'GRE Test Prep',
-    testType: 'GRE',
+    testType: 'GRE Premium',
     description: 'Advanced GRE preparation focusing on Verbal Reasoning, Quantitative Reasoning, and Analytical Writing.',
     durationMonths: 4,
     enrolledCount: 28,
@@ -66,7 +66,7 @@ const mockCourses: Course[] = [
   {
     _id: '4',
     name: 'TOEFL iBT Course',
-    testType: 'TOEFL',
+    testType: 'TOEFL Premium',
     description: 'Intensive TOEFL iBT course with mock tests and expert guidance for all test sections.',
     durationMonths: 3,
     enrolledCount: 38,
@@ -83,7 +83,10 @@ const mockCourses: Course[] = [
   },
 ]
 
-const testTypes: TestType[] = ['IELTS', 'PTE', 'GRE', 'TOEFL']
+const courseTypes: CourseType[] = [
+  'IELTS Premium', 'IELTS Crash', 'IELTS Intense', 'IELTS Elementary', 'IELTS Mock Test',
+  'Basic English', 'GRE Premium', 'TOEFL Premium', 'PTE Premium',
+]
 
 const CourseDetails: React.FC = () => {
   const isAdmin = true;
@@ -218,11 +221,11 @@ const CourseDetails: React.FC = () => {
         </div>
         <select
           value={filters.testType}
-          onChange={(e) => setFilters({ ...filters, testType: e.target.value as TestType | 'all' })}
+          onChange={(e) => setFilters({ ...filters, testType: e.target.value as CourseType | 'all' })}
           className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
         >
-          <option value="all">All Test Types</option>
-          {testTypes.map(type => (
+          <option value="all">All Course Types</option>
+          {courseTypes.map(type => (
             <option key={type} value={type}>{type}</option>
           ))}
         </select>

@@ -67,10 +67,15 @@ export default function AdminDashboard() {
             setCoursePerformance(d.coursePerformance)
           } else {
             setCoursePerformance([
-              { label: 'IELTS', count: 0, color: '#3B82F6' },
-              { label: 'PTE',   count: 0, color: '#F59E0B' },
-              { label: 'GRE',   count: 0, color: '#22C55E' },
-              { label: 'TOEFL', count: 0, color: '#10B981' }
+              { label: 'IELTS Premium',   count: 0, color: '#EF4444' },
+              { label: 'IELTS Crash',     count: 0, color: '#F87171' },
+              { label: 'IELTS Intense',   count: 0, color: '#DC2626' },
+              { label: 'IELTS Elementary',count: 0, color: '#FCA5A5' },
+              { label: 'IELTS Mock Test', count: 0, color: '#FF6B6B' },
+              { label: 'Basic English',   count: 0, color: '#F97316' },
+              { label: 'GRE Premium',     count: 0, color: '#22C55E' },
+              { label: 'TOEFL Premium',   count: 0, color: '#3B82F6' },
+              { label: 'PTE Premium',     count: 0, color: '#A855F7' },
             ])
           }
         }

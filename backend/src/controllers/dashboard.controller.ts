@@ -477,8 +477,8 @@ export const getBDMDashboardAll = async (req: Request, res: Response): Promise<v
     const stages = ['Intake', 'Processing', 'Hot', 'Converted', 'Dead'];
     const sources = ['Website', 'Referral', 'Social Media', 'Email Campaign', 'Walk-in', 'Phone', 'Other'];
     const sourceColors = ['#3B82F6', '#F59E0B', '#22C55E', '#A855F7', '#EC4899', '#6366F1', '#94A3B8'];
-    const courseLabels = ['IELTS', 'PTE', 'GRE', 'TOEFL'];
-    const courseColors = ['#3B82F6', '#F59E0B', '#22C55E', '#10B981'];
+    const courseLabels = ['IELTS Premium', 'IELTS Crash', 'IELTS Intense', 'IELTS Elementary', 'IELTS Mock Test', 'Basic English', 'GRE Premium', 'TOEFL Premium', 'PTE Premium'];
+    const courseColors = ['#EF4444', '#F87171', '#DC2626', '#FCA5A5', '#FF6B6B', '#F97316', '#22C55E', '#3B82F6', '#A855F7'];
 
     const monthKeys = Array.from({ length: 6 }, (_, idx) => {
       const date = new Date(now.getFullYear(), now.getMonth() - (5 - idx), 1);
@@ -511,19 +511,8 @@ export const getBDMDashboardAll = async (req: Request, res: Response): Promise<v
         { $group: { _id: '$source', count: { $sum: 1 } } },
       ]),
       Lead.aggregate([
-        {
-          $project: {
-            normalizedService: {
-              $toUpper: {
-                $trim: {
-                  input: { $ifNull: ['$serviceInterest', ''] },
-                },
-              },
-            },
-          },
-        },
-        { $match: { normalizedService: { $in: courseLabels } } },
-        { $group: { _id: '$normalizedService', count: { $sum: 1 } } },
+        { $match: { serviceInterest: { $in: courseLabels } } },
+        { $group: { _id: '$serviceInterest', count: { $sum: 1 } } },
       ]),
       Lead.aggregate([
         { $match: { createdAt: { $gte: sixMonthsAgo } } },
@@ -729,23 +718,11 @@ export const getAdminDashboardAll = async (req: Request, res: Response): Promise
     }
 
     // --- Course Performance (This Month) ---
-    const courseLabels = ['IELTS', 'PTE', 'GRE', 'TOEFL'];
-    const courseColors = ['#3B82F6', '#F59E0B', '#22C55E', '#10B981'];
+    const courseLabels = ['IELTS Premium', 'IELTS Crash', 'IELTS Intense', 'IELTS Elementary', 'IELTS Mock Test', 'Basic English', 'GRE Premium', 'TOEFL Premium', 'PTE Premium'];
+    const courseColors = ['#EF4444', '#F87171', '#DC2626', '#FCA5A5', '#FF6B6B', '#F97316', '#22C55E', '#3B82F6', '#A855F7'];
     const courseAgg = await Lead.aggregate([
-      { $match: { createdAt: { $gte: startOfMonth } } },
-      {
-        $project: {
-          normalizedService: {
-            $toUpper: {
-              $trim: {
-                input: { $ifNull: ['$serviceInterest', ''] },
-              },
-            },
-          },
-        },
-      },
-      { $match: { normalizedService: { $in: courseLabels } } },
-      { $group: { _id: '$normalizedService', count: { $sum: 1 } } },
+      { $match: { createdAt: { $gte: startOfMonth }, serviceInterest: { $in: courseLabels } } },
+      { $group: { _id: '$serviceInterest', count: { $sum: 1 } } },
     ]);
     const courseMap = new Map<string, number>();
     for (const row of courseAgg) {

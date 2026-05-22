@@ -1,11 +1,23 @@
-// Test Types - shared across all admin pages
+// Test Types - shared across MockTestPackage, MockTestSchedule, Exam
 export type TestType = 'IELTS' | 'PTE' | 'GRE' | 'TOEFL';
+
+// Course Types - specific Luminedge program names
+export type CourseType =
+  | 'IELTS Premium'
+  | 'IELTS Crash'
+  | 'IELTS Intense'
+  | 'IELTS Elementary'
+  | 'IELTS Mock Test'
+  | 'Basic English'
+  | 'GRE Premium'
+  | 'TOEFL Premium'
+  | 'PTE Premium';
 
 // Course Interface
 export interface Course {
   _id: string;
   name: string;
-  testType: TestType;
+  testType: CourseType;
   description: string;
   durationMonths: number;
   enrolledCount: number;
@@ -115,6 +127,18 @@ export const testTypeBadgeColors: Record<TestType, string> = {
   'TOEFL': 'bg-blue-100 text-blue-700 border-blue-200',
 };
 
+export const courseTypeBadgeColors: Record<CourseType, string> = {
+  'IELTS Premium':   'bg-red-100 text-red-700 border-red-200',
+  'IELTS Crash':     'bg-red-100 text-red-700 border-red-200',
+  'IELTS Intense':   'bg-red-100 text-red-700 border-red-200',
+  'IELTS Elementary':'bg-red-100 text-red-700 border-red-200',
+  'IELTS Mock Test': 'bg-red-100 text-red-700 border-red-200',
+  'Basic English':   'bg-orange-100 text-orange-700 border-orange-200',
+  'GRE Premium':     'bg-green-100 text-green-700 border-green-200',
+  'TOEFL Premium':   'bg-blue-100 text-blue-700 border-blue-200',
+  'PTE Premium':     'bg-purple-100 text-purple-700 border-purple-200',
+};
+
 export const examTypeBadgeColors: Record<ExamType, string> = {
   'Computer-Based': 'bg-blue-100 text-blue-700',
   'Paper-Based': 'bg-amber-100 text-amber-700',
@@ -134,7 +158,18 @@ export const statusBadgeColors: Record<string, string> = {
 // Lead Types
 export type LeadSource = 'Website' | 'Referral' | 'Social Media' | 'Email Campaign' | 'Walk-in' | 'Phone' | 'Other';
 export type LeadStage = 'Intake' | 'Processing' | 'Hot' | 'Converted' | 'Dead';
-export type ServiceInterest = 'IELTS' | 'PTE' | 'GRE' | 'TOEFL' | 'Study Abroad' | 'Visa Processing';
+export type ServiceInterest =
+  | 'IELTS Premium'
+  | 'IELTS Crash'
+  | 'IELTS Intense'
+  | 'IELTS Elementary'
+  | 'IELTS Mock Test'
+  | 'Basic English'
+  | 'GRE Premium'
+  | 'TOEFL Premium'
+  | 'PTE Premium'
+  | 'Study Abroad'
+  | 'Visa Processing';
 
 export interface FollowUp {
   date: string;
