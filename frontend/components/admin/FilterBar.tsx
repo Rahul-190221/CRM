@@ -1,7 +1,7 @@
 'use client'
 
 import { X } from 'lucide-react'
-import type { TestType, ExamType, FilterState } from '@/types/admin'
+import type { TestType, CourseType, ExamType, FilterState } from '@/types/admin'
 
 interface FilterBarProps {
   filters: FilterState
@@ -65,7 +65,7 @@ export default function FilterBar({
         {showTestType && (
           <select
             value={filters.testType || 'all'}
-            onChange={(e) => onFilterChange({ ...filters, testType: e.target.value as TestType | 'all' })}
+            onChange={(e) => onFilterChange({ ...filters, testType: e.target.value as TestType | CourseType | 'all' })}
             className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#FACE39]/40 focus:border-transparent"
           >
             <option value="all">All Types</option>

@@ -112,7 +112,7 @@ export interface Exam {
 // Filter State Interface
 export interface FilterState {
   courseType?: string;
-  testType?: TestType | 'all';
+  testType?: TestType | CourseType | 'all';
   examType?: ExamType | 'all';
   status?: string;
   sortBy?: string;
